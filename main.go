@@ -15,11 +15,12 @@ import (
 const (
 	homeCmd = `Hi there!
 I will help know current US Dollar to Russian Ruble exchange rate.`
-	helpCmd    = "Just use /forex, /cbrf and /home command."
+	helpCmd    = "Just use /forex, /cbrf, /cash and /home command."
 	unknownCmd = "Unknown command"
 
-	fxTitle  = "Forex"
-	cbrTitle = "CBRF"
+	fxTitle   = "Forex"
+	cbrTitle  = "CBRF"
+	cashTitle = "Cash"
 )
 
 var (
@@ -29,11 +30,13 @@ var (
 
 	forex,
 	cbrf Source
+	cash Cash
 
 	opts struct {
 		Dbg      bool   `long:"dbg" env:"DEBUG" description:"Debug mode"`
 		BotToken string `long:"bottoken" env:"BOT_TOKEN" description:"Telegram API Token"`
 		CronSpec string `long:"cronspec" env:"CRON_SPEC" description:"Cron spec"`
+		CashURL  string `long:"cashurl" env:"CASH_URL" description:"Cash URL"`
 	}
 	version = "unknown"
 )
@@ -61,6 +64,7 @@ func main() {
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData(fxTitle, fxTitle),
 			tgbotapi.NewInlineKeyboardButtonData("CBRF", cbrTitle),
+			tgbotapi.NewInlineKeyboardButtonData(cashTitle, cashTitle),
 			tgbotapi.NewInlineKeyboardButtonData("Help", "Help"),
 		),
 	)
@@ -77,6 +81,11 @@ func main() {
 		rateFunc: func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) },
 	}
 
+	cash = Cash{
+		name:    cashTitle,
+		pattern: "1 US Dollar costs from %.2f RUB to %.2f RUB (%.2f on average) by Banki.ru",
+	}
+
 	updateRates()
 	startCmdOnSchedule(updateRates)
 
@@ -84,15 +93,21 @@ func main() {
 }
 
 func updateRates() {
-	if err := forex.updateRate(); err != nil {
+	if err := forex.UpdateRate(); err != nil {
 		log.Error(err)
 	}
 	log.Debugf(forex.pattern, forex.rate)
 
-	if err := cbrf.updateRate(); err != nil {
+	if err := cbrf.UpdateRate(); err != nil {
 		log.Error(err)
 	}
 	log.Debugf(cbrf.pattern, cbrf.rate)
+
+	log.Info("Fetching the cash currency rate for RUB")
+	if err := cash.UpdateRate(opts.CashURL); err != nil {
+		log.Error(err)
+	}
+	log.Debugf(cash.pattern, cash.min, cash.max, cash.avg)
 }
 
 func run() {
@@ -127,9 +142,11 @@ func run() {
 				msg.Text = homeCmd
 				msg.ReplyMarkup = homeKeyboard
 			case "forex":
-				msg.Text = forex.getRatef()
+				msg.Text = forex.GetRatef()
 			case "cbrf":
-				msg.Text = cbrf.getRatef()
+				msg.Text = cbrf.GetRatef()
+			case "cash":
+				msg.Text = cash.GetRatef()
 			case "help":
 				persist(update.Message.From)
 				msg.Text = helpCmd
@@ -153,9 +170,11 @@ func run() {
 			var msg tgbotapi.MessageConfig
 			switch update.CallbackQuery.Data {
 			case fxTitle:
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, forex.getRatef())
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, forex.GetRatef())
 			case cbrTitle:
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, cbrf.getRatef())
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, cbrf.GetRatef())
+			case cashTitle:
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, cash.GetRatef())
 			case "Help":
 				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, helpCmd)
 			default:
