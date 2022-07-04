@@ -23,40 +23,40 @@ var e = Source{
 
 // DATA RACE test
 func TestDataRace(t *testing.T) {
-	go s.updateRate()
-	go s.getRatef()
+	go s.UpdateRate()
+	go s.GetRatef()
 }
 
 func TestUpdateRate(t *testing.T) {
-	s.updateRate()
-	if got := s.getRate(); got < 0.0 {
+	s.UpdateRate()
+	if got := s.GetRate(); got < 0.0 {
 		t.Errorf("Expected: greater or equal 0, got: %2f", got)
 	}
 }
 
 func TestUpdateRateError(t *testing.T) {
-	e.updateRate()
-	if got := e.getErr(); got == nil {
+	e.UpdateRate()
+	if got := e.GetErr(); got == nil {
 		t.Errorf("Expected: not nil, got: %v", got)
 	}
 }
 
 func TestGetRatef(t *testing.T) {
-	s.updateRate()
-	got := s.getRatef()
-	want := fmt.Sprintf(s.getPattern(), s.getRate())
+	s.UpdateRate()
+	got := s.GetRatef()
+	want := fmt.Sprintf(s.GetPattern(), s.GetRate())
 	if got != want {
 		t.Errorf("Expected: %s, got: %s", want, got)
 	}
 }
 
 func TestGetRatefError(t *testing.T) {
-	e.updateRate()
-	got := e.getRatef()
-	if e.err == nil || e.getRate() > 0.0 {
+	e.UpdateRate()
+	got := e.GetRatef()
+	if e.err == nil || e.GetRate() > 0.0 {
 		t.Errorf("Expected: error, got: %s", got)
 	}
-	want := fmt.Sprintf("%s error: %s", e.getName(), e.getErr().Error())
+	want := fmt.Sprintf("%s error: %s", e.GetName(), e.GetErr().Error())
 	if got != want {
 		t.Errorf("Expected: error, got: %s", got)
 	}
