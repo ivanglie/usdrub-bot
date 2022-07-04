@@ -2,6 +2,7 @@
 # vendor/
 coverage.out
 coverage.html
-.env
-.env.debug
-debug.sh
+*.env
+*.debug
+*.sh
+*.db

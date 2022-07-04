@@ -3,10 +3,10 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 h1:wG8n/XJQ07TmjbITcGiUaOtXxdrINDz1b0J1w0SzqDc=
 github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1/go.mod h1:A2S0CWkNylc2phvKXWBBdD3K0iGnDBGbzRpISP2zBl8=
-github.com/ivanglie/go-cbr-client v1.0.2 h1:Zb0Wa7phpk7oZAnTMTClQO//Fd1N9CZRtVgFydpE+l0=
-github.com/ivanglie/go-cbr-client v1.0.2/go.mod h1:FOwxqkSEoGRYwg1D8x5DyIIS2pY/WnfGAmKPBPk7U/w=
-github.com/ivanglie/go-coingate-client v1.0.2 h1:vuUvAPKh4FLO3N2sq8Mrt9yjIwDDU2kPyu9N1GIN39o=
-github.com/ivanglie/go-coingate-client v1.0.2/go.mod h1:Ovscku6gKYko0vUoMJXGFq7u7t/j5dBLxQzaCysfodY=
+github.com/ivanglie/go-cbr-client v1.0.3 h1:jhhBPlUIeamIxVtgNm33QGYvgFbRbsO46bnJ0WuCuhk=
+github.com/ivanglie/go-cbr-client v1.0.3/go.mod h1:FOwxqkSEoGRYwg1D8x5DyIIS2pY/WnfGAmKPBPk7U/w=
+github.com/ivanglie/go-coingate-client v1.0.3 h1:uiiqsxprfvLyNs6MdgzcYN5xBva5FDJPsAjgJXPU6vI=
+github.com/ivanglie/go-coingate-client v1.0.3/go.mod h1:Ovscku6gKYko0vUoMJXGFq7u7t/j5dBLxQzaCysfodY=
 github.com/jessevdk/go-flags v1.5.0 h1:1jKYvbxEjfUl0fmqTCOfonvskHHXMjBySTLW4y9LFvc=
 github.com/jessevdk/go-flags v1.5.0/go.mod h1:Fw0T6WPc1dYxT4mKEZRfG5kJhaTDP9pj1c2EWnYs/m4=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
