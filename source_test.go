@@ -29,14 +29,14 @@ func TestDataRace(t *testing.T) {
 
 func TestUpdateRate(t *testing.T) {
 	s.updateRate()
-	if got := s.rate; got < 0.0 {
+	if got := s.getRate(); got < 0.0 {
 		t.Errorf("Expected: greater or equal 0, got: %2f", got)
 	}
 }
 
 func TestUpdateRateError(t *testing.T) {
 	e.updateRate()
-	if got := e.err; got == nil {
+	if got := e.getErr(); got == nil {
 		t.Errorf("Expected: not nil, got: %v", got)
 	}
 }
@@ -44,7 +44,7 @@ func TestUpdateRateError(t *testing.T) {
 func TestGetRatef(t *testing.T) {
 	s.updateRate()
 	got := s.getRatef()
-	want := fmt.Sprintf(s.pattern, s.rate)
+	want := fmt.Sprintf(s.getPattern(), s.getRate())
 	if got != want {
 		t.Errorf("Expected: %s, got: %s", want, got)
 	}
@@ -53,10 +53,10 @@ func TestGetRatef(t *testing.T) {
 func TestGetRatefError(t *testing.T) {
 	e.updateRate()
 	got := e.getRatef()
-	if e.err == nil || e.rate > 0.0 {
+	if e.err == nil || e.getRate() > 0.0 {
 		t.Errorf("Expected: error, got: %s", got)
 	}
-	want := fmt.Sprintf("%s error: %s", e.name, e.err.Error())
+	want := fmt.Sprintf("%s error: %s", e.getName(), e.getErr().Error())
 	if got != want {
 		t.Errorf("Expected: error, got: %s", got)
 	}
