@@ -6,6 +6,7 @@ Telegram bot that provides latest US Dollar to Russian Ruble exchange rate.
 
 * Forex rate
 * Russian Central Bank exchange rate
+* Cash exchange rates
 
 ## Demo
 You will find it at [t.me/usd2rub_bot](https://t.me/usd2rub_bot). See screenshot:
@@ -16,3 +17,4 @@ You will find it at [t.me/usd2rub_bot](https://t.me/usd2rub_bot). See screenshot
 
 * [go-coingate-client](https://github.com/ivanglie/go-coingate-client)
 * [go-cbr-client](https://github.com/ivanglie/go-cbr-client)
+* [usdrub-cash-exchange](https://github.com/ivanglie/usdrub-cash-exchange)

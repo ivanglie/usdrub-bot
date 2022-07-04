@@ -103,11 +103,10 @@ func updateRates() {
 	}
 	log.Debugf(cbrf.pattern, cbrf.rate)
 
-	log.Info("Fetching the cash currency rate for RUB")
-	if err := cash.UpdateRate(opts.CashURL); err != nil {
+	if err := cash.UpdateRate(opts.CashURL, ""); err != nil {
 		log.Error(err)
 	}
-	log.Debugf(cash.pattern, cash.min, cash.max, cash.avg)
+	log.Debugf(cash.pattern, cash.GetMin(), cash.GetMax(), cash.GetAvg())
 }
 
 func run() {
