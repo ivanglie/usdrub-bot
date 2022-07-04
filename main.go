@@ -15,11 +15,12 @@ import (
 const (
 	homeCmd = `Hi there!
 I will help know current US Dollar to Russian Ruble exchange rate.`
-	helpCmd    = "Just use /forex, /cbrf and /home command."
+	helpCmd    = "Just use /forex, /cbrf, /cash and /home command."
 	unknownCmd = "Unknown command"
 
-	fxTitle  = "Forex"
-	cbrTitle = "CBRF"
+	fxTitle   = "Forex"
+	cbrTitle  = "CBRF"
+	cashTitle = "Cash"
 )
 
 var (
@@ -29,11 +30,13 @@ var (
 
 	forex,
 	cbrf Source
+	cash Cash
 
 	opts struct {
 		Dbg      bool   `long:"dbg" env:"DEBUG" description:"Debug mode"`
 		BotToken string `long:"bottoken" env:"BOT_TOKEN" description:"Telegram API Token"`
 		CronSpec string `long:"cronspec" env:"CRON_SPEC" description:"Cron spec"`
+		CashURL  string `long:"cashurl" env:"CASH_URL" description:"Cash URL"`
 	}
 	version = "unknown"
 )
@@ -61,6 +64,7 @@ func main() {
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData(fxTitle, fxTitle),
 			tgbotapi.NewInlineKeyboardButtonData("CBRF", cbrTitle),
+			tgbotapi.NewInlineKeyboardButtonData(cashTitle, cashTitle),
 			tgbotapi.NewInlineKeyboardButtonData("Help", "Help"),
 		),
 	)
@@ -75,6 +79,11 @@ func main() {
 		name:     cbrTitle,
 		pattern:  "1 US Dollar equals %.2f RUB by Russian Central Bank",
 		rateFunc: func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) },
+	}
+
+	cash = Cash{
+		name:    cashTitle,
+		pattern: "1 US Dollar costs from %.2f RUB to %.2f RUB (%.2f on average) by Banki.ru",
 	}
 
 	updateRates()
@@ -93,6 +102,11 @@ func updateRates() {
 		log.Error(err)
 	}
 	log.Debugf(cbrf.pattern, cbrf.rate)
+
+	if err := cash.updateRate(opts.CashURL); err != nil {
+		log.Error(err)
+	}
+	log.Debugf(cash.pattern, cash.min, cash.max, cash.avg)
 }
 
 func run() {
@@ -130,6 +144,8 @@ func run() {
 				msg.Text = forex.getRatef()
 			case "cbrf":
 				msg.Text = cbrf.getRatef()
+			case "cash":
+				msg.Text = cash.getRatef()
 			case "help":
 				persist(update.Message.From)
 				msg.Text = helpCmd
@@ -156,6 +172,8 @@ func run() {
 				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, forex.getRatef())
 			case cbrTitle:
 				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, cbrf.getRatef())
+			case cashTitle:
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, cash.getRatef())
 			case "Help":
 				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, helpCmd)
 			default:
