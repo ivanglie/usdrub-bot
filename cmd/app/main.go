@@ -54,14 +54,17 @@ func main() {
 	p := flags.NewParser(&opts, flags.PrintErrors|flags.PassDoubleDash|flags.HelpFlag)
 	if _, err := p.Parse(); err != nil {
 		if err.(*flags.Error).Type != flags.ErrHelp {
-			log.Printf("[ERROR] cli error: %v", err)
+			log.Printf("[ERROR] usdrub-bot error: %v", err)
 		}
 		os.Exit(2)
 	}
 
 	setupLog(opts.Dbg)
+	scheduler.Debug = opts.Dbg
 	fx.Debug = opts.Dbg
+	moex.Debug = opts.Dbg
 	cbr.Debug = opts.Dbg
+	cashex.Debug = opts.Dbg
 
 	tgbotapi.SetLogger(log)
 	fx.SetLogger(log)

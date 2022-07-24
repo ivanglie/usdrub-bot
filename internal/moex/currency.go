@@ -16,7 +16,10 @@ const (
 	Region  = "moskva" // Default region
 )
 
-var lock sync.RWMutex
+var (
+	lock  sync.RWMutex
+	Debug bool
+)
 
 // Cash currency exchange rate
 type Currency struct {
@@ -27,7 +30,9 @@ type Currency struct {
 }
 
 func NewCurrency(name, pattern string) Currency {
-	log.Println("Fetching the cash currency rate")
+	if Debug {
+		log.Println("Fetching the cash currency rate")
+	}
 
 	lock.Lock()
 	defer lock.Unlock()
