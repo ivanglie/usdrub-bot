@@ -1,0 +1,8 @@
+.DS_Store
+# vendor/
+*.out
+*.html
+*.env
+*.debug
+*.sh
+*.db
