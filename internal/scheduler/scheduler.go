@@ -1,6 +1,8 @@
 package scheduler
 
 import (
+	"os"
+
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 )
@@ -8,7 +10,8 @@ import (
 var Debug bool
 
 // Start cmd on schedule
-func StartCmdOnSchedule(cmd func(), spec string) {
+func StartCmdOnSchedule(cmd func()) {
+	spec := os.Getenv("CRON_SPEC")
 	if spec == "" {
 		spec = "0/5 * * * 1-5" // See https://crontab.guru/
 	}

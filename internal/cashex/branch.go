@@ -26,6 +26,13 @@ func newBranch(bank, address, subway, currency string, buy, sell float64, update
 		Updated:  updated}
 }
 
+// ByBuySorter implements sort.Interface based on the Buy field
+type ByBuySorter []branch
+
+func (b ByBuySorter) Len() int           { return len(b) }
+func (b ByBuySorter) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
+func (b ByBuySorter) Less(i, j int) bool { return b[i].Buy < b[j].Buy }
+
 // BySellSorter implements sort.Interface based on the Sell field
 type BySellSorter []branch
 

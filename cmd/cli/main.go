@@ -21,11 +21,11 @@ var (
 	cash  *cashex.Currency
 
 	opts struct {
-		Forex       bool `long:"forex" short:"f" description:"Exchange rate by Forex"`
-		Moex        bool `long:"moex" short:"m" description:"Exchange rate by Moscow Exchange"`
-		Cbrf        bool `long:"cbrf" short:"c" description:"Exchange rate by Russian Central Bank"`
-		Cash        bool `long:"cash" description:"Cost of cash in Exchange Branches in Russia, Moscow"`
-		CashDetails bool `long:"cashd" description:"Details of cash cost in Exchange Branches in Russia, Moscow"`
+		Forex        bool `long:"forex" short:"f" description:"Exchange rate by Forex"`
+		Moex         bool `long:"moex" short:"m" description:"Exchange rate by Moscow Exchange"`
+		Cbrf         bool `long:"cbrf" short:"c" description:"Exchange rate by Russian Central Bank"`
+		Cash         bool `long:"cash" description:"Cost of cash in Exchange Branches in Russia, Moscow"`
+		CashBranches bool `long:"cashb" description:"Cash Exchange branches os Moscow, Russia"`
 	}
 )
 
@@ -38,29 +38,29 @@ func main() {
 		os.Exit(2)
 	}
 
-	mx = moex.New("1 US Dollar equals %.2f RUB by Moscow Exchange")
-	forex = ex.New("1 US Dollar equals %.2f RUB by Forex", func() (float64, error) { return fx.NewClient().GetRate("USD", "RUB") })
-	cbrf = ex.New("1 US Dollar equals %.2f RUB by Russian Central Bank", func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
-	cash = cashex.New("1 US Dollar costs from %.2f RUB to %.2f RUB (%.2f on average) in Moscow, Russia by Banki.ru", cashex.Region)
+	mx = moex.New()
+	forex = ex.New(func() (float64, error) { return fx.NewClient().GetRate("USD", "RUB") })
+	cbrf = ex.New(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
+	cash = cashex.New(cashex.Region)
 
 	if opts.Forex {
 		forex.Update()
-		fmt.Println(forex.Format())
+		fmt.Println(forex.Rate())
 	}
 	if opts.Moex {
 		mx.Update()
-		fmt.Println(mx.Format())
+		fmt.Println(mx.Rate())
 	}
 	if opts.Cbrf {
 		cbrf.Update()
-		fmt.Println(cbrf.Format())
+		fmt.Println(cbrf.Rate())
 	}
 	if opts.Cash {
 		cash.Update()
-		fmt.Println(cash.Format())
+		fmt.Println(cash.Rate())
 	}
-	if opts.CashDetails {
-		cash.Details()
-		fmt.Printf("List of cash cost in Exchange Branches in Russia, Moscow:\n%s", cash.Details())
+	if opts.CashBranches {
+		cash.Update()
+		fmt.Printf("Cash exchange rates in branches in Moscow, Russia\nBuy cash:\n%sSell cash:\n%s", cash.BuyBranches(), cash.SellBranches())
 	}
 }
