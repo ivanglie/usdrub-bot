@@ -7,7 +7,7 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	cbr "github.com/ivanglie/go-cbr-client"
-	fx "github.com/ivanglie/go-coingate-client"
+	forex "github.com/ivanglie/go-coingate-client"
 	"github.com/ivanglie/usdrub-bot/internal/cashex"
 	"github.com/ivanglie/usdrub-bot/internal/ex"
 	"github.com/ivanglie/usdrub-bot/internal/moex"
@@ -18,34 +18,34 @@ import (
 )
 
 const (
-	homeCmd = `Hi there!
-I will help know current US Dollar to Russian Ruble exchange rate.`
 	helpCmd    = "Just use /forex, /moex, /cbrf, /cash and /home command."
 	unknownCmd = "Unknown command"
-
-	fxTitle   = "Forex"
-	cbrTitle  = "CBRF"
-	moexTitle = "MOEX"
-	cashTitle = "Cash"
+	prefix     = "1 US Dollar equals "
 )
 
 var (
-	homeKeyboard,
-	detailsKeyboard tgbotapi.InlineKeyboardMarkup
-
 	log *logrus.Logger
-
-	forex *ex.Currency
-	cbrf  *ex.Currency
-	mx    *moex.Currency
-	cash  *cashex.Currency
 
 	opts struct {
 		Dbg      bool   `long:"dbg" env:"DEBUG" description:"Debug mode"`
 		BotToken string `long:"bottoken" env:"BOT_TOKEN" description:"Telegram API Token"`
 		CronSpec string `long:"cronspec" env:"CRON_SPEC" description:"Cron spec"`
 	}
+
 	version = "unknown"
+
+	cashKeyboard = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("Buy cash", "Buy"),
+			tgbotapi.NewInlineKeyboardButtonData("Sell cash", "Sell"),
+			tgbotapi.NewInlineKeyboardButtonData("Help", "Help"),
+		),
+	)
+
+	fx   *ex.Currency
+	mx   *moex.Currency
+	cbrf *ex.Currency
+	cash *cashex.Currency
 )
 
 func main() {
@@ -61,54 +61,24 @@ func main() {
 
 	setupLog(opts.Dbg)
 	scheduler.Debug = opts.Dbg
-	fx.Debug = opts.Dbg
+	forex.Debug = opts.Dbg
 	moex.Debug = opts.Dbg
 	cbr.Debug = opts.Dbg
 	cashex.Debug = opts.Dbg
 
 	tgbotapi.SetLogger(log)
-	fx.SetLogger(log)
+	forex.SetLogger(log)
 	cbr.SetLogger(log)
 
-	homeKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(fxTitle, fxTitle),
-			tgbotapi.NewInlineKeyboardButtonData(moexTitle, moexTitle),
-			tgbotapi.NewInlineKeyboardButtonData(cbrTitle, cbrTitle),
-			tgbotapi.NewInlineKeyboardButtonData(cashTitle, cashTitle),
-			tgbotapi.NewInlineKeyboardButtonData("Help", "Help"),
-		),
-	)
-
-	detailsKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("See details", "Details"),
-		),
-	)
-
-	mx = moex.New("1 US Dollar equals %.2f RUB by Moscow Exchange")
-	forex = ex.New("1 US Dollar equals %.2f RUB by Forex", func() (float64, error) { return fx.NewClient().GetRate("USD", "RUB") })
-	cbrf = ex.New("1 US Dollar equals %.2f RUB by Russian Central Bank", func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
-	cash = cashex.New("1 US Dollar costs from %.2f RUB to %.2f RUB (%.2f on average) in Moscow, Russia by Banki.ru", cashex.Region)
+	mx = moex.New()
+	fx = ex.New(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
+	cbrf = ex.New(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
+	cash = cashex.New(cashex.Region)
 
 	updateRates()
-	scheduler.StartCmdOnSchedule(updateRates, opts.CronSpec)
+	scheduler.StartCmdOnSchedule(updateRates)
 
 	run()
-}
-
-func updateRates() {
-	forex.Update()
-	log.Debug(forex.Format())
-
-	mx.Update()
-	log.Debug(mx.Format())
-
-	cbrf.Update()
-	log.Debug(cbrf.Format())
-
-	cash.Update()
-	log.Debug(cash.Format())
 }
 
 func run() {
@@ -143,17 +113,17 @@ func run() {
 				if err != nil {
 					log.Error(err)
 				}
-				msg.Text = homeCmd
-				msg.ReplyMarkup = homeKeyboard
+				msg.Text = format()
+				msg.ReplyMarkup = cashKeyboard
 			case "forex":
-				msg.Text = forex.Format()
+				msg.Text = prefix + forexFormat()
 			case "moex":
-				msg.Text = mx.Format()
+				msg.Text = prefix + formatMoex()
 			case "cbrf":
-				msg.Text = cbrf.Format()
+				msg.Text = prefix + cbrfFormat()
 			case "cash":
-				msg.Text = cash.Format()
-				msg.ReplyMarkup = detailsKeyboard
+				msg.Text = formatCash()
+				msg.ReplyMarkup = cashKeyboard
 			case "help":
 				err = storage.Persist(update.Message.From)
 				if err != nil {
@@ -180,17 +150,21 @@ func run() {
 			// And finally, send a message containing the data received.
 			var msg tgbotapi.MessageConfig
 			switch update.CallbackQuery.Data {
-			case fxTitle:
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, forex.Format())
-			case moexTitle:
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, mx.Format())
-			case cbrTitle:
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, cbrf.Format())
-			case cashTitle:
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, cash.Format())
-				msg.ReplyMarkup = detailsKeyboard
-			case "Details":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, cash.Details())
+			case "Home":
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, format())
+			case "Forex":
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, prefix+forexFormat())
+			case "Moex":
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, prefix+formatMoex())
+			case "Cbrf":
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, prefix+cbrfFormat())
+			case "Cash":
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, prefix+formatCash())
+				msg.ReplyMarkup = cashKeyboard
+			case "Buy":
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Buy cash:\n"+cash.BuyBranches())
+			case "Sell":
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Sell cash:\n"+cash.SellBranches())
 			case "Help":
 				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, helpCmd)
 			default:
@@ -202,6 +176,66 @@ func run() {
 			}
 		}
 	}
+}
+
+func updateRates() {
+	fx.Update()
+	log.Debug(fx.Rate())
+
+	mx.Update()
+	log.Debug(mx.Rate())
+
+	cbrf.Update()
+	log.Debug(cbrf.Rate())
+
+	cash.Update()
+	log.Debug(cash.Rate())
+}
+
+func format() string {
+	return fmt.Sprintf("*%s*\n%s\n%s\n%s\n\n*Cash exchange rates*\n%s",
+		prefix, forexFormat(), formatMoex(), cbrfFormat(), formatCash())
+}
+
+func formatCash() string {
+	bmn, bmx, ba, smn, smx, sa := cash.Rate()
+	s := fmt.Sprintf(
+		"Buy:\t%.2f .. %.2f RUB (avg %.2f)\nSell:\t%.2f .. %.2f RUB (avg %.2f)\nin branches in Moscow, Russia by Banki.ru",
+		bmx, bmn, ba, smn, smx, sa)
+	return s
+}
+
+func formatMoex() string {
+	var s string
+	r, e := mx.Rate()
+	if e != nil {
+		s = fmt.Sprintf("Moscow Exchange error: %v", e)
+		return s
+	}
+	s = fmt.Sprintf("%.2f RUB by Moscow Exchange", r)
+	return s
+}
+
+func cbrfFormat() string {
+	var s string
+	r, e := cbrf.Rate()
+	if e != nil {
+		s = fmt.Sprintf("Russian Central Bank error: %v", e)
+		return s
+	}
+	s = fmt.Sprintf("%.2f RUB by Russian Central Bank", r)
+	return s
+}
+
+func forexFormat() string {
+	var s string
+	r, e := fx.Rate()
+	if e != nil {
+		s = fmt.Sprintf("Forex error: %v", e)
+		return s
+	}
+	s = fmt.Sprintf("%.2f RUB by Forex", r)
+	return s
 }
 
 func setupLog(dbg bool) {

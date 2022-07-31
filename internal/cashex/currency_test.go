@@ -5,107 +5,8 @@ import (
 	"time"
 )
 
-func Test_min(t *testing.T) {
-	type args struct {
-		b []branch
-	}
-	tests := []struct {
-		name string
-		args args
-		want float64
-	}{
-		{
-			name: "min",
-			args: args{[]branch{
-				{"b", "a", "s", "c", 12.34, 58.78, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 12.34, 56.78, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 12.34, 57.78, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-			}},
-			want: 56.78,
-		},
-		{
-			name: "0",
-			args: args{[]branch{}},
-			want: 0,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := min(tt.args.b); got != tt.want {
-				t.Errorf("min() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_max(t *testing.T) {
-	type args struct {
-		b []branch
-	}
-	tests := []struct {
-		name string
-		args args
-		want float64
-	}{
-		{
-			name: "max",
-			args: args{[]branch{
-				{"b", "a", "s", "c", 12.34, 56.78, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 12.34, 58.78, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 12.34, 57.78, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-			}},
-			want: 58.78,
-		},
-		{
-			name: "0",
-			args: args{[]branch{}},
-			want: 0,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := max(tt.args.b); got != tt.want {
-				t.Errorf("max() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_avg(t *testing.T) {
-	type args struct {
-		b []branch
-	}
-	tests := []struct {
-		name string
-		args args
-		want float64
-	}{
-		{
-			name: "avg",
-			args: args{[]branch{
-				{"b", "a", "s", "c", 12.34, 30, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 12.34, 40, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 12.34, 80, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-			}},
-			want: 50,
-		},
-		{
-			name: "0",
-			args: args{[]branch{}},
-			want: 0,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := avg(tt.args.b); got != tt.want {
-				t.Errorf("avg() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func Test_dataRace(t *testing.T) {
-	c := New("%.2f", "moskva")
+	c := New("moskva")
 	go func() {
 		for {
 			c.Update()
@@ -113,7 +14,71 @@ func Test_dataRace(t *testing.T) {
 	}()
 
 	for i := 0; i < 10; i++ {
-		c.Format()
+		c.Rate()
 		time.Sleep(100 * time.Millisecond)
+	}
+}
+
+func Test_mma(t *testing.T) {
+	type args struct {
+		b []branch
+	}
+	tests := []struct {
+		name  string
+		args  args
+		want  float64
+		want1 float64
+		want2 float64
+		want3 float64
+		want4 float64
+		want5 float64
+	}{
+		{
+			name: "Min, max and avg",
+			args: args{[]branch{
+				{"b", "a", "s", "c", 13.00, 58.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+				{"b", "a", "s", "c", 12.00, 56.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+				{"b", "a", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+			}},
+			want:  12,
+			want1: 56,
+			want2: 14,
+			want3: 58,
+			want4: 13,
+			want5: 57,
+		},
+		{
+			name:  "0",
+			args:  args{[]branch{}},
+			want:  0,
+			want1: 0,
+			want2: 0,
+			want3: 0,
+			want4: 0,
+			want5: 0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, got2, got3, got4, got5 := mma(tt.args.b)
+			if got != tt.want {
+				t.Errorf("mma() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("mma() got1 = %v, want %v", got1, tt.want1)
+			}
+			if got2 != tt.want2 {
+				t.Errorf("mma() got2 = %v, want %v", got2, tt.want2)
+			}
+			if got3 != tt.want3 {
+				t.Errorf("mma() got3 = %v, want %v", got3, tt.want3)
+			}
+			if got4 != tt.want4 {
+				t.Errorf("mma() got4 = %v, want %v", got4, tt.want4)
+			}
+			if got5 != tt.want5 {
+				t.Errorf("mma() got5 = %v, want %v", got5, tt.want5)
+			}
+		})
 	}
 }

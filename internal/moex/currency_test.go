@@ -5,33 +5,8 @@ import (
 	"time"
 )
 
-func TestNewCurrency(t *testing.T) {
-	type args struct {
-		name    string
-		pattern string
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		{
-			name: "Equals",
-			args: args{name: "any", pattern: "%.2f"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := New(tt.args.pattern)
-			got.Update()
-			if got.rate <= 0 {
-				t.Errorf("NewCurrency() = %v", got)
-			}
-		})
-	}
-}
-
 func Test_dataRace(t *testing.T) {
-	c := New("%.2f")
+	c := New()
 	go func() {
 		for {
 			c.Update()
@@ -39,7 +14,7 @@ func Test_dataRace(t *testing.T) {
 	}()
 
 	for i := 0; i < 10; i++ {
-		c.Format()
+		c.Rate()
 		time.Sleep(100 * time.Millisecond)
 	}
 }

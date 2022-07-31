@@ -25,19 +25,21 @@ var (
 // Cash currency exchange rate
 type Currency struct {
 	sync.RWMutex
-	pattern  string
-	region   string
-	details  string
-	branches []branch
-	min      float64
-	max      float64
-	avg      float64
+	region       string
+	branches     []branch
+	buyBranches  string
+	sellBranches string
+	buyMin       float64
+	buyMax       float64
+	buyAvg       float64
+	sellMin      float64
+	sellMax      float64
+	sellAvg      float64
 }
 
-func New(pattern, region string) *Currency {
+func New(region string) *Currency {
 	return &Currency{
-		pattern: pattern,
-		region:  region,
+		region: region,
 	}
 }
 
@@ -49,28 +51,30 @@ func (c *Currency) Update() {
 	defer c.Unlock()
 	b := c.parseBranches(c.region)
 	c.branches = b
-	c.details = details(b)
-	c.min = min(b)
-	c.max = max(b)
-	c.avg = avg(b)
+	c.buyMin, c.sellMin, c.buyMax, c.sellMax, c.buyAvg, c.sellAvg = mma(b)
+	c.buyBranches = buyBranches(b)
+	c.sellBranches = sellBranches(b)
 }
 
-// Get formated cash exchange rate
-func (c *Currency) Format() string {
+// Get formated cash exchange rate: buyMin, buyMax, buyAvg, sellMin, sellMax, sellAvg
+func (c *Currency) Rate() (float64, float64, float64, float64, float64, float64) {
 	c.RLock()
 	defer c.RUnlock()
-	r := fmt.Sprintf(c.pattern, c.min, c.max, c.avg)
-	if c.min <= 0.0 || c.max <= 0.0 || c.avg <= 0.0 {
-		r = fmt.Sprintf("cashex error: wrong value of min=%.2f, max=%.2f, avg=%.2f", c.min, c.max, c.avg)
-	}
-	return r
+	return c.buyMin, c.buyMax, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg
 }
 
-// Get details
-func (c *Currency) Details() string {
+// Get buy branches
+func (c *Currency) BuyBranches() string {
 	c.RLock()
 	defer c.RUnlock()
-	return c.details
+	return c.buyBranches
+}
+
+// Get sell branches
+func (c *Currency) SellBranches() string {
+	c.RLock()
+	defer c.RUnlock()
+	return c.sellBranches
 }
 
 // Parse branches
@@ -123,51 +127,50 @@ func (c *Currency) parseBranches(region string) []branch {
 	return branches
 }
 
-func details(b []branch) string {
-	sort.Sort(BySellSorter(b))
-	details := ""
+func buyBranches(b []branch) string {
+	sort.Sort(sort.Reverse(ByBuySorter(ByBuySorter(b))))
+	d := ""
 	for i, v := range b {
-		details = details + fmt.Sprintf("%d. *%.2f* RUB: %s, %s, %s\n", i+1, v.Sell, v.Bank, v.Address, v.Subway)
+		d = d + fmt.Sprintf("%d. *%.2f* RUB: %s, %s, %s\n", i+1, v.Buy, v.Bank, v.Address, v.Subway)
 	}
-	return details
+	return d
 }
 
-func min(b []branch) float64 {
-	if len(b) == 0 {
-		return 0
+func sellBranches(b []branch) string {
+	sort.Sort(BySellSorter(b))
+	d := ""
+	for i, v := range b {
+		d = d + fmt.Sprintf("%d. *%.2f* RUB: %s, %s, %s\n", i+1, v.Sell, v.Bank, v.Address, v.Subway)
 	}
+	return d
+}
 
-	min := b[0].Sell
+// Min, max and avg
+func mma(b []branch) (float64, float64, float64, float64, float64, float64) {
+	if len(b) == 0 {
+		return 0, 0, 0, 0, 0, 0
+	}
+	bmin := b[0].Buy
+	smin := b[0].Sell
+	bmax := b[0].Buy
+	smax := b[0].Sell
+	btotal := 0.0
+	stotal := 0.0
 	for _, v := range b {
-		if v.Sell < min {
-			min = v.Sell
+		if v.Buy < bmin {
+			bmin = v.Buy
 		}
-	}
-	return min
-}
-
-func max(b []branch) float64 {
-	if len(b) == 0 {
-		return 0
-	}
-
-	max := b[0].Sell
-	for _, v := range b {
-		if v.Sell > max {
-			max = v.Sell
+		if v.Sell < smin {
+			smin = v.Sell
 		}
+		if v.Buy > bmax {
+			bmax = v.Buy
+		}
+		if v.Sell > smax {
+			smax = v.Sell
+		}
+		btotal += v.Buy
+		stotal += v.Sell
 	}
-	return max
-}
-
-func avg(b []branch) float64 {
-	if len(b) == 0 {
-		return 0
-	}
-
-	total := 0.0
-	for _, v := range b {
-		total += v.Sell
-	}
-	return total / float64(len(b))
+	return bmin, smin, bmax, smax, btotal / float64(len(b)), stotal / float64(len(b))
 }
