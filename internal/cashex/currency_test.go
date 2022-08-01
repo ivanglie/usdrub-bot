@@ -60,7 +60,7 @@ func Test_mma(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, got2, got3, got4, got5 := mma(tt.args.b)
+			got, got1, got2, got3, got4, got5 := findMma(tt.args.b)
 			if got != tt.want {
 				t.Errorf("mma() got = %v, want %v", got, tt.want)
 			}
