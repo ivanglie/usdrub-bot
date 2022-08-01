@@ -20,7 +20,8 @@ import (
 const (
 	helpCmd    = "Just use /forex, /moex, /cbrf, /cash and /home command."
 	unknownCmd = "Unknown command"
-	prefix     = "1 US Dollar equals "
+	exPrefix   = "1 US Dollar equals "
+	cashPrefix = "Cash exchange rates"
 )
 
 var (
@@ -116,13 +117,13 @@ func run() {
 				msg.Text = format()
 				msg.ReplyMarkup = cashKeyboard
 			case "forex":
-				msg.Text = prefix + forexFormat()
+				msg.Text = exPrefix + formatForex()
 			case "moex":
-				msg.Text = prefix + formatMoex()
+				msg.Text = exPrefix + formatMoex()
 			case "cbrf":
-				msg.Text = prefix + cbrfFormat()
+				msg.Text = exPrefix + formatCbrf()
 			case "cash":
-				msg.Text = formatCash()
+				msg.Text = cashPrefix + "\n" + formatCash()
 				msg.ReplyMarkup = cashKeyboard
 			case "help":
 				err = storage.Persist(update.Message.From)
@@ -150,21 +151,10 @@ func run() {
 			// And finally, send a message containing the data received.
 			var msg tgbotapi.MessageConfig
 			switch update.CallbackQuery.Data {
-			case "Home":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, format())
-			case "Forex":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, prefix+forexFormat())
-			case "Moex":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, prefix+formatMoex())
-			case "Cbrf":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, prefix+cbrfFormat())
-			case "Cash":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, prefix+formatCash())
-				msg.ReplyMarkup = cashKeyboard
 			case "Buy":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Buy cash:\n"+cash.BuyBranches())
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "*Buy cash*\n"+cash.BuyBranches())
 			case "Sell":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Sell cash:\n"+cash.SellBranches())
+				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "*Sell cash*\n"+cash.SellBranches())
 			case "Help":
 				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, helpCmd)
 			default:
@@ -193,8 +183,8 @@ func updateRates() {
 }
 
 func format() string {
-	return fmt.Sprintf("*%s*\n%s\n%s\n%s\n\n*Cash exchange rates*\n%s",
-		prefix, forexFormat(), formatMoex(), cbrfFormat(), formatCash())
+	return fmt.Sprintf("*%s*\n%s\n%s\n%s\n*%s*\n%s",
+		exPrefix, formatForex(), formatMoex(), formatCbrf(), cashPrefix, formatCash())
 }
 
 func formatCash() string {
@@ -216,7 +206,7 @@ func formatMoex() string {
 	return s
 }
 
-func cbrfFormat() string {
+func formatCbrf() string {
 	var s string
 	r, e := cbrf.Rate()
 	if e != nil {
@@ -227,7 +217,7 @@ func cbrfFormat() string {
 	return s
 }
 
-func forexFormat() string {
+func formatForex() string {
 	var s string
 	r, e := fx.Rate()
 	if e != nil {

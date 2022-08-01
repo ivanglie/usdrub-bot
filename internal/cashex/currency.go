@@ -51,7 +51,7 @@ func (c *Currency) Update() {
 	defer c.Unlock()
 	b := c.parseBranches(c.region)
 	c.branches = b
-	c.buyMin, c.sellMin, c.buyMax, c.sellMax, c.buyAvg, c.sellAvg = mma(b)
+	c.buyMin, c.sellMin, c.buyMax, c.sellMax, c.buyAvg, c.sellAvg = findMma(b)
 	c.buyBranches = buyBranches(b)
 	c.sellBranches = sellBranches(b)
 }
@@ -131,7 +131,7 @@ func buyBranches(b []branch) string {
 	sort.Sort(sort.Reverse(ByBuySorter(ByBuySorter(b))))
 	d := ""
 	for i, v := range b {
-		d = d + fmt.Sprintf("%d. *%.2f* RUB: %s, %s, %s\n", i+1, v.Buy, v.Bank, v.Address, v.Subway)
+		d = d + fmt.Sprintf("%d. %.2f RUB: %s, %s, %s\n", i+1, v.Buy, v.Bank, v.Address, v.Subway)
 	}
 	return d
 }
@@ -140,13 +140,13 @@ func sellBranches(b []branch) string {
 	sort.Sort(BySellSorter(b))
 	d := ""
 	for i, v := range b {
-		d = d + fmt.Sprintf("%d. *%.2f* RUB: %s, %s, %s\n", i+1, v.Sell, v.Bank, v.Address, v.Subway)
+		d = d + fmt.Sprintf("%d. %.2f RUB: %s, %s, %s\n", i+1, v.Sell, v.Bank, v.Address, v.Subway)
 	}
 	return d
 }
 
-// Min, max and avg
-func mma(b []branch) (float64, float64, float64, float64, float64, float64) {
+// Find min, max and avg
+func findMma(b []branch) (float64, float64, float64, float64, float64, float64) {
 	if len(b) == 0 {
 		return 0, 0, 0, 0, 0, 0
 	}

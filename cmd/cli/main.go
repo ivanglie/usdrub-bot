@@ -61,6 +61,7 @@ func main() {
 	}
 	if opts.CashBranches {
 		cash.Update()
-		fmt.Printf("Cash exchange rates in branches in Moscow, Russia\nBuy cash:\n%sSell cash:\n%s", cash.BuyBranches(), cash.SellBranches())
+		fmt.Printf("Cash exchange rates in branches in Moscow, Russia\nBuy cash\n%sSell cash\n%s",
+			cash.BuyBranches(), cash.SellBranches())
 	}
 }
