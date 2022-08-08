@@ -22,6 +22,10 @@ const (
 	unknownCmd = "Unknown command"
 	exPrefix   = "1 US Dollar equals "
 	cashPrefix = "Cash exchange rates"
+	fxFormat   = "%.2f RUB by Forex"
+	mxFormat   = "%.2f RUB by Moscow Exchange"
+	cbrfFormat = "%.2f RUB by Russian Central Bank"
+	cashFormat = "Buy:\t%.2f .. %.2f RUB (avg %.2f)\nSell:\t%.2f .. %.2f RUB (avg %.2f)\nin branches in Moscow, Russia by Banki.ru"
 )
 
 var (
@@ -114,16 +118,18 @@ func run() {
 				if err != nil {
 					log.Error(err)
 				}
-				msg.Text = format()
+				msg.Text = fmt.Sprintf("*%s*\n%s\n%s\n%s\n*%s*\n%s",
+					exPrefix, fx.Format(fxFormat), mx.Format(mxFormat), cbrf.Format(cbrfFormat),
+					cashPrefix, cash.Format(cashFormat))
 				msg.ReplyMarkup = cashKeyboard
 			case "forex":
-				msg.Text = exPrefix + formatForex()
+				msg.Text = fx.Format(exPrefix + fxFormat)
 			case "moex":
-				msg.Text = exPrefix + formatMoex()
+				msg.Text = mx.Format(exPrefix + mxFormat)
 			case "cbrf":
-				msg.Text = exPrefix + formatCbrf()
+				msg.Text = cbrf.Format(exPrefix + cbrfFormat)
 			case "cash":
-				msg.Text = cashPrefix + "\n" + formatCash()
+				msg.Text = cash.Format(cashPrefix + "\n" + cashFormat)
 				msg.ReplyMarkup = cashKeyboard
 			case "help":
 				err = storage.Persist(update.Message.From)
@@ -170,62 +176,21 @@ func run() {
 
 func updateRates() {
 	fx.Update()
-	log.Debug(fx.Rate())
+	if _, err := fx.Rate(); err != nil {
+		log.Errorf("Forex error: %v\n", err)
+	}
 
 	mx.Update()
-	log.Debug(mx.Rate())
+	if _, err := mx.Rate(); err != nil {
+		log.Errorf("Moscow Exchange error: %v", err)
+	}
 
 	cbrf.Update()
-	log.Debug(cbrf.Rate())
+	if _, err := cbrf.Rate(); err != nil {
+		log.Errorf("Russian Central Bank error: %v", err)
+	}
 
 	cash.Update()
-	log.Debug(cash.Rate())
-}
-
-func format() string {
-	return fmt.Sprintf("*%s*\n%s\n%s\n%s\n*%s*\n%s",
-		exPrefix, formatForex(), formatMoex(), formatCbrf(), cashPrefix, formatCash())
-}
-
-func formatCash() string {
-	bmn, bmx, ba, smn, smx, sa := cash.Rate()
-	s := fmt.Sprintf(
-		"Buy:\t%.2f .. %.2f RUB (avg %.2f)\nSell:\t%.2f .. %.2f RUB (avg %.2f)\nin branches in Moscow, Russia by Banki.ru",
-		bmx, bmn, ba, smn, smx, sa)
-	return s
-}
-
-func formatMoex() string {
-	var s string
-	r, e := mx.Rate()
-	if e != nil {
-		s = fmt.Sprintf("Moscow Exchange error: %v", e)
-		return s
-	}
-	s = fmt.Sprintf("%.2f RUB by Moscow Exchange", r)
-	return s
-}
-
-func formatCbrf() string {
-	var s string
-	r, e := cbrf.Rate()
-	if e != nil {
-		s = fmt.Sprintf("Russian Central Bank error: %v", e)
-		return s
-	}
-	s = fmt.Sprintf("%.2f RUB by Russian Central Bank", r)
-	return s
-}
-
-func formatForex() string {
-	var s string
-	r, e := fx.Rate()
-	if e != nil {
-		s = fmt.Sprintf("Forex error: %v", e)
-		return s
-	}
-	s = fmt.Sprintf("%.2f RUB by Forex", r)
-	return s
 }
 
 func setupLog(dbg bool) {

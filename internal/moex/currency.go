@@ -1,6 +1,7 @@
 package moex
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -19,7 +20,7 @@ var (
 	Debug bool
 )
 
-// Cash currency exchange rate
+// Currency of exchange rate
 type Currency struct {
 	sync.RWMutex
 	rate float64
@@ -30,6 +31,7 @@ func New() *Currency {
 	return &Currency{}
 }
 
+// Update
 func (c *Currency) Update() {
 	if Debug {
 		log.Println("Fetching the cash currency rate")
@@ -39,11 +41,18 @@ func (c *Currency) Update() {
 	c.rate, c.err = c.parseMOEX()
 }
 
-// Get formated MOEX rate
+// Get MOEX rate
 func (c *Currency) Rate() (float64, error) {
 	c.RLock()
 	defer c.RUnlock()
 	return c.rate, c.err
+}
+
+// Get formatted exchange rate
+func (c *Currency) Format(format string) string {
+	c.RLock()
+	defer c.RUnlock()
+	return fmt.Sprintf(format, c.rate)
 }
 
 // Parse MOEX

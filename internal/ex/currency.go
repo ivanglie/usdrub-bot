@@ -1,6 +1,7 @@
 package ex
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -18,6 +19,7 @@ func New(rateFunc func() (float64, error)) *Currency {
 	}
 }
 
+// Update
 func (c *Currency) Update() {
 	c.Lock()
 	defer c.Unlock()
@@ -29,4 +31,11 @@ func (c *Currency) Rate() (float64, error) {
 	c.RLock()
 	defer c.RUnlock()
 	return c.rate, c.err
+}
+
+// Get formatted exchange rate
+func (c *Currency) Format(format string) string {
+	c.RLock()
+	defer c.RUnlock()
+	return fmt.Sprintf(format, c.rate)
 }
