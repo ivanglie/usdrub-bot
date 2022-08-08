@@ -49,10 +49,10 @@ func (c *Currency) Rate() (float64, error) {
 }
 
 // Get formatted exchange rate
-func (c *Currency) Format(format string) string {
+func (c *Currency) String() string {
 	c.RLock()
 	defer c.RUnlock()
-	return fmt.Sprintf(format, c.rate)
+	return fmt.Sprintf("%.2f RUB", c.rate)
 }
 
 // Parse MOEX
