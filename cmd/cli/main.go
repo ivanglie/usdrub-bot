@@ -12,6 +12,7 @@ import (
 	"github.com/ivanglie/usdrub-bot/internal/ex"
 	"github.com/ivanglie/usdrub-bot/internal/moex"
 	"github.com/jessevdk/go-flags"
+	"github.com/olekukonko/tablewriter"
 )
 
 var (
@@ -21,11 +22,13 @@ var (
 	cash  *cashex.Currency
 
 	opts struct {
-		Forex        bool `long:"forex" short:"f" description:"Exchange rate by Forex"`
-		Moex         bool `long:"moex" short:"m" description:"Exchange rate by Moscow Exchange"`
-		Cbrf         bool `long:"cbrf" short:"c" description:"Exchange rate by Russian Central Bank"`
-		Cash         bool `long:"cash" description:"Cost of cash in Exchange Branches in Russia, Moscow"`
-		CashBranches bool `long:"cashb" description:"Cash Exchange branches os Moscow, Russia"`
+		Forex    bool `long:"forex" description:"Exchange rate by Forex"`
+		Moex     bool `long:"moex" description:"Exchange rate by Moscow Exchange"`
+		Cbrf     bool `long:"cbrf" description:"Exchange rate by Russian Central Bank"`
+		Cash     bool `long:"cash" description:"Cash exchange rates in Russia, Moscow"`
+		BuyCash  bool `long:"buy" description:"Buy cash"`
+		SellCash bool `long:"sell" description:"Sell cash"`
+		Rates    bool `long:"rates" description:"Exchange rate by Forex, Moscow Exchange and Russian Central Bank"`
 	}
 )
 
@@ -45,23 +48,82 @@ func main() {
 
 	if opts.Forex {
 		forex.Update()
-		fmt.Println(forex.Rate())
+		fmt.Println(forex.Format("1 US Dollar equals %.2f RUB by Forex"))
+
 	}
 	if opts.Moex {
 		mx.Update()
-		fmt.Println(mx.Rate())
+		fmt.Println(mx.Format("1 US Dollar equals %.2f RUB by Moscow Exchange"))
 	}
 	if opts.Cbrf {
 		cbrf.Update()
-		fmt.Println(cbrf.Rate())
+		fmt.Println(cbrf.Format("1 US Dollar equals %.2f RUB by Russian Central Bank"))
 	}
 	if opts.Cash {
 		cash.Update()
-		fmt.Println(cash.Rate())
+		bmn, bmx, ba, smn, smx, sa := cash.Rate()
+		rates := [][]string{
+			{"Min", fmt.Sprintf("%.2f", bmn), fmt.Sprintf("%.2f", smn)},
+			{"Max", fmt.Sprintf("%.2f", bmx), fmt.Sprintf("%.2f", smx)},
+			{"Avg", fmt.Sprintf("%.2f", ba), fmt.Sprintf("%.2f", sa)},
+		}
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"", "Buy, RUB", "Sell, RUB"})
+
+		for _, v := range rates {
+			table.Append(v)
+		}
+		table.Render() // Send output
 	}
-	if opts.CashBranches {
-		cash.Update()
-		fmt.Printf("Cash exchange rates in branches in Moscow, Russia\nBuy cash\n%sSell cash\n%s",
-			cash.BuyBranches(), cash.SellBranches())
+	if opts.Rates {
+		forex.Update()
+		mx.Update()
+		cbrf.Update()
+		rates := [][]string{
+			{forex.Format("%.2f"), "RUB by Forex"},
+			{mx.Format("%.2f"), "RUB by Moscow Exchange"},
+			{cbrf.Format("%.2f"), "RUB by Russian Central Bank"},
+		}
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"1 US Dollar equals", "Source"})
+
+		for _, v := range rates {
+			table.Append(v)
+		}
+		table.Render() // Send output
 	}
+	if opts.BuyCash {
+		branches("Buy")
+	}
+	if opts.SellCash {
+		branches("Sell")
+	}
+}
+
+func branches(title string) {
+	cash.Update()
+	var b string
+	switch title {
+	case "Buy":
+		b = cash.BuyBranches()
+	case "Sell":
+		b = cash.SellBranches()
+	default:
+		b = ""
+	}
+	func(branches string) {
+		rates := [][]string{
+			{branches},
+		}
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{title})
+		table.SetAutoWrapText(false)
+
+		for _, v := range rates {
+			table.Append(v)
+		}
+		table.Render() // Send output
+	}(b)
 }

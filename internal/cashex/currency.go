@@ -43,6 +43,7 @@ func New(region string) *Currency {
 	}
 }
 
+// Update
 func (c *Currency) Update() {
 	if Debug {
 		log.Println("Fetching the currency rate")
@@ -56,11 +57,18 @@ func (c *Currency) Update() {
 	c.sellBranches = sellBranches(b)
 }
 
-// Get formated cash exchange rate: buyMin, buyMax, buyAvg, sellMin, sellMax, sellAvg
+// Get cash exchange rate: buyMin, buyMax, buyAvg, sellMin, sellMax, sellAvg
 func (c *Currency) Rate() (float64, float64, float64, float64, float64, float64) {
 	c.RLock()
 	defer c.RUnlock()
 	return c.buyMin, c.buyMax, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg
+}
+
+// Get formatted exchange rate
+func (c *Currency) Format(format string) string {
+	c.RLock()
+	defer c.RUnlock()
+	return fmt.Sprintf(format, c.buyMax, c.buyMin, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg)
 }
 
 // Get buy branches

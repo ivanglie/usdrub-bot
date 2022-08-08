@@ -8,6 +8,7 @@ require (
 	github.com/ivanglie/go-cbr-client v1.0.3
 	github.com/ivanglie/go-coingate-client v1.0.3
 	github.com/jessevdk/go-flags v1.5.0
+	github.com/olekukonko/tablewriter v0.0.5
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.8.1
 	go.etcd.io/bbolt v1.3.6
@@ -23,6 +24,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
+	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
