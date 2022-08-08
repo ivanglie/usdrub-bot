@@ -48,16 +48,15 @@ func main() {
 
 	if opts.Forex {
 		forex.Update()
-		fmt.Println(forex.Format("1 US Dollar equals %.2f RUB by Forex"))
-
+		fmt.Println("1 US Dollar equals", forex, "by Forex")
 	}
 	if opts.Moex {
 		mx.Update()
-		fmt.Println(mx.Format("1 US Dollar equals %.2f RUB by Moscow Exchange"))
+		fmt.Println("1 US Dollar equals", mx, "by Moscow Exchange")
 	}
 	if opts.Cbrf {
 		cbrf.Update()
-		fmt.Println(cbrf.Format("1 US Dollar equals %.2f RUB by Russian Central Bank"))
+		fmt.Println("1 US Dollar equals", cbrf, "by Russian Central Bank")
 	}
 	if opts.Cash {
 		cash.Update()
@@ -81,9 +80,9 @@ func main() {
 		mx.Update()
 		cbrf.Update()
 		rates := [][]string{
-			{forex.Format("%.2f"), "RUB by Forex"},
-			{mx.Format("%.2f"), "RUB by Moscow Exchange"},
-			{cbrf.Format("%.2f"), "RUB by Russian Central Bank"},
+			{forex.String(), "by Forex"},
+			{mx.String(), "by Moscow Exchange"},
+			{cbrf.String(), "by Russian Central Bank"},
 		}
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"1 US Dollar equals", "Source"})

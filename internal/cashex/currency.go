@@ -65,10 +65,11 @@ func (c *Currency) Rate() (float64, float64, float64, float64, float64, float64)
 }
 
 // Get formatted exchange rate
-func (c *Currency) Format(format string) string {
+func (c *Currency) String() string {
 	c.RLock()
 	defer c.RUnlock()
-	return fmt.Sprintf(format, c.buyMax, c.buyMin, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg)
+	return fmt.Sprintf("Buy:\t%.2f .. %.2f RUB (avg %.2f)\nSell:\t%.2f .. %.2f RUB (avg %.2f)",
+		c.buyMax, c.buyMin, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg)
 }
 
 // Get buy branches

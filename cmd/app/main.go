@@ -20,12 +20,12 @@ import (
 const (
 	helpCmd    = "Just use /forex, /moex, /cbrf, /cash and /home command."
 	unknownCmd = "Unknown command"
-	exPrefix   = "1 US Dollar equals "
+	exPrefix   = "1 US Dollar equals"
 	cashPrefix = "Cash exchange rates"
-	fxFormat   = "%.2f RUB by Forex"
-	mxFormat   = "%.2f RUB by Moscow Exchange"
-	cbrfFormat = "%.2f RUB by Russian Central Bank"
-	cashFormat = "Buy:\t%.2f .. %.2f RUB (avg %.2f)\nSell:\t%.2f .. %.2f RUB (avg %.2f)\nin branches in Moscow, Russia by Banki.ru"
+	fxSuffix   = "by Forex"
+	mxSuffix   = "by Moscow Exchange"
+	cbrfSuffix = "by Russian Central Bank"
+	cashSuffix = "in branches in Moscow, Russia by Banki.ru"
 )
 
 var (
@@ -118,18 +118,18 @@ func run() {
 				if err != nil {
 					log.Error(err)
 				}
-				msg.Text = fmt.Sprintf("*%s*\n%s\n%s\n%s\n*%s*\n%s",
-					exPrefix, fx.Format(fxFormat), mx.Format(mxFormat), cbrf.Format(cbrfFormat),
-					cashPrefix, cash.Format(cashFormat))
+				msg.Text = fmt.Sprintf("*%s*\n%s %s\n%s %s\n%s %s\n*%s*\n%s\n%s",
+					exPrefix, fx, fxSuffix, mx, mxSuffix, cbrf, cbrfSuffix,
+					cashPrefix, cash, cashSuffix)
 				msg.ReplyMarkup = cashKeyboard
 			case "forex":
-				msg.Text = fx.Format(exPrefix + fxFormat)
+				msg.Text = fmt.Sprintln(exPrefix, fx, fxSuffix)
 			case "moex":
-				msg.Text = mx.Format(exPrefix + mxFormat)
+				msg.Text = fmt.Sprintln(exPrefix, mx, mxSuffix)
 			case "cbrf":
-				msg.Text = cbrf.Format(exPrefix + cbrfFormat)
+				msg.Text = fmt.Sprintln(exPrefix, cbrf, cbrfSuffix)
 			case "cash":
-				msg.Text = cash.Format(cashPrefix + "\n" + cashFormat)
+				msg.Text = fmt.Sprintf("%s\n%s\n%s", cashPrefix, cash, cashSuffix)
 				msg.ReplyMarkup = cashKeyboard
 			case "help":
 				err = storage.Persist(update.Message.From)
