@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -175,22 +176,44 @@ func run() {
 }
 
 func updateRates() {
-	fx.Update()
-	if _, err := fx.Rate(); err != nil {
-		log.Errorf("Forex error: %v\n", err)
-	}
+	t := time.Now()
+	var wg sync.WaitGroup
 
-	mx.Update()
-	if _, err := mx.Rate(); err != nil {
-		log.Errorf("Moscow Exchange error: %v", err)
-	}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		fx.Update()
+		if _, err := fx.Rate(); err != nil {
+			log.Errorf("Forex error: %v\n", err)
+		}
+	}()
 
-	cbrf.Update()
-	if _, err := cbrf.Rate(); err != nil {
-		log.Errorf("Russian Central Bank error: %v", err)
-	}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		mx.Update()
+		if _, err := mx.Rate(); err != nil {
+			log.Errorf("Moscow Exchange error: %v", err)
+		}
+	}()
 
-	cash.Update()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		cbrf.Update()
+		if _, err := cbrf.Rate(); err != nil {
+			log.Errorf("Russian Central Bank error: %v", err)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		cash.Update()
+	}()
+
+	wg.Wait()
+	log.Debugln("Elapsed time:", time.Since(t))
 }
 
 func setupLog(dbg bool) {
