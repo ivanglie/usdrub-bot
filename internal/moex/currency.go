@@ -32,7 +32,20 @@ func New() *Currency {
 }
 
 // Update
-func (c *Currency) Update() {
+func (c *Currency) Update(wg *sync.WaitGroup) {
+	if wg == nil {
+		c.update()
+		return
+	}
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		c.update()
+	}()
+}
+
+func (c *Currency) update() {
 	if Debug {
 		log.Println("Fetching the cash currency rate")
 	}

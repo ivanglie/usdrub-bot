@@ -9,7 +9,7 @@ func Test_dataRace(t *testing.T) {
 	c := New()
 	go func() {
 		for {
-			c.Update()
+			c.Update(nil)
 		}
 	}()
 
