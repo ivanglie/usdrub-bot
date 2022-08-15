@@ -10,7 +10,7 @@ func Test_dataRace(t *testing.T) {
 	c := New(func() (float64, error) { return 100 * rand.Float64(), nil })
 	go func() {
 		for {
-			c.Update()
+			c.Update(nil)
 		}
 	}()
 

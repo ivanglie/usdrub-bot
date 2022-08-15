@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	cbr "github.com/ivanglie/go-cbr-client"
@@ -47,19 +48,19 @@ func main() {
 	cash = cashex.New(cashex.Region)
 
 	if opts.Forex {
-		forex.Update()
+		forex.Update(nil)
 		fmt.Println("1 US Dollar equals", forex, "by Forex")
 	}
 	if opts.Moex {
-		mx.Update()
+		forex.Update(nil)
 		fmt.Println("1 US Dollar equals", mx, "by Moscow Exchange")
 	}
 	if opts.Cbrf {
-		cbrf.Update()
+		forex.Update(nil)
 		fmt.Println("1 US Dollar equals", cbrf, "by Russian Central Bank")
 	}
 	if opts.Cash {
-		cash.Update()
+		forex.Update(nil)
 		bmn, bmx, ba, smn, smx, sa := cash.Rate()
 		rates := [][]string{
 			{"Min", fmt.Sprintf("%.2f", bmn), fmt.Sprintf("%.2f", smn)},
@@ -76,9 +77,14 @@ func main() {
 		table.Render() // Send output
 	}
 	if opts.Rates {
-		forex.Update()
-		mx.Update()
-		cbrf.Update()
+		t := time.Now()
+		var wg sync.WaitGroup
+		forex.Update(&wg)
+		mx.Update(&wg)
+		cbrf.Update(&wg)
+		wg.Wait()
+		log.Println("Elapsed time:", time.Since(t))
+
 		rates := [][]string{
 			{forex.String(), "by Forex"},
 			{mx.String(), "by Moscow Exchange"},
@@ -101,7 +107,7 @@ func main() {
 }
 
 func branches(title string) {
-	cash.Update()
+	cash.Update(nil)
 	var b string
 	switch title {
 	case "Buy":
