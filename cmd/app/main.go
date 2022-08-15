@@ -179,41 +179,25 @@ func updateRates() {
 	t := time.Now()
 	var wg sync.WaitGroup
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		fx.Update()
-		if _, err := fx.Rate(); err != nil {
-			log.Errorf("Forex error: %v\n", err)
-		}
-	}()
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		mx.Update()
-		if _, err := mx.Rate(); err != nil {
-			log.Errorf("Moscow Exchange error: %v", err)
-		}
-	}()
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		cbrf.Update()
-		if _, err := cbrf.Rate(); err != nil {
-			log.Errorf("Russian Central Bank error: %v", err)
-		}
-	}()
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		cash.Update()
-	}()
+	fx.Update(&wg)
+	mx.Update(&wg)
+	cbrf.Update(&wg)
+	cash.Update(&wg)
 
 	wg.Wait()
 	log.Debugln("Elapsed time:", time.Since(t))
+
+	if _, err := fx.Rate(); err != nil {
+		log.Errorf("Forex error: %v\n", err)
+	}
+
+	if _, err := mx.Rate(); err != nil {
+		log.Errorf("Moscow Exchange error: %v", err)
+	}
+
+	if _, err := cbrf.Rate(); err != nil {
+		log.Errorf("Russian Central Bank error: %v", err)
+	}
 }
 
 func setupLog(dbg bool) {
