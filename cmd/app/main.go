@@ -9,9 +9,9 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	cbr "github.com/ivanglie/go-cbr-client"
 	forex "github.com/ivanglie/go-coingate-client"
+	moex "github.com/ivanglie/go-moex-client"
 	"github.com/ivanglie/usdrub-bot/internal/cashex"
 	"github.com/ivanglie/usdrub-bot/internal/ex"
-	"github.com/ivanglie/usdrub-bot/internal/moex"
 	"github.com/ivanglie/usdrub-bot/internal/scheduler"
 	"github.com/ivanglie/usdrub-bot/internal/storage"
 	flags "github.com/jessevdk/go-flags"
@@ -49,7 +49,7 @@ var (
 	)
 
 	fx   *ex.Currency
-	mx   *moex.Currency
+	mx   *ex.Currency
 	cbrf *ex.Currency
 	cash *cashex.Currency
 )
@@ -76,7 +76,7 @@ func main() {
 	forex.SetLogger(log)
 	cbr.SetLogger(log)
 
-	mx = moex.New()
+	mx = ex.New(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
 	fx = ex.New(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
 	cbrf = ex.New(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
 	cash = cashex.New(cashex.Region)

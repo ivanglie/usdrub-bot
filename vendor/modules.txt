@@ -43,6 +43,9 @@ github.com/ivanglie/go-cbr-client
 # github.com/ivanglie/go-coingate-client v1.0.3
 ## explicit; go 1.16
 github.com/ivanglie/go-coingate-client
+# github.com/ivanglie/go-moex-client v0.0.1
+## explicit; go 1.16
+github.com/ivanglie/go-moex-client
 # github.com/jessevdk/go-flags v1.5.0
 ## explicit; go 1.15
 github.com/jessevdk/go-flags
