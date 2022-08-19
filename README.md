@@ -15,7 +15,9 @@ You will find it at [t.me/usd2rub_bot](https://t.me/usd2rub_bot). See screenshot
 ![Screenshot](../assets/demo.png?raw=true)
 
 ## References
+For more information check out the following links:
 
 * Coingate API [go-coingate-client](https://github.com/ivanglie/go-coingate-client)
+* Moscow Exchange ISS API [go-moex-client](https://github.com/ivanglie/go-moex-client)
 * CBR API [go-cbr-client](https://github.com/ivanglie/go-cbr-client)
-* Moscow Exchange rate and Cash exchange rates by [Banki.ru](https://banki.ru)
+* Cash exchange rates by [Banki.ru](https://banki.ru)

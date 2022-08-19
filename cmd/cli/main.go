@@ -8,19 +8,19 @@ import (
 	"time"
 
 	cbr "github.com/ivanglie/go-cbr-client"
-	fx "github.com/ivanglie/go-coingate-client"
+	forex "github.com/ivanglie/go-coingate-client"
+	moex "github.com/ivanglie/go-moex-client"
 	"github.com/ivanglie/usdrub-bot/internal/cashex"
 	"github.com/ivanglie/usdrub-bot/internal/ex"
-	"github.com/ivanglie/usdrub-bot/internal/moex"
 	"github.com/jessevdk/go-flags"
 	"github.com/olekukonko/tablewriter"
 )
 
 var (
-	forex *ex.Currency
-	cbrf  *ex.Currency
-	mx    *moex.Currency
-	cash  *cashex.Currency
+	fx   *ex.Currency
+	mx   *ex.Currency
+	cbrf *ex.Currency
+	cash *cashex.Currency
 
 	opts struct {
 		Forex    bool `long:"forex" description:"Exchange rate by Forex"`
@@ -42,25 +42,25 @@ func main() {
 		os.Exit(2)
 	}
 
-	mx = moex.New()
-	forex = ex.New(func() (float64, error) { return fx.NewClient().GetRate("USD", "RUB") })
+	fx = ex.New(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
+	mx = ex.New(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
 	cbrf = ex.New(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
 	cash = cashex.New(cashex.Region)
 
 	if opts.Forex {
-		forex.Update(nil)
-		fmt.Println("1 US Dollar equals", forex, "by Forex")
+		fx.Update(nil)
+		fmt.Println("1 US Dollar equals", fx, "by Forex")
 	}
 	if opts.Moex {
-		forex.Update(nil)
+		mx.Update(nil)
 		fmt.Println("1 US Dollar equals", mx, "by Moscow Exchange")
 	}
 	if opts.Cbrf {
-		forex.Update(nil)
+		cbrf.Update(nil)
 		fmt.Println("1 US Dollar equals", cbrf, "by Russian Central Bank")
 	}
 	if opts.Cash {
-		forex.Update(nil)
+		cash.Update(nil)
 		bmn, bmx, ba, smn, smx, sa := cash.Rate()
 		rates := [][]string{
 			{"Min", fmt.Sprintf("%.2f", bmn), fmt.Sprintf("%.2f", smn)},
@@ -79,14 +79,14 @@ func main() {
 	if opts.Rates {
 		t := time.Now()
 		var wg sync.WaitGroup
-		forex.Update(&wg)
+		fx.Update(&wg)
 		mx.Update(&wg)
 		cbrf.Update(&wg)
 		wg.Wait()
 		log.Println("Elapsed time:", time.Since(t))
 
 		rates := [][]string{
-			{forex.String(), "by Forex"},
+			{fx.String(), "by Forex"},
 			{mx.String(), "by Moscow Exchange"},
 			{cbrf.String(), "by Russian Central Bank"},
 		}

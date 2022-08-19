@@ -7,6 +7,7 @@ require (
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/ivanglie/go-cbr-client v1.0.3
 	github.com/ivanglie/go-coingate-client v1.0.3
+	github.com/ivanglie/go-moex-client v0.0.1
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/robfig/cron/v3 v3.0.1
