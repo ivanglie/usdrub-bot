@@ -4,17 +4,17 @@ import (
 	"net/http"
 )
 
-// FetchFunction is a function that mimics http.Get() method
-type FetchFunction func(url string) (resp *http.Response, err error)
+// fetchFunction is a function that mimics http.Get() method
+type fetchFunction func(url string) (resp *http.Response, err error)
 
 // Client is a currency rates service client... what else?
 type Client interface {
 	GetRate(code string) (float64, error)
-	SetFetchFunction(FetchFunction)
+	SetFetchFunction(fetchFunction)
 }
 
 type client struct {
-	fetch FetchFunction
+	fetch fetchFunction
 }
 
 func (s client) GetRate(code string) (float64, error) {
@@ -25,7 +25,7 @@ func (s client) GetRate(code string) (float64, error) {
 	return rate, nil
 }
 
-func (s client) SetFetchFunction(f FetchFunction) {
+func (s client) SetFetchFunction(f fetchFunction) {
 	s.fetch = f
 }
 

@@ -6,8 +6,9 @@ import (
 	"io/ioutil"
 )
 
-const baseURL = "https://iss.moex.com/iss/engines/currency/markets/selt/securities.json" +
-	"?iss.only=securities,marketdata&lang=en&iss.meta=off&iss.json=extended"
+const (
+	baseURL = "https://iss.moex.com/iss"
+)
 
 // Codes
 const (
@@ -103,22 +104,26 @@ type currency struct {
 // This endpoint is public, authentication is not required.
 // Example: EURRUB, USDRUB, etc.
 // See https://iss.moex.com/iss/reference/
-func getRate(code string, fetch FetchFunction) (float64, error) {
+func getRate(code string, fetch fetchFunction) (float64, error) {
 	if Debug {
 		log.Printf("Fetching the currency rate for %s\n", code)
 	}
 
 	var res float64 = 0
-	url := fmt.Sprintf("%s%s", baseURL, "&securities=CETS:"+code)
+	url := fmt.Sprintf("%s%s%s", baseURL,
+		"/engines/currency/markets/selt/securities.json?iss.only=securities,marketdata&lang=en&iss.meta=off&iss.json=extended",
+		"&securities=CETS:"+code)
 	resp, err := fetch(url)
 	if err != nil {
 		return res, err
 	}
-	defer resp.Body.Close()
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return res, err
 	}
+	defer resp.Body.Close()
+
 	var c *Currency = &Currency{}
 	err = json.Unmarshal(body, &c.values)
 	if err != nil {

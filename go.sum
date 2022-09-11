@@ -51,8 +51,8 @@ github.com/ivanglie/go-cbr-client v1.0.3 h1:jhhBPlUIeamIxVtgNm33QGYvgFbRbsO46bnJ
 github.com/ivanglie/go-cbr-client v1.0.3/go.mod h1:FOwxqkSEoGRYwg1D8x5DyIIS2pY/WnfGAmKPBPk7U/w=
 github.com/ivanglie/go-coingate-client v1.0.3 h1:uiiqsxprfvLyNs6MdgzcYN5xBva5FDJPsAjgJXPU6vI=
 github.com/ivanglie/go-coingate-client v1.0.3/go.mod h1:Ovscku6gKYko0vUoMJXGFq7u7t/j5dBLxQzaCysfodY=
-github.com/ivanglie/go-moex-client v0.0.1 h1:ZbpICT9Wac/atmF+o4uZ/1mVdcXfoWOCH/+mxAEKaIk=
-github.com/ivanglie/go-moex-client v0.0.1/go.mod h1:iUcJSjD/q1z8wvUBk/jEqwckUUjj4VzBOocTLPMYKbo=
+github.com/ivanglie/go-moex-client v0.0.2 h1:xGLxLN1CLW2+AcOqH7+TFku+h5ojGUVCBniXDi76AKQ=
+github.com/ivanglie/go-moex-client v0.0.2/go.mod h1:iUcJSjD/q1z8wvUBk/jEqwckUUjj4VzBOocTLPMYKbo=
 github.com/jawher/mow.cli v1.1.0/go.mod h1:aNaQlc7ozF3vw6IJ2dHjp2ZFiA4ozMIYY6PyuRJwlUg=
 github.com/jessevdk/go-flags v1.5.0 h1:1jKYvbxEjfUl0fmqTCOfonvskHHXMjBySTLW4y9LFvc=
 github.com/jessevdk/go-flags v1.5.0/go.mod h1:Fw0T6WPc1dYxT4mKEZRfG5kJhaTDP9pj1c2EWnYs/m4=

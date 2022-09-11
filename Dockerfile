@@ -1,5 +1,9 @@
 FROM golang:1.17-alpine
 
+RUN apk add --no-cache tzdata
+
+ENV TZ=Europe/Moscow
+
 WORKDIR /usr/src/usdrub-bot/
 
 COPY . .
