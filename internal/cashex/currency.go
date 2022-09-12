@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -18,9 +17,7 @@ const (
 	Region  = "moskva" // Default region
 )
 
-var (
-	Debug bool
-)
+var Debug bool
 
 // Cash currency exchange rate
 type Currency struct {
@@ -38,36 +35,34 @@ type Currency struct {
 }
 
 func New(region string) *Currency {
-	return &Currency{
-		region: region,
-	}
+	return &Currency{region: region}
 }
 
 // Update
 func (c *Currency) Update(wg *sync.WaitGroup) {
+	update := func() {
+		if Debug {
+			log.Println("Fetching the currency rate")
+		}
+
+		c.Lock()
+		defer c.Unlock()
+		b := c.parseBranches(c.region)
+		c.branches = b
+		c.buyMin, c.sellMin, c.buyMax, c.sellMax, c.buyAvg, c.sellAvg = findMma(b)
+		c.buyBranches, c.sellBranches = buyBranches(b), sellBranches(b)
+	}
+
 	if wg == nil {
-		c.update()
+		update()
 		return
 	}
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		c.update()
+		update()
 	}()
-}
-
-func (c *Currency) update() {
-	if Debug {
-		log.Println("Fetching the currency rate")
-	}
-	c.Lock()
-	defer c.Unlock()
-	b := c.parseBranches(c.region)
-	c.branches = b
-	c.buyMin, c.sellMin, c.buyMax, c.sellMax, c.buyAvg, c.sellAvg = findMma(b)
-	c.buyBranches = buyBranches(b)
-	c.sellBranches = sellBranches(b)
 }
 
 // Get cash exchange rate: buyMin, buyMax, buyAvg, sellMin, sellMax, sellAvg
@@ -100,9 +95,7 @@ func (c *Currency) SellBranches() string {
 }
 
 // Parse branches
-func (c *Currency) parseBranches(region string) []branch {
-	var branches []branch
-
+func (c *Currency) parseBranches(region string) (branches []branch) {
 	if len(region) == 0 {
 		region = Region
 	}
@@ -141,12 +134,12 @@ func (c *Currency) parseBranches(region string) []branch {
 	})
 
 	s.OnError(func(r *colly.Response, err error) {
-		log.Error(err)
+		log.Println(err)
 	})
 
 	s.Visit(baseURL + path + "/" + region)
 
-	return branches
+	return
 }
 
 func buyBranches(b []branch) string {
@@ -168,16 +161,13 @@ func sellBranches(b []branch) string {
 }
 
 // Find min, max and avg
-func findMma(b []branch) (float64, float64, float64, float64, float64, float64) {
+func findMma(b []branch) (bmin, smin, bmax, smax, bavg, savg float64) {
 	if len(b) == 0 {
-		return 0, 0, 0, 0, 0, 0
+		return
 	}
-	bmin := b[0].Buy
-	smin := b[0].Sell
-	bmax := b[0].Buy
-	smax := b[0].Sell
-	btotal := 0.0
-	stotal := 0.0
+
+	bmin, smin, bmax, smax = b[0].Buy, b[0].Sell, b[0].Buy, b[0].Sell
+	btotal, stotal := float64(0), float64(0)
 	for _, v := range b {
 		if v.Buy < bmin {
 			bmin = v.Buy
@@ -194,5 +184,7 @@ func findMma(b []branch) (float64, float64, float64, float64, float64, float64) 
 		btotal += v.Buy
 		stotal += v.Sell
 	}
-	return bmin, smin, bmax, smax, btotal / float64(len(b)), stotal / float64(len(b))
+	bavg, savg = btotal/float64(len(b)), stotal/float64(len(b))
+
+	return
 }

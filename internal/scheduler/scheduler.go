@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/robfig/cron/v3"
-	log "github.com/sirupsen/logrus"
 )
 
 var Debug bool
@@ -13,14 +12,16 @@ var Debug bool
 func StartCmdOnSchedule(cmd func()) {
 	spec := os.Getenv("CRON_SPEC")
 	if spec == "" {
-		spec = "0/5 * * * 1-5" // See https://crontab.guru/
-	}
-	if Debug {
-		log.Printf("Cron spec = %s", spec)
+		spec = "* * * * 1-5" // See https://crontab.guru/
 	}
 
-	scheduler := cron.New()
-	defer scheduler.Stop()
-	scheduler.AddFunc(spec, cmd)
-	go scheduler.Start()
+	if Debug {
+		log.Printf("Cron spec = %s\n", spec)
+	}
+
+	c := cron.New()
+	defer c.Stop()
+
+	c.AddFunc(spec, cmd)
+	go c.Start()
 }

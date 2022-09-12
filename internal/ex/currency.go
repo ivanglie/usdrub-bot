@@ -14,29 +14,27 @@ type Currency struct {
 }
 
 func New(rateFunc func() (float64, error)) *Currency {
-	return &Currency{
-		rateFunc: rateFunc,
-	}
+	return &Currency{rateFunc: rateFunc}
 }
 
 // Update
 func (c *Currency) Update(wg *sync.WaitGroup) {
+	update := func() {
+		c.Lock()
+		defer c.Unlock()
+		c.rate, c.err = c.rateFunc()
+	}
+
 	if wg == nil {
-		c.update()
+		update()
 		return
 	}
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		c.update()
+		update()
 	}()
-}
-
-func (c *Currency) update() {
-	c.Lock()
-	defer c.Unlock()
-	c.rate, c.err = c.rateFunc()
 }
 
 // Get exchange rate
