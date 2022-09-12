@@ -15,29 +15,29 @@ type User struct {
 }
 
 // Persist data
-func Persist(user *tgbotapi.User) error {
+func Persist(user *tgbotapi.User) (err error) {
 	id, err := json.Marshal(user.ID)
 	if err != nil {
-		return err
+		return
 	}
 	usr := User{User: user, Date: time.Now().Local()}
 	u, err := json.Marshal(usr)
 	if err != nil {
-		return err
+		return
 	}
 
 	db, err := bolt.Open("users.db", 0600, nil)
 	if err != nil {
-		return err
+		return
 	}
 	defer db.Close()
 
 	err = db.Update(func(tx *bolt.Tx) error {
-		r, err := tx.CreateBucketIfNotExists([]byte("root"))
+		b, err := tx.CreateBucketIfNotExists([]byte("root"))
 		if err != nil {
 			return err
 		}
-		b, err := r.CreateBucketIfNotExists([]byte("users"))
+		b, err = b.CreateBucketIfNotExists([]byte("users"))
 		if err != nil {
 			return err
 		}
@@ -45,10 +45,9 @@ func Persist(user *tgbotapi.User) error {
 		if err != nil {
 			return err
 		}
+
 		return err
 	})
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return
 }

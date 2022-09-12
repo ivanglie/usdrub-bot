@@ -17,10 +17,8 @@ import (
 )
 
 var (
-	fx   *ex.Currency
-	mx   *ex.Currency
-	cbrf *ex.Currency
-	cash *cashex.Currency
+	fx, mx, cbrf *ex.Currency
+	cash         *cashex.Currency
 
 	opts struct {
 		Forex    bool `long:"forex" description:"Exchange rate by Forex"`
@@ -78,17 +76,15 @@ func main() {
 	}
 	if opts.Rates {
 		t := time.Now()
-		var wg sync.WaitGroup
-		fx.Update(&wg)
-		mx.Update(&wg)
-		cbrf.Update(&wg)
+		wg := &sync.WaitGroup{}
+		fx.Update(wg)
+		mx.Update(wg)
+		cbrf.Update(wg)
 		wg.Wait()
 		log.Println("Elapsed time:", time.Since(t))
 
 		rates := [][]string{
-			{fx.String(), "by Forex"},
-			{mx.String(), "by Moscow Exchange"},
-			{cbrf.String(), "by Russian Central Bank"},
+			{fx.String(), "by Forex"}, {mx.String(), "by Moscow Exchange"}, {cbrf.String(), "by Russian Central Bank"},
 		}
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"1 US Dollar equals", "Source"})

@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	helpCmd    = "Just use /forex, /moex, /cbrf, /cash and /home command."
+	helpCmd    = "Just use /forex, /moex, /cbrf, /cash and /dashboard command."
 	unknownCmd = "Unknown command"
 	exPrefix   = "1 US Dollar equals"
 	cashPrefix = "Cash exchange rates"
@@ -48,10 +48,8 @@ var (
 		),
 	)
 
-	fx   *ex.Currency
-	mx   *ex.Currency
-	cbrf *ex.Currency
-	cash *cashex.Currency
+	fx, mx, cbrf *ex.Currency
+	cash         *cashex.Currency
 )
 
 func main() {
@@ -66,15 +64,14 @@ func main() {
 	}
 
 	setupLog(opts.Dbg)
-	scheduler.Debug = opts.Dbg
-	forex.Debug = opts.Dbg
-	moex.Debug = opts.Dbg
-	cbr.Debug = opts.Dbg
-	cashex.Debug = opts.Dbg
+	scheduler.Debug, forex.Debug, moex.Debug, cbr.Debug, cashex.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
 
 	tgbotapi.SetLogger(log)
+	scheduler.SetLogger(log)
 	forex.SetLogger(log)
 	cbr.SetLogger(log)
+	moex.SetLogger(log)
+	cashex.SetLogger(log)
 
 	mx = ex.New(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
 	fx = ex.New(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
@@ -114,14 +111,13 @@ func run() {
 			}
 
 			switch update.Message.Command() {
-			case "start", "home":
+			case "start", "dashboard":
 				err = storage.Persist(update.Message.From)
 				if err != nil {
 					log.Error(err)
 				}
 				msg.Text = fmt.Sprintf("*%s*\n%s %s\n%s %s\n%s %s\n*%s*\n%s\n%s",
-					exPrefix, fx, fxSuffix, mx, mxSuffix, cbrf, cbrfSuffix,
-					cashPrefix, cash, cashSuffix)
+					exPrefix, fx, fxSuffix, mx, mxSuffix, cbrf, cbrfSuffix, cashPrefix, cash, cashSuffix)
 				msg.ReplyMarkup = cashKeyboard
 			case "forex":
 				msg.Text = fmt.Sprintln(exPrefix, fx, fxSuffix)
@@ -177,22 +173,22 @@ func run() {
 
 func updateRates() {
 	t := time.Now()
-	var wg sync.WaitGroup
-	fx.Update(&wg)
-	mx.Update(&wg)
-	cbrf.Update(&wg)
-	cash.Update(&wg)
+	wg := &sync.WaitGroup{}
+	fx.Update(wg)
+	mx.Update(wg)
+	cbrf.Update(wg)
+	cash.Update(wg)
 	wg.Wait()
 	log.Debugln("Elapsed time:", time.Since(t))
 
 	if _, err := fx.Rate(); err != nil {
-		log.Errorf("Forex error: %v\n", err)
+		log.Errorf("error by Forex: %v\n", err)
 	}
 	if _, err := mx.Rate(); err != nil {
-		log.Errorf("Moscow Exchange error: %v", err)
+		log.Errorf("error by Moscow Exchange: %v", err)
 	}
 	if _, err := cbrf.Rate(); err != nil {
-		log.Errorf("Russian Central Bank error: %v", err)
+		log.Errorf("error by Russian Central Bank: %v", err)
 	}
 }
 

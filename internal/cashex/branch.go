@@ -16,14 +16,7 @@ type branch struct {
 }
 
 func newBranch(bank, address, subway, currency string, buy, sell float64, updated time.Time) branch {
-	return branch{
-		Bank:     bank,
-		Address:  address,
-		Subway:   subway,
-		Currency: currency,
-		Buy:      buy,
-		Sell:     sell,
-		Updated:  updated}
+	return branch{Bank: bank, Address: address, Subway: subway, Currency: currency, Buy: buy, Sell: sell, Updated: updated}
 }
 
 // ByBuySorter implements sort.Interface based on the Buy field
