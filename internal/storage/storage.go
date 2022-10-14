@@ -30,23 +30,28 @@ func Persist(user *tgbotapi.User) (err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			return
+		}
+	}()
 
-	err = db.Update(func(tx *bolt.Tx) error {
+	err = db.Update(func(tx *bolt.Tx) (err error) {
 		b, err := tx.CreateBucketIfNotExists([]byte("root"))
 		if err != nil {
-			return err
+			return
 		}
 		b, err = b.CreateBucketIfNotExists([]byte("users"))
 		if err != nil {
-			return err
+			return
 		}
-		err = b.Put([]byte(id), []byte(u))
+		err = b.Put(id, u)
 		if err != nil {
-			return err
+			return
 		}
 
-		return err
+		return
 	})
 
 	return
