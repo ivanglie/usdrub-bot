@@ -8,7 +8,7 @@ import (
 
 var Debug bool
 
-// Start cmd on schedule
+// StartCmdOnSchedule specified by cmd.
 func StartCmdOnSchedule(cmd func()) {
 	spec := os.Getenv("CRON_SPEC")
 	if spec == "" {
@@ -22,6 +22,9 @@ func StartCmdOnSchedule(cmd func()) {
 	c := cron.New()
 	defer c.Stop()
 
-	c.AddFunc(spec, cmd)
+	_, err := c.AddFunc(spec, cmd)
+	if err != nil {
+		log.Println(err)
+	}
 	go c.Start()
 }

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/gocolly/colly/v2/extensions"
 )
 
 const (
@@ -19,7 +20,7 @@ const (
 
 var Debug bool
 
-// Cash currency exchange rate
+// Currency exchange rate of cash.
 type Currency struct {
 	sync.RWMutex
 	region       string
@@ -38,7 +39,7 @@ func New(region string) *Currency {
 	return &Currency{region: region}
 }
 
-// Update
+// Update currency exchange cash rate.
 func (c *Currency) Update(wg *sync.WaitGroup) {
 	update := func() {
 		if Debug {
@@ -65,14 +66,14 @@ func (c *Currency) Update(wg *sync.WaitGroup) {
 	}()
 }
 
-// Get cash exchange rate: buyMin, buyMax, buyAvg, sellMin, sellMax, sellAvg
+// Rate of currency exchange cash returns of buyMin, buyMax, buyAvg, sellMin, sellMax, sellAvg.
 func (c *Currency) Rate() (float64, float64, float64, float64, float64, float64) {
 	c.RLock()
 	defer c.RUnlock()
 	return c.buyMin, c.buyMax, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg
 }
 
-// Get formatted exchange rate
+// String representation of currency exchange cash rate.
 func (c *Currency) String() string {
 	c.RLock()
 	defer c.RUnlock()
@@ -80,31 +81,31 @@ func (c *Currency) String() string {
 		c.buyMax, c.buyMin, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg)
 }
 
-// Get buy branches
+// BuyBranches represented as string.
 func (c *Currency) BuyBranches() string {
 	c.RLock()
 	defer c.RUnlock()
 	return c.buyBranches
 }
 
-// Get sell branches
+// SellBranches represented as string.
 func (c *Currency) SellBranches() string {
 	c.RLock()
 	defer c.RUnlock()
 	return c.sellBranches
 }
 
-// Parse branches
+// Parse branches.
 func (c *Currency) parseBranches(region string) (branches []branch) {
 	if len(region) == 0 {
 		region = Region
 	}
 
-	s := colly.NewCollector(
-		colly.UserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"),
-	)
+	collector := colly.NewCollector()
+	collector.AllowURLRevisit = true
+	extensions.RandomUserAgent(collector)
 
-	s.OnHTML("div.table-flex.trades-table.table-product", func(e *colly.HTMLElement) {
+	collector.OnHTML("div.table-flex.trades-table.table-product", func(e *colly.HTMLElement) {
 		e.ForEach("div.table-flex__row.item.calculator-hover-icon__container", func(i int, row *colly.HTMLElement) {
 			bank := row.ChildText("a.font-bold")
 
@@ -116,11 +117,13 @@ func (c *Currency) parseBranches(region string) (branches []branch) {
 
 			buy, err := strconv.ParseFloat(row.ChildAttr("div.table-flex__rate.font-size-large", "data-currencies-rate-buy"), 64)
 			if err != nil {
+				log.Println(err)
 				return
 			}
 
 			sell, err := strconv.ParseFloat(row.ChildAttr("div.table-flex__rate.font-size-large.text-nowrap", "data-currencies-rate-sell"), 64)
 			if err != nil {
+				log.Println(err)
 				return
 			}
 
@@ -133,17 +136,24 @@ func (c *Currency) parseBranches(region string) (branches []branch) {
 		})
 	})
 
-	s.OnError(func(r *colly.Response, err error) {
+	collector.OnRequest(func(r *colly.Request) {
+		log.Printf("UserAgent: %s", r.Headers.Get("User-Agent"))
+	})
+
+	collector.OnError(func(r *colly.Response, err error) {
 		log.Println(err)
 	})
 
-	s.Visit(baseURL + path + "/" + region)
+	err := collector.Visit(baseURL + path + "/" + region)
+	if err != nil {
+		log.Println(err)
+	}
 
 	return
 }
 
 func buyBranches(b []branch) string {
-	sort.Sort(sort.Reverse(ByBuySorter(ByBuySorter(b))))
+	sort.Sort(sort.Reverse(ByBuySorter(b)))
 	d := ""
 	for i, v := range b {
 		d = d + fmt.Sprintf("%d. %.2f RUB: %s, %s, %s\n", i+1, v.Buy, v.Bank, v.Address, v.Subway)
