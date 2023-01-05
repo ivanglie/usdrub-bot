@@ -1,6 +1,9 @@
 package cashex
 
 import (
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -48,7 +51,7 @@ func Test_mma(t *testing.T) {
 			want5: 57,
 		},
 		{
-			name:  "0",
+			name:  "Empty branches",
 			args:  args{[]branch{}},
 			want:  0,
 			want1: 0,
@@ -56,6 +59,20 @@ func Test_mma(t *testing.T) {
 			want3: 0,
 			want4: 0,
 			want5: 0,
+		},
+		{
+			name: "Branch with empty value of buy rate or sell rate",
+			args: args{[]branch{
+				{"b", "a", "s", "c", 13.00, 58.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+				{"b", "a", "s", "c", 0.00, 0.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+				{"b", "a", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+			}},
+			want:  13.0,
+			want1: 57.0,
+			want2: 14.0,
+			want3: 58.0,
+			want4: 13.50,
+			want5: 57.50,
 		},
 	}
 	for _, tt := range tests {
@@ -80,5 +97,34 @@ func Test_mma(t *testing.T) {
 				t.Errorf("mma() got5 = %v, want %v", got5, tt.want5)
 			}
 		})
+	}
+}
+
+func Test_parseBranches(t *testing.T) {
+	currency := Currency{}
+
+	dir, _ := os.Getwd()
+	absFilePath := filepath.Join(dir, "../../test/currency_cash_moscow.html")
+
+	currency.parseBranches("file:" + absFilePath)
+
+	if currency.branches == nil {
+		t.Errorf("b is nil")
+	}
+
+	branchesCount := len(currency.branches)
+	buyBranchesCount := len(strings.Split(buyBranches(currency.branches), "\n"))
+	sellBranchesCount := len(strings.Split(sellBranches(currency.branches), "\n"))
+
+	if branchesCount != 34 {
+		t.Errorf("branchesCount got = %v, want %v", branchesCount, 34)
+	}
+
+	if buyBranchesCount != 33 {
+		t.Errorf("buyBranchesCount got = %v, want %v", buyBranchesCount, 33)
+	}
+
+	if sellBranchesCount != 33 {
+		t.Errorf("sellBranchesCount got = %v, want %v", sellBranchesCount, 33)
 	}
 }

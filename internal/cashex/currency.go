@@ -2,6 +2,7 @@ package cashex
 
 import (
 	"fmt"
+	"net/http"
 	"sort"
 	"strconv"
 	"strings"
@@ -46,12 +47,18 @@ func (c *Currency) Update(wg *sync.WaitGroup) {
 			log.Println("Fetching the currency rate")
 		}
 
+		var url string
+		if c.region != "" {
+			url = baseURL + path + "/" + c.region
+		} else {
+			url = baseURL + path + "/" + Region
+		}
+
 		c.Lock()
 		defer c.Unlock()
-		b := c.parseBranches(c.region)
-		c.branches = b
-		c.buyMin, c.sellMin, c.buyMax, c.sellMax, c.buyAvg, c.sellAvg = findMma(b)
-		c.buyBranches, c.sellBranches = buyBranches(b), sellBranches(b)
+		c.parseBranches(url)
+		c.buyMin, c.sellMin, c.buyMax, c.sellMax, c.buyAvg, c.sellAvg = findMma(c.branches)
+		c.buyBranches, c.sellBranches = buyBranches(c.branches), sellBranches(c.branches)
 	}
 
 	if wg == nil {
@@ -96,12 +103,14 @@ func (c *Currency) SellBranches() string {
 }
 
 // Parse branches.
-func (c *Currency) parseBranches(region string) (branches []branch) {
-	if len(region) == 0 {
-		region = Region
-	}
+func (c *Currency) parseBranches(url string) {
+	c.branches = []branch{}
+
+	t := &http.Transport{}
+	t.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
 
 	collector := colly.NewCollector()
+	collector.WithTransport(t)
 	collector.AllowURLRevisit = true
 	extensions.RandomUserAgent(collector)
 
@@ -132,7 +141,7 @@ func (c *Currency) parseBranches(region string) (branches []branch) {
 				return
 			}
 
-			branches = append(branches, newBranch(bank, address, subway, currency, buy, sell, updated))
+			c.branches = append(c.branches, newBranch(bank, address, subway, currency, buy, sell, updated))
 		})
 	})
 
@@ -144,34 +153,59 @@ func (c *Currency) parseBranches(region string) (branches []branch) {
 		log.Println(err)
 	})
 
-	err := collector.Visit(baseURL + path + "/" + region)
+	err := collector.Visit(url)
 	if err != nil {
 		log.Println(err)
 	}
-
-	return
 }
 
 func buyBranches(b []branch) string {
+	b = func(raw []branch) (checked []branch) {
+		for _, v := range raw {
+			if v != (branch{}) && v.Buy != 0 {
+				checked = append(checked, v)
+			}
+		}
+		return
+	}(b)
+
 	sort.Sort(sort.Reverse(ByBuySorter(b)))
 	d := ""
 	for i, v := range b {
-		d = d + fmt.Sprintf("%d. %.2f RUB: %s, %s, %s\n", i+1, v.Buy, v.Bank, v.Address, v.Subway)
+		d = d + fmt.Sprintf("%d) %.2f RUB: %s, %s, %s\n", i+1, v.Buy, v.Bank, v.Address, v.Subway)
 	}
-	return d
+	return strings.TrimSuffix(d, "\n")
 }
 
 func sellBranches(b []branch) string {
+	b = func(raw []branch) (checked []branch) {
+		for _, v := range raw {
+			if v != (branch{}) && v.Sell != 0 {
+				checked = append(checked, v)
+			}
+		}
+		return
+	}(b)
+
 	sort.Sort(BySellSorter(b))
 	d := ""
 	for i, v := range b {
-		d = d + fmt.Sprintf("%d. %.2f RUB: %s, %s, %s\n", i+1, v.Sell, v.Bank, v.Address, v.Subway)
+		d = d + fmt.Sprintf("%d) %.2f RUB: %s, %s, %s\n", i+1, v.Sell, v.Bank, v.Address, v.Subway)
 	}
-	return d
+	return strings.TrimSuffix(d, "\n")
 }
 
 // Find min, max and avg
 func findMma(b []branch) (bmin, smin, bmax, smax, bavg, savg float64) {
+	b = func(raw []branch) (checked []branch) {
+		for _, v := range raw {
+			if v != (branch{}) && v.Buy != 0 && v.Sell != 0 {
+				checked = append(checked, v)
+			}
+		}
+		return
+	}(b)
+
 	if len(b) == 0 {
 		return
 	}
