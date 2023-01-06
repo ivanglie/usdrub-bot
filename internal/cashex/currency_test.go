@@ -122,7 +122,7 @@ func Test_parseBranches(t *testing.T) {
 
 	currency.parseBranches("file:" + absFilePath)
 
-	if currency.branches == nil {
+	if len(currency.branches) == 0 {
 		t.Errorf("b is nil")
 	}
 
@@ -130,15 +130,15 @@ func Test_parseBranches(t *testing.T) {
 	buyBranchesCount := len(strings.Split(buyBranches(currency.branches), "\n"))
 	sellBranchesCount := len(strings.Split(sellBranches(currency.branches), "\n"))
 
-	if branchesCount != 34 {
-		t.Errorf("branchesCount got = %v, want %v", branchesCount, 34)
+	if branchesCount != 3 {
+		t.Errorf("branchesCount got = %v, want %v", branchesCount, 3)
 	}
 
-	if buyBranchesCount != 33 {
-		t.Errorf("buyBranchesCount got = %v, want %v", buyBranchesCount, 33)
+	if buyBranchesCount != 2 {
+		t.Errorf("buyBranchesCount got = %v, want %v", buyBranchesCount, 2)
 	}
 
-	if sellBranchesCount != 33 {
-		t.Errorf("sellBranchesCount got = %v, want %v", sellBranchesCount, 33)
+	if sellBranchesCount != 2 {
+		t.Errorf("sellBranchesCount got = %v, want %v", sellBranchesCount, 2)
 	}
 }
