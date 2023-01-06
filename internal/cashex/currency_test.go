@@ -118,7 +118,7 @@ func Test_parseBranches(t *testing.T) {
 	currency := Currency{}
 
 	dir, _ := os.Getwd()
-	absFilePath := filepath.Join(dir, "../../test/currency_cash_moscow.html")
+	absFilePath := filepath.Join(dir, "../../test/bankiru")
 
 	currency.parseBranches("file:" + absFilePath)
 
