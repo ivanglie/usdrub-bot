@@ -1,0 +1,123 @@
+<!doctype html>
+<html class="env-no-js env-desktop " data-ui-version="2013" prefix="ya: http://webmaster.yandex.ru/vocabularies/
+og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://opengraphprotocol.org/schema/"
+	xmlns:fb="http://www.facebook.com/2008/fbml" lang="ru">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+
+<body>
+	<div class="table-flex trades-table table-product">
+		<div data-currencies-row-container>
+
+			<!-- Branch 1 -->
+			<div data-test="exchange-row" class="exchange-calculator-rates table-flex__row-group " data-row-group>
+				<div data-row-item class="table-flex__row item calculator-hover-icon__container">
+					<div class="table-flex__cell trades-table__name">
+
+						<a class="font-bold" href="/products/currency/exchange/14731/" data-test="bank-name"
+							data-currency-rates-tab-item="bank_code_isb|address_г. Москва, ул. Барклая дом 8"
+							data-currencies-bank-name>Индустриальный Сберегательный Банк</a>
+						<div class="font-size-small">
+							м. Багратионовская
+						</div>
+					</div>
+
+					<div class="table-flex__rate font-size-large color-pumpkin-orange " data-currencies-rate-buy="0"
+						data-currencies-code="USD">
+						-
+						<!-- 71,40 ₽ -->
+						<div class="trades-table__refresh-time" data-test="date-update">
+							<span>Время обновления:</span>
+							<span class="text-nowrap">31.12.2123 13:13</span>
+						</div>
+					</div>
+					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="73.8"
+						data-currencies-code="USD"
+						data-currency-rates-tab-item="tab_open_currency_converter|currencies_rate_sale|currency_USD|bank_code_isb">
+						73,80 ₽
+					</div>
+				</div>
+			</div>
+
+			<!-- Branch 2 and 3 -->
+			<div data-test="exchange-row" class="exchange-calculator-rates table-flex__row-group " data-row-group>
+
+				<!-- Branch 2 -->
+				<div data-row-item class="table-flex__row item calculator-hover-icon__container">
+					<div class="table-flex__cell trades-table__name">
+
+						<a class="font-bold" href="/products/currency/exchange/12987/" data-test="bank-name"
+							data-currency-rates-tab-item="bank_code_kazanbank|address_Москва, улица Куусинена, 4Ак1 "
+							data-currencies-bank-name>Банк Казани</a>
+						<div class="font-size-small">
+							м. Полежаевская
+						</div>
+
+
+						<div class="margin-top-x-small font-size-default">
+							<span class="link-with-icon" data-click="toggle-more-offices" data-hide="is-open">
+								<span class="link-with-icon__text pseudo-link">еще 1
+									обменный пункт</span>
+								<span
+									class="link-with-icon__icon icon-font icon-arrow-down-16 icon-font--size_small color-border-dark"></span>
+							</span>
+							<span class="link-with-icon is-hidden" data-click="toggle-more-offices" data-show="is-open">
+								<span class="link-with-icon__text pseudo-link">свернуть</span>
+								<span
+									class="link-with-icon__icon icon-font icon-arrow-top-16 icon-font--size_small color-border-dark"></span>
+							</span>
+						</div>
+					</div>
+
+					<div class="table-flex__rate font-size-large  " data-currencies-rate-buy="71.2"
+						data-currencies-code="USD">
+						71,20 ₽
+						<div class="trades-table__refresh-time" data-test="date-update">
+							<span>Время обновления:</span>
+							<span class="text-nowrap">31.12.2123 13:12</span>
+						</div>
+					</div>
+					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="74.49"
+						data-currencies-code="USD"
+						data-currency-rates-tab-item="tab_open_currency_converter|currencies_rate_sale|currency_USD|bank_code_kazanbank">
+						74,49 ₽
+					</div>
+				</div>
+
+				<!-- Branch 3 -->
+				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
+					<div class="table-flex__cell trades-table__name">
+
+						<a class="font-bold" href="/products/currency/exchange/13017/" data-test="bank-name"
+							data-currency-rates-tab-item="bank_code_kazanbank|address_Москва, Восточная улица, 13 "
+							data-currencies-bank-name>Банк Казани</a>
+						<div class="font-size-small">
+							м. Автозаводская
+						</div>
+
+
+					</div>
+
+					<div class="table-flex__rate font-size-large  " data-currencies-rate-buy="71.2"
+						data-currencies-code="USD">
+						71,20 ₽
+						<div class="trades-table__refresh-time" data-test="date-update">
+							<span>Время обновления:</span>
+							<span class="text-nowrap">31.12.2123 13:12</span>
+						</div>
+					</div>
+					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="0"
+						data-currencies-code="USD"
+						data-currency-rates-tab-item="tab_open_currency_converter|currencies_rate_sale|currency_USD|bank_code_kazanbank">
+						-
+						<!-- 74,49 ₽ -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
