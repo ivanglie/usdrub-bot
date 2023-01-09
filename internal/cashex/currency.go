@@ -137,7 +137,7 @@ func (c *Currency) parseBranches(url string) {
 			}
 
 			updated, _ := time.Parse("02.01.2006 15:04", row.ChildText("span.text-nowrap"))
-			if updated.YearDay() < time.Now().YearDay() {
+			if updated.YearDay() < time.Now().YearDay() && updated.Year() == time.Now().Year() {
 				return
 			}
 
