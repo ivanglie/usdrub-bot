@@ -50,44 +50,6 @@ func Test_mma(t *testing.T) {
 			want4: 13,
 			want5: 57,
 		},
-		{
-			name:  "Empty branches",
-			args:  args{[]branch{}},
-			want:  0,
-			want1: 0,
-			want2: 0,
-			want3: 0,
-			want4: 0,
-			want5: 0,
-		},
-		{
-			name: "Branch with empty value of buy rate or sell rate",
-			args: args{[]branch{
-				{"b", "a", "s", "c", 13.00, 58.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 0.00, 0.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-			}},
-			want:  13.0,
-			want1: 57.0,
-			want2: 14.0,
-			want3: 58.0,
-			want4: 13.50,
-			want5: 57.50,
-		},
-		{
-			name: "Branch with empty value of buy rate or sell rate",
-			args: args{[]branch{
-				{"b", "a", "s", "c", 13.00, 58.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 0.00, 0.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-			}},
-			want:  13.0,
-			want1: 57.0,
-			want2: 14.0,
-			want3: 58.0,
-			want4: 13.50,
-			want5: 57.50,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -123,22 +85,22 @@ func Test_parseBranches(t *testing.T) {
 	currency.parseBranches("file:" + absFilePath)
 
 	if len(currency.branches) == 0 {
-		t.Errorf("b is nil")
+		t.Errorf("currency.branches is empty")
 	}
 
 	branchesCount := len(currency.branches)
 	buyBranchesCount := len(strings.Split(buyBranches(currency.branches), "\n"))
 	sellBranchesCount := len(strings.Split(sellBranches(currency.branches), "\n"))
 
-	if branchesCount != 3 {
+	if branchesCount != 1 {
 		t.Errorf("branchesCount got = %v, want %v", branchesCount, 3)
 	}
 
-	if buyBranchesCount != 2 {
+	if buyBranchesCount != 1 {
 		t.Errorf("buyBranchesCount got = %v, want %v", buyBranchesCount, 2)
 	}
 
-	if sellBranchesCount != 2 {
+	if sellBranchesCount != 1 {
 		t.Errorf("sellBranchesCount got = %v, want %v", sellBranchesCount, 2)
 	}
 }

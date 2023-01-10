@@ -136,12 +136,16 @@ func (c *Currency) parseBranches(url string) {
 				return
 			}
 
-			updated, _ := time.Parse("02.01.2006 15:04", row.ChildText("span.text-nowrap"))
-			if updated.YearDay() < time.Now().YearDay() {
+			updated, err := time.Parse("02.01.2006 15:04", row.ChildText("span.text-nowrap"))
+			if err != nil {
+				log.Println(err)
 				return
 			}
 
-			c.branches = append(c.branches, newBranch(bank, address, subway, currency, buy, sell, updated))
+			raw := newBranch(bank, address, subway, currency, buy, sell, updated)
+			if raw != (branch{}) && buy != 0 && sell != 0 && time.Now().Unix() <= updated.Local().Unix() {
+				c.branches = append(c.branches, raw)
+			}
 		})
 	})
 
@@ -160,15 +164,6 @@ func (c *Currency) parseBranches(url string) {
 }
 
 func buyBranches(b []branch) string {
-	b = func(raw []branch) (checked []branch) {
-		for _, v := range raw {
-			if v != (branch{}) && v.Buy != 0 {
-				checked = append(checked, v)
-			}
-		}
-		return
-	}(b)
-
 	sort.Sort(sort.Reverse(ByBuySorter(b)))
 	d := ""
 	for i, v := range b {
@@ -178,15 +173,6 @@ func buyBranches(b []branch) string {
 }
 
 func sellBranches(b []branch) string {
-	b = func(raw []branch) (checked []branch) {
-		for _, v := range raw {
-			if v != (branch{}) && v.Sell != 0 {
-				checked = append(checked, v)
-			}
-		}
-		return
-	}(b)
-
 	sort.Sort(BySellSorter(b))
 	d := ""
 	for i, v := range b {
@@ -197,15 +183,6 @@ func sellBranches(b []branch) string {
 
 // Find min, max and avg
 func findMma(b []branch) (bmin, smin, bmax, smax, bavg, savg float64) {
-	b = func(raw []branch) (checked []branch) {
-		for _, v := range raw {
-			if v != (branch{}) && v.Buy != 0 && v.Sell != 0 {
-				checked = append(checked, v)
-			}
-		}
-		return
-	}(b)
-
 	if len(b) == 0 {
 		return
 	}
