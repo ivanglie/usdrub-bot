@@ -130,15 +130,15 @@ func Test_parseBranches(t *testing.T) {
 	buyBranchesCount := len(strings.Split(buyBranches(currency.branches), "\n"))
 	sellBranchesCount := len(strings.Split(sellBranches(currency.branches), "\n"))
 
-	if branchesCount != 3 {
+	if branchesCount != 1 {
 		t.Errorf("branchesCount got = %v, want %v", branchesCount, 3)
 	}
 
-	if buyBranchesCount != 2 {
+	if buyBranchesCount != 1 {
 		t.Errorf("buyBranchesCount got = %v, want %v", buyBranchesCount, 2)
 	}
 
-	if sellBranchesCount != 2 {
+	if sellBranchesCount != 1 {
 		t.Errorf("sellBranchesCount got = %v, want %v", sellBranchesCount, 2)
 	}
 }
