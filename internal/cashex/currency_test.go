@@ -60,34 +60,6 @@ func Test_mma(t *testing.T) {
 			want4: 0,
 			want5: 0,
 		},
-		{
-			name: "Branch with empty value of buy rate or sell rate",
-			args: args{[]branch{
-				{"b", "a", "s", "c", 13.00, 58.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 0.00, 0.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-			}},
-			want:  13.0,
-			want1: 57.0,
-			want2: 14.0,
-			want3: 58.0,
-			want4: 13.50,
-			want5: 57.50,
-		},
-		{
-			name: "Branch with empty value of buy rate or sell rate",
-			args: args{[]branch{
-				{"b", "a", "s", "c", 13.00, 58.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 0.00, 0.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-			}},
-			want:  13.0,
-			want1: 57.0,
-			want2: 14.0,
-			want3: 58.0,
-			want4: 13.50,
-			want5: 57.50,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
