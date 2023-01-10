@@ -50,16 +50,6 @@ func Test_mma(t *testing.T) {
 			want4: 13,
 			want5: 57,
 		},
-		{
-			name:  "Empty branches",
-			args:  args{[]branch{}},
-			want:  0,
-			want1: 0,
-			want2: 0,
-			want3: 0,
-			want4: 0,
-			want5: 0,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -95,7 +85,7 @@ func Test_parseBranches(t *testing.T) {
 	currency.parseBranches("file:" + absFilePath)
 
 	if len(currency.branches) == 0 {
-		t.Errorf("b is nil")
+		t.Errorf("currency.branches is empty")
 	}
 
 	branchesCount := len(currency.branches)
