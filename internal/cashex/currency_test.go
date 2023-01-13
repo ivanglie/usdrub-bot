@@ -3,7 +3,6 @@ package cashex
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 )
@@ -89,18 +88,28 @@ func Test_parseBranches(t *testing.T) {
 	}
 
 	branchesCount := len(currency.branches)
-	buyBranchesCount := len(strings.Split(buyBranches(currency.branches), "\n"))
-	sellBranchesCount := len(strings.Split(sellBranches(currency.branches), "\n"))
 
-	if branchesCount != 1 {
+	buyBranches := buyBranches(currency.branches)
+	buyBranchesCount := 0
+	for _, v := range buyBranches {
+		buyBranchesCount = buyBranchesCount + len(v)
+	}
+
+	sellBranches := sellBranches(currency.branches)
+	sellBranchesCount := 0
+	for _, v := range sellBranches {
+		sellBranchesCount = sellBranchesCount + len(v)
+	}
+
+	if branchesCount != 3 {
 		t.Errorf("branchesCount got = %v, want %v", branchesCount, 3)
 	}
 
-	if buyBranchesCount != 1 {
-		t.Errorf("buyBranchesCount got = %v, want %v", buyBranchesCount, 2)
+	if buyBranchesCount != 3 {
+		t.Errorf("buyBranchesCount got = %v, want %v", buyBranchesCount, 3)
 	}
 
-	if sellBranchesCount != 1 {
-		t.Errorf("sellBranchesCount got = %v, want %v", sellBranchesCount, 2)
+	if sellBranchesCount != 3 {
+		t.Errorf("sellBranchesCount got = %v, want %v", sellBranchesCount, 3)
 	}
 }

@@ -11,7 +11,7 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 	<div class="table-flex trades-table table-product">
 		<div data-currencies-row-container>
 
-			<!-- Branch 1 -->
+			<!-- Branch 1 (good) -->
 			<div data-test="exchange-row" class="exchange-calculator-rates table-flex__row-group " data-row-group>
 				<div data-row-item class="table-flex__row item calculator-hover-icon__container">
 					<div class="table-flex__cell trades-table__name">
@@ -24,10 +24,9 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 						</div>
 					</div>
 
-					<div class="table-flex__rate font-size-large color-pumpkin-orange " data-currencies-rate-buy="0"
+					<div class="table-flex__rate font-size-large color-pumpkin-orange " data-currencies-rate-buy="71.40"
 						data-currencies-code="USD">
-						-
-						<!-- 71,40 ₽ -->
+						71,40 ₽
 						<div class="trades-table__refresh-time" data-test="date-update">
 							<span>Время обновления:</span>
 							<span class="text-nowrap">31.12.2123 13:13</span>
@@ -44,7 +43,7 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 			<!-- Branch 2 and 3 -->
 			<div data-test="exchange-row" class="exchange-calculator-rates table-flex__row-group " data-row-group>
 
-				<!-- Branch 2 -->
+				<!-- Branch 2 (good) -->
 				<div data-row-item class="table-flex__row item calculator-hover-icon__container">
 					<div class="table-flex__cell trades-table__name">
 
@@ -86,7 +85,7 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 					</div>
 				</div>
 
-				<!-- Branch 3 -->
+				<!-- Branch 3 (good) -->
 				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
 					<div class="table-flex__cell trades-table__name">
 
@@ -108,15 +107,14 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 							<span class="text-nowrap">31.12.2123 13:12</span>
 						</div>
 					</div>
-					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="0"
+					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="74.49"
 						data-currencies-code="USD"
 						data-currency-rates-tab-item="tab_open_currency_converter|currencies_rate_sale|currency_USD|bank_code_kazanbank">
-						-
-						<!-- 74,49 ₽ -->
+						74,49 ₽
 					</div>
 				</div>
 
-				<!-- Branch with not actual updated date -->
+				<!-- Branch 4 with not actual updated date (bad) -->
 				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
 					<div class="table-flex__cell trades-table__name">
 
@@ -145,7 +143,7 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 					</div>
 				</div>
 
-				<!-- Branch with incorrect buy -->
+				<!-- Branch 5 with incorrect buy (bad) -->
 				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
 					<div class="table-flex__cell trades-table__name">
 
@@ -174,7 +172,7 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 					</div>
 				</div>
 
-				<!-- Branch with incorrect sell -->
+				<!-- Branch 6 with incorrect sell (bad) -->
 				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
 					<div class="table-flex__cell trades-table__name">
 
@@ -203,7 +201,7 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 					</div>
 				</div>
 
-				<!-- Branch with incorrect date -->
+				<!-- Branch 7 with incorrect date (bad) -->
 				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
 					<div class="table-flex__cell trades-table__name">
 
