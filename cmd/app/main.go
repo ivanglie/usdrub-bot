@@ -63,10 +63,9 @@ var (
 		),
 	)
 
-	fx, mx, cbrf                    *ex.Currency
-	cash                            *cashex.Currency
-	buyBranches, sellBranches       map[int][]string
-	sellChatIdIndex, buyChatIdIndex map[int64]int
+	fx, mx, cbrf *ex.Currency
+	cash         *cashex.Currency
+	cbb, csb     map[int64]int // Current Buy Branches (cbb) and Sell Branches (csb) for chat ID
 )
 
 func main() {
@@ -176,49 +175,49 @@ func callbackQueryHandler(update tgbotapi.Update) {
 	msg := tgbotapi.MessageConfig{}
 	switch update.CallbackQuery.Data {
 	case "Buy":
-		buyBranches = cash.BuyBranches()
-
+		b := cash.BuyBranches()
 		chatId := update.CallbackQuery.Message.Chat.ID
-		buyChatIdIndex = make(map[int64]int)
-		buyChatIdIndex[chatId] = 0
-		msg = tgbotapi.NewMessage(chatId, "*Buy cash*\n"+strings.Join(buyBranches[buyChatIdIndex[chatId]], "\n"))
-		if len(buyBranches) > 1 {
+		cbb = make(map[int64]int)
+		cbb[chatId] = 0
+		msg = tgbotapi.NewMessage(chatId, "*Buy cash*\n"+strings.Join(b[cbb[chatId]], "\n"))
+		if len(b) > 1 {
 			msg.ReplyMarkup = cashBuyMoreKeyboard
 		}
 	case "BuyMore":
+		b := cash.BuyBranches()
 		chatId := update.CallbackQuery.Message.Chat.ID
-		if buyChatIdIndex[chatId] < len(buyBranches) {
-			buyChatIdIndex[chatId] = buyChatIdIndex[chatId] + 1
+		if cbb[chatId] < len(b) {
+			cbb[chatId] = cbb[chatId] + 1
 		}
 
-		if buyBranches[buyChatIdIndex[chatId]] != nil {
-			msg = tgbotapi.NewMessage(chatId, "*Buy cash*\n"+strings.Join(buyBranches[buyChatIdIndex[chatId]], "\n"))
+		if b[cbb[chatId]] != nil {
+			msg = tgbotapi.NewMessage(chatId, "*Buy cash*\n"+strings.Join(b[cbb[chatId]], "\n"))
 		}
 
-		if buyChatIdIndex[chatId] != len(buyBranches)-1 {
+		if cbb[chatId] != len(b)-1 {
 			msg.ReplyMarkup = cashBuyMoreKeyboard
 		}
 	case "Sell":
-		sellBranches = cash.SellBranches()
-
+		b := cash.SellBranches()
 		chatId := update.CallbackQuery.Message.Chat.ID
-		sellChatIdIndex = make(map[int64]int)
-		sellChatIdIndex[chatId] = 0
-		msg = tgbotapi.NewMessage(chatId, "*Sell cash*\n"+strings.Join(sellBranches[sellChatIdIndex[chatId]], "\n"))
-		if len(sellBranches) > 1 {
+		csb = make(map[int64]int)
+		csb[chatId] = 0
+		msg = tgbotapi.NewMessage(chatId, "*Sell cash*\n"+strings.Join(b[csb[chatId]], "\n"))
+		if len(b) > 1 {
 			msg.ReplyMarkup = cashSellMoreKeyboard
 		}
 	case "SellMore":
+		b := cash.SellBranches()
 		chatId := update.CallbackQuery.Message.Chat.ID
-		if sellChatIdIndex[chatId] < len(sellBranches) {
-			sellChatIdIndex[chatId] = sellChatIdIndex[chatId] + 1
+		if csb[chatId] < len(b) {
+			csb[chatId] = csb[chatId] + 1
 		}
 
-		if sellBranches[sellChatIdIndex[chatId]] != nil {
-			msg = tgbotapi.NewMessage(chatId, "*Sell cash*\n"+strings.Join(sellBranches[sellChatIdIndex[chatId]], "\n"))
+		if b[csb[chatId]] != nil {
+			msg = tgbotapi.NewMessage(chatId, "*Sell cash*\n"+strings.Join(b[csb[chatId]], "\n"))
 		}
 
-		if sellChatIdIndex[chatId] != len(sellBranches)-1 {
+		if csb[chatId] != len(b)-1 {
 			msg.ReplyMarkup = cashSellMoreKeyboard
 		}
 	case "Help":

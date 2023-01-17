@@ -143,7 +143,7 @@ func (c *Currency) parseBranches(url string) {
 			}
 
 			raw := newBranch(bank, address, subway, currency, buy, sell, updated)
-			if raw != (branch{}) && buy != 0 && sell != 0 && time.Now().Unix() <= updated.Local().Unix() {
+			if raw != (branch{}) && time.Now().Unix() <= updated.Local().Unix() && (buy != 0 || sell != 0) {
 				c.branches = append(c.branches, raw)
 			}
 		})
@@ -167,14 +167,16 @@ func buyBranches(b []branch) map[int][]string {
 	sort.Sort(sort.Reverse(ByBuySorter(b)))
 	d := []string{}
 	for i, v := range b {
-		d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i+1, v.Buy, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
+		if v.Buy != 0 {
+			d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i+1, v.Buy, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
+		}
 	}
-	return func(b []string) map[int][]string {
+	return func(b []string, n int) map[int][]string {
 		m := make(map[int][]string)
 		j := 0
 		for i := range b {
-			if i%10 == 0 {
-				j = i + 10
+			if i%n == 0 {
+				j = i + n
 
 				s := []string{}
 				if j < len(b) {
@@ -183,25 +185,27 @@ func buyBranches(b []branch) map[int][]string {
 					s = b[i:]
 				}
 
-				m[(j-10)/10] = s
+				m[(j-n)/n] = s
 			}
 		}
 		return m
-	}(d)
+	}(d, 5)
 }
 
 func sellBranches(b []branch) map[int][]string {
 	sort.Sort(BySellSorter(b))
 	d := []string{}
 	for i, v := range b {
-		d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i+1, v.Sell, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
+		if v.Sell != 0 {
+			d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i+1, v.Sell, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
+		}
 	}
-	return func(b []string) map[int][]string {
+	return func(b []string, n int) map[int][]string {
 		m := make(map[int][]string)
 		j := 0
 		for i := range b {
-			if i%10 == 0 {
-				j = i + 10
+			if i%n == 0 {
+				j = i + n
 
 				s := []string{}
 				if j < len(b) {
@@ -210,38 +214,55 @@ func sellBranches(b []branch) map[int][]string {
 					s = b[i:]
 				}
 
-				m[(j-10)/10] = s
+				m[(j-n)/n] = s
 			}
 		}
 		return m
-	}(d)
+	}(d, 5)
 }
 
 // Find min, max and avg
-func findMma(b []branch) (bmin, smin, bmax, smax, bavg, savg float64) {
-	if len(b) == 0 {
+func findMma(r []branch) (bmin, smin, bmax, smax, bavg, savg float64) {
+	if len(r) == 0 {
 		return
 	}
 
-	bmin, smin, bmax, smax = b[0].Buy, b[0].Sell, b[0].Buy, b[0].Sell
 	btotal, stotal := float64(0), float64(0)
-	for _, v := range b {
+
+	bb, sb := []branch{}, []branch{}
+	for _, v := range r {
+		if v.Buy != 0 {
+			bb = append(bb, v)
+		}
+
+		if v.Sell != 0 {
+			sb = append(sb, v)
+		}
+	}
+
+	bmin, bmax = bb[0].Buy, bb[0].Buy
+	for _, v := range bb {
 		if v.Buy < bmin {
 			bmin = v.Buy
-		}
-		if v.Sell < smin {
-			smin = v.Sell
 		}
 		if v.Buy > bmax {
 			bmax = v.Buy
 		}
+		btotal += v.Buy
+	}
+
+	smin, smax = sb[0].Sell, sb[0].Sell
+	for _, v := range sb {
+		if v.Sell < smin {
+			smin = v.Sell
+		}
 		if v.Sell > smax {
 			smax = v.Sell
 		}
-		btotal += v.Buy
 		stotal += v.Sell
 	}
-	bavg, savg = btotal/float64(len(b)), stotal/float64(len(b))
+
+	bavg, savg = btotal/float64(len(bb)), stotal/float64(len(sb))
 
 	return
 }

@@ -18,7 +18,7 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 
 						<a class="font-bold" href="/products/currency/exchange/14731/" data-test="bank-name"
 							data-currency-rates-tab-item="bank_code_isb|address_г. Москва, ул. Барклая дом 8"
-							data-currencies-bank-name>Индустриальный Сберегательный Банк</a>
+							data-currencies-bank-name>1st Good Bank</a>
 						<div class="font-size-small">
 							м. Багратионовская
 						</div>
@@ -40,7 +40,7 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 				</div>
 			</div>
 
-			<!-- Branch 2 and 3 -->
+			<!-- Branches -->
 			<div data-test="exchange-row" class="exchange-calculator-rates table-flex__row-group " data-row-group>
 
 				<!-- Branch 2 (good) -->
@@ -49,7 +49,7 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 
 						<a class="font-bold" href="/products/currency/exchange/12987/" data-test="bank-name"
 							data-currency-rates-tab-item="bank_code_kazanbank|address_Москва, улица Куусинена, 4Ак1 "
-							data-currencies-bank-name>Банк Казани</a>
+							data-currencies-bank-name>2d Good Bank</a>
 						<div class="font-size-small">
 							м. Полежаевская
 						</div>
@@ -91,7 +91,7 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 
 						<a class="font-bold" href="/products/currency/exchange/13017/" data-test="bank-name"
 							data-currency-rates-tab-item="bank_code_kazanbank|address_Москва, Восточная улица, 13 "
-							data-currencies-bank-name>Банк Казани</a>
+							data-currencies-bank-name>3rd Good Bank</a>
 						<div class="font-size-small">
 							м. Автозаводская
 						</div>
@@ -114,13 +114,13 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 					</div>
 				</div>
 
-				<!-- Branch 4 with not actual updated date (bad) -->
+				<!-- Branch 4 without buy rate (good) -->
 				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
 					<div class="table-flex__cell trades-table__name">
 
 						<a class="font-bold" href="/products/currency/exchange/13017/" data-test="bank-name"
 							data-currency-rates-tab-item="bank_code_testbank|address_Москва, Тестовая улица, 1 "
-							data-currencies-bank-name>Банк Тест</a>
+							data-currencies-bank-name>Bank without buy rate)</a>
 						<div class="font-size-small">
 							м. Тестовская
 						</div>
@@ -128,38 +128,9 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 
 					</div>
 
-					<div class="table-flex__rate font-size-large  " data-currencies-rate-buy="71.2"
+					<div class="table-flex__rate font-size-large  " data-currencies-rate-buy="0"
 						data-currencies-code="USD">
-						71,20 ₽
-						<div class="trades-table__refresh-time" data-test="date-update">
-							<span>Время обновления:</span>
-							<span class="text-nowrap">31.12.2022 13:12</span>
-						</div>
-					</div>
-					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="74.49"
-						data-currencies-code="USD"
-						data-currency-rates-tab-item="tab_open_currency_converter|currencies_rate_sale|currency_USD|bank_code_testbank">
-						74,49 ₽
-					</div>
-				</div>
-
-				<!-- Branch 5 with incorrect buy (bad) -->
-				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
-					<div class="table-flex__cell trades-table__name">
-
-						<a class="font-bold" href="/products/currency/exchange/13017/" data-test="bank-name"
-							data-currency-rates-tab-item="bank_code_testbank|address_Москва, Тестовая улица, 1 "
-							data-currencies-bank-name>Банк Тест</a>
-						<div class="font-size-small">
-							м. Тестовская
-						</div>
-
-
-					</div>
-
-					<div class="table-flex__rate font-size-large  " data-currencies-rate-buy=""
-						data-currencies-code="USD">
-						71,20 ₽
+						- <!-- 71,20 ₽ -->
 						<div class="trades-table__refresh-time" data-test="date-update">
 							<span>Время обновления:</span>
 							<span class="text-nowrap">31.12.2123 13:12</span>
@@ -172,13 +143,13 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 					</div>
 				</div>
 
-				<!-- Branch 6 with incorrect sell (bad) -->
+				<!-- Branch 5 without sell rate (good) -->
 				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
 					<div class="table-flex__cell trades-table__name">
 
 						<a class="font-bold" href="/products/currency/exchange/13017/" data-test="bank-name"
 							data-currency-rates-tab-item="bank_code_testbank|address_Москва, Тестовая улица, 1 "
-							data-currencies-bank-name>Банк Тест</a>
+							data-currencies-bank-name>Bank without sell rate</a>
 						<div class="font-size-small">
 							м. Тестовская
 						</div>
@@ -194,14 +165,101 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 							<span class="text-nowrap">31.12.2123 13:12</span>
 						</div>
 					</div>
-					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="-"
+					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="0"
 						data-currencies-code="USD"
 						data-currency-rates-tab-item="tab_open_currency_converter|currencies_rate_sale|currency_USD|bank_code_testbank">
-						74,49 ₽
+						- <!-- 74,49 ₽ -->
 					</div>
 				</div>
 
-				<!-- Branch 7 with incorrect date (bad) -->
+				<!-- Branch 6 without buy and sell rate (bad) -->
+				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
+					<div class="table-flex__cell trades-table__name">
+
+						<a class="font-bold" href="/products/currency/exchange/13017/" data-test="bank-name"
+							data-currency-rates-tab-item="bank_code_testbank|address_Москва, Тестовая улица, 1 "
+							data-currencies-bank-name>Bank without buy and sell</a>
+						<div class="font-size-small">
+							м. Тестовская
+						</div>
+
+
+					</div>
+
+					<div class="table-flex__rate font-size-large  " data-currencies-rate-buy="0"
+						data-currencies-code="USD">
+						- <!-- 71,20 ₽ -->
+						<div class="trades-table__refresh-time" data-test="date-update">
+							<span>Время обновления:</span>
+							<span class="text-nowrap">31.12.2123 13:12</span>
+						</div>
+					</div>
+					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="0"
+						data-currencies-code="USD"
+						data-currency-rates-tab-item="tab_open_currency_converter|currencies_rate_sale|currency_USD|bank_code_testbank">
+						- <!-- 74,49 ₽ -->
+					</div>
+				</div>
+
+				<!-- Branch 7 with incorrect buy rate (bad) -->
+				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
+				<div class="table-flex__cell trades-table__name">
+
+					<a class="font-bold" href="/products/currency/exchange/13017/" data-test="bank-name"
+						data-currency-rates-tab-item="bank_code_testbank|address_Москва, Тестовая улица, 1 "
+						data-currencies-bank-name>Bank without buy rate)</a>
+					<div class="font-size-small">
+						м. Тестовская
+					</div>
+
+
+				</div>
+
+				<div class="table-flex__rate font-size-large  " data-currencies-rate-buy="-"
+					data-currencies-code="USD">
+					- <!-- 71,20 ₽ -->
+					<div class="trades-table__refresh-time" data-test="date-update">
+						<span>Время обновления:</span>
+						<span class="text-nowrap">31.12.2123 13:12</span>
+					</div>
+				</div>
+				<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="74.49"
+					data-currencies-code="USD"
+					data-currency-rates-tab-item="tab_open_currency_converter|currencies_rate_sale|currency_USD|bank_code_testbank">
+					74,49 ₽
+				</div>
+				</div>
+
+				<!-- Branch 8 with incorrect sell rate (bad) -->
+				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
+				<div class="table-flex__cell trades-table__name">
+
+					<a class="font-bold" href="/products/currency/exchange/13017/" data-test="bank-name"
+						data-currency-rates-tab-item="bank_code_testbank|address_Москва, Тестовая улица, 1 "
+						data-currencies-bank-name>Bank with incorrect sell rate</a>
+					<div class="font-size-small">
+						м. Тестовская
+					</div>
+
+
+				</div>
+
+				<div class="table-flex__rate font-size-large  " data-currencies-rate-buy="71.20"
+					data-currencies-code="USD">
+					71,20 ₽
+					<div class="trades-table__refresh-time" data-test="date-update">
+						<span>Время обновления:</span>
+						<span class="text-nowrap">31.12.2123 13:12</span>
+					</div>
+				</div>
+				<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell=""
+					data-currencies-code="USD"
+					data-currency-rates-tab-item="tab_open_currency_converter|currencies_rate_sale|currency_USD|bank_code_testbank">
+					- <!-- 74,49 ₽ -->
+				</div>
+				</div>
+
+				<!-- Branch 9 with incorrect date (bad) -->
 				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
 					<div class="table-flex__cell trades-table__name">
 
@@ -221,6 +279,35 @@ og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ope
 						<div class="trades-table__refresh-time" data-test="date-update">
 							<span>Время обновления:</span>
 							<span class="text-nowrap">31122123 13:12</span>
+						</div>
+					</div>
+					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="74.49"
+						data-currencies-code="USD"
+						data-currency-rates-tab-item="tab_open_currency_converter|currencies_rate_sale|currency_USD|bank_code_testbank">
+						74,49 ₽
+					</div>
+				</div>
+
+				<!-- Branch 10 with not actual updated date (bad) -->
+				<div data-row-item class="table-flex__row item calculator-hover-icon__container" data-group-extra-item>
+					<div class="table-flex__cell trades-table__name">
+
+						<a class="font-bold" href="/products/currency/exchange/13017/" data-test="bank-name"
+							data-currency-rates-tab-item="bank_code_testbank|address_Москва, Тестовая улица, 1 "
+							data-currencies-bank-name>Банк Тест</a>
+						<div class="font-size-small">
+							м. Тестовская
+						</div>
+
+
+					</div>
+
+					<div class="table-flex__rate font-size-large  " data-currencies-rate-buy="71.2"
+						data-currencies-code="USD">
+						71,20 ₽
+						<div class="trades-table__refresh-time" data-test="date-update">
+							<span>Время обновления:</span>
+							<span class="text-nowrap">31.12.2022 13:12</span>
 						</div>
 					</div>
 					<div class="table-flex__rate font-size-large   text-nowrap" data-currencies-rate-sell="74.49"
