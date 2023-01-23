@@ -26,8 +26,8 @@ type Currency struct {
 	sync.RWMutex
 	region       string
 	branches     []branch
-	buyBranches  string
-	sellBranches string
+	buyBranches  map[int][]string
+	sellBranches map[int][]string
 	buyMin       float64
 	buyMax       float64
 	buyAvg       float64
@@ -89,14 +89,14 @@ func (c *Currency) String() string {
 }
 
 // BuyBranches represented as string.
-func (c *Currency) BuyBranches() string {
+func (c *Currency) BuyBranches() map[int][]string {
 	c.RLock()
 	defer c.RUnlock()
 	return c.buyBranches
 }
 
 // SellBranches represented as string.
-func (c *Currency) SellBranches() string {
+func (c *Currency) SellBranches() map[int][]string {
 	c.RLock()
 	defer c.RUnlock()
 	return c.sellBranches
@@ -136,14 +136,14 @@ func (c *Currency) parseBranches(url string) {
 				return
 			}
 
-			updated, err := time.Parse("02.01.2006 15:04", row.ChildText("span.text-nowrap"))
+			updated, err := time.ParseInLocation("02.01.2006 15:04", row.ChildText("span.text-nowrap"), time.FixedZone("Europe/Moscow", 3))
 			if err != nil {
 				log.Println(err)
 				return
 			}
 
 			raw := newBranch(bank, address, subway, currency, buy, sell, updated)
-			if raw != (branch{}) && buy != 0 && sell != 0 && time.Now().Unix() <= updated.Local().Unix() {
+			if raw != (branch{}) && time.Now().Unix() <= updated.Local().Unix() && (buy != 0 || sell != 0) {
 				c.branches = append(c.branches, raw)
 			}
 		})
@@ -163,49 +163,106 @@ func (c *Currency) parseBranches(url string) {
 	}
 }
 
-func buyBranches(b []branch) string {
+func buyBranches(b []branch) map[int][]string {
 	sort.Sort(sort.Reverse(ByBuySorter(b)))
-	d := ""
+	d := []string{}
 	for i, v := range b {
-		d = d + fmt.Sprintf("%d) %.2f RUB: %s, %s, %s\n", i+1, v.Buy, v.Bank, v.Address, v.Subway)
+		if v.Buy != 0 {
+			d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i+1, v.Buy, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
+		}
 	}
-	return strings.TrimSuffix(d, "\n")
+	return func(b []string, n int) map[int][]string {
+		m := make(map[int][]string)
+		j := 0
+		for i := range b {
+			if i%n == 0 {
+				j = i + n
+
+				s := []string{}
+				if j < len(b) {
+					s = b[i:j]
+				} else {
+					s = b[i:]
+				}
+
+				m[(j-n)/n] = s
+			}
+		}
+		return m
+	}(d, 5)
 }
 
-func sellBranches(b []branch) string {
+func sellBranches(b []branch) map[int][]string {
 	sort.Sort(BySellSorter(b))
-	d := ""
+	d := []string{}
 	for i, v := range b {
-		d = d + fmt.Sprintf("%d) %.2f RUB: %s, %s, %s\n", i+1, v.Sell, v.Bank, v.Address, v.Subway)
+		if v.Sell != 0 {
+			d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i+1, v.Sell, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
+		}
 	}
-	return strings.TrimSuffix(d, "\n")
+	return func(b []string, n int) map[int][]string {
+		m := make(map[int][]string)
+		j := 0
+		for i := range b {
+			if i%n == 0 {
+				j = i + n
+
+				s := []string{}
+				if j < len(b) {
+					s = b[i:j]
+				} else {
+					s = b[i:]
+				}
+
+				m[(j-n)/n] = s
+			}
+		}
+		return m
+	}(d, 5)
 }
 
 // Find min, max and avg
-func findMma(b []branch) (bmin, smin, bmax, smax, bavg, savg float64) {
-	if len(b) == 0 {
+func findMma(r []branch) (bmin, smin, bmax, smax, bavg, savg float64) {
+	if len(r) == 0 {
 		return
 	}
 
-	bmin, smin, bmax, smax = b[0].Buy, b[0].Sell, b[0].Buy, b[0].Sell
 	btotal, stotal := float64(0), float64(0)
-	for _, v := range b {
+
+	bb, sb := []branch{}, []branch{}
+	for _, v := range r {
+		if v.Buy != 0 {
+			bb = append(bb, v)
+		}
+
+		if v.Sell != 0 {
+			sb = append(sb, v)
+		}
+	}
+
+	bmin, bmax = bb[0].Buy, bb[0].Buy
+	for _, v := range bb {
 		if v.Buy < bmin {
 			bmin = v.Buy
-		}
-		if v.Sell < smin {
-			smin = v.Sell
 		}
 		if v.Buy > bmax {
 			bmax = v.Buy
 		}
+		btotal += v.Buy
+	}
+
+	smin, smax = sb[0].Sell, sb[0].Sell
+	for _, v := range sb {
+		if v.Sell < smin {
+			smin = v.Sell
+		}
 		if v.Sell > smax {
 			smax = v.Sell
 		}
-		btotal += v.Buy
 		stotal += v.Sell
 	}
-	bavg, savg = btotal/float64(len(b)), stotal/float64(len(b))
+
+	bavg, savg = btotal/float64(len(bb)), stotal/float64(len(sb))
 
 	return
 }

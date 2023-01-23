@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -40,6 +41,8 @@ var (
 
 	version = "unknown"
 
+	bot *tgbotapi.BotAPI
+
 	cashKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("Buy cash", "Buy"),
@@ -48,8 +51,21 @@ var (
 		),
 	)
 
+	cashBuyMoreKeyboard = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("More", "BuyMore"),
+		),
+	)
+
+	cashSellMoreKeyboard = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("More", "SellMore"),
+		),
+	)
+
 	fx, mx, cbrf *ex.Currency
 	cash         *cashex.Currency
+	cbb, csb     map[int64]int // Current Buy Branches (cbb) and Sell Branches (csb) for chat ID
 )
 
 func main() {
@@ -85,7 +101,8 @@ func main() {
 }
 
 func run() {
-	bot, err := tgbotapi.NewBotAPI(opts.BotToken)
+	var err error
+	bot, err = tgbotapi.NewBotAPI(opts.BotToken)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -98,76 +115,119 @@ func run() {
 
 	updates := bot.GetUpdatesChan(u)
 
-	// Loop through each update.
 	for update := range updates {
-		// Check if we've gotten a message update.
-		if update.Message != nil {
-			// Construct a new message from the given chat ID and containing
-			// the text that we received.
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
 
+		if update.Message != nil {
 			if !update.Message.IsCommand() {
 				continue
 			}
 
-			switch update.Message.Command() {
-			case "start", "dashboard":
-				err = storage.Persist(update.Message.From)
-				if err != nil {
-					log.Error(err)
-				}
-				msg.Text = fmt.Sprintf("*%s*\n%s %s\n%s %s\n%s %s\n*%s*\n%s\n%s",
-					exPrefix, fx, fxSuffix, mx, mxSuffix, cbrf, cbrfSuffix, cashPrefix, cash, cashSuffix)
-				msg.ReplyMarkup = cashKeyboard
-			case "forex":
-				msg.Text = fmt.Sprintln(exPrefix, fx, fxSuffix)
-			case "moex":
-				msg.Text = fmt.Sprintln(exPrefix, mx, mxSuffix)
-			case "cbrf":
-				msg.Text = fmt.Sprintln(exPrefix, cbrf, cbrfSuffix)
-			case "cash":
-				msg.Text = fmt.Sprintf("%s\n%s\n%s", cashPrefix, cash, cashSuffix)
-				msg.ReplyMarkup = cashKeyboard
-			case "help":
-				err = storage.Persist(update.Message.From)
-				if err != nil {
-					log.Error(err)
-				}
-				msg.Text = helpCmd
-			default:
-				msg.Text = unknownCmd
-			}
-
-			// Send the message.
-			msg.ParseMode = "markdown"
-			if _, err = bot.Send(msg); err != nil {
-				log.Error(err)
-			}
+			commandHandler(update)
 		} else if update.CallbackQuery != nil {
-			// Respond to the callback query, telling Telegram to show the user
-			// a message with the data received.
-			callback := tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)
-			if _, err = bot.Request(callback); err != nil {
-				log.Error(err)
-			}
-
-			// And finally, send a message containing the data received.
-			var msg tgbotapi.MessageConfig
-			switch update.CallbackQuery.Data {
-			case "Buy":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "*Buy cash*\n"+cash.BuyBranches())
-			case "Sell":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "*Sell cash*\n"+cash.SellBranches())
-			case "Help":
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, helpCmd)
-			default:
-				msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
-			}
-			msg.ParseMode = "markdown"
-			if _, err := bot.Send(msg); err != nil {
-				log.Error(err)
-			}
+			callbackQueryHandler(update)
 		}
+	}
+}
+
+func commandHandler(update tgbotapi.Update) {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+
+	switch update.Message.Command() {
+	case "start", "dashboard":
+		err := storage.Persist(update.Message.From)
+		if err != nil {
+			log.Error(err)
+		}
+		msg.Text = fmt.Sprintf("*%s*\n%s %s\n%s %s\n%s %s\n*%s*\n%s\n%s",
+			exPrefix, fx, fxSuffix, mx, mxSuffix, cbrf, cbrfSuffix, cashPrefix, cash, cashSuffix)
+		msg.ReplyMarkup = cashKeyboard
+	case "forex":
+		msg.Text = fmt.Sprintln(exPrefix, fx, fxSuffix)
+	case "moex":
+		msg.Text = fmt.Sprintln(exPrefix, mx, mxSuffix)
+	case "cbrf":
+		msg.Text = fmt.Sprintln(exPrefix, cbrf, cbrfSuffix)
+	case "cash":
+		msg.Text = fmt.Sprintf("%s\n%s\n%s", cashPrefix, cash, cashSuffix)
+		msg.ReplyMarkup = cashKeyboard
+	case "help":
+		err := storage.Persist(update.Message.From)
+		if err != nil {
+			log.Error(err)
+		}
+		msg.Text = helpCmd
+	default:
+		msg.Text = unknownCmd
+	}
+
+	msg.ParseMode = tgbotapi.ModeMarkdown
+	if _, err := bot.Send(msg); err != nil {
+		log.Error(err)
+	}
+}
+
+func callbackQueryHandler(update tgbotapi.Update) {
+	callback := tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)
+	if _, err := bot.Request(callback); err != nil {
+		log.Error(err)
+	}
+
+	msg := tgbotapi.MessageConfig{}
+	switch update.CallbackQuery.Data {
+	case "Buy":
+		b := cash.BuyBranches()
+		chatId := update.CallbackQuery.Message.Chat.ID
+		cbb = make(map[int64]int)
+		cbb[chatId] = 0
+		msg = tgbotapi.NewMessage(chatId, "*Buy cash*\n"+strings.Join(b[cbb[chatId]], "\n"))
+		if len(b) > 1 {
+			msg.ReplyMarkup = cashBuyMoreKeyboard
+		}
+	case "BuyMore":
+		b := cash.BuyBranches()
+		chatId := update.CallbackQuery.Message.Chat.ID
+		if cbb[chatId] < len(b) {
+			cbb[chatId] = cbb[chatId] + 1
+		}
+
+		if b[cbb[chatId]] != nil {
+			msg = tgbotapi.NewMessage(chatId, "*Buy cash*\n"+strings.Join(b[cbb[chatId]], "\n"))
+		}
+
+		if cbb[chatId] != len(b)-1 {
+			msg.ReplyMarkup = cashBuyMoreKeyboard
+		}
+	case "Sell":
+		b := cash.SellBranches()
+		chatId := update.CallbackQuery.Message.Chat.ID
+		csb = make(map[int64]int)
+		csb[chatId] = 0
+		msg = tgbotapi.NewMessage(chatId, "*Sell cash*\n"+strings.Join(b[csb[chatId]], "\n"))
+		if len(b) > 1 {
+			msg.ReplyMarkup = cashSellMoreKeyboard
+		}
+	case "SellMore":
+		b := cash.SellBranches()
+		chatId := update.CallbackQuery.Message.Chat.ID
+		if csb[chatId] < len(b) {
+			csb[chatId] = csb[chatId] + 1
+		}
+
+		if b[csb[chatId]] != nil {
+			msg = tgbotapi.NewMessage(chatId, "*Sell cash*\n"+strings.Join(b[csb[chatId]], "\n"))
+		}
+
+		if csb[chatId] != len(b)-1 {
+			msg.ReplyMarkup = cashSellMoreKeyboard
+		}
+	case "Help":
+		msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, helpCmd)
+	default:
+		msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
+	}
+	msg.ParseMode = tgbotapi.ModeMarkdown
+	if _, err := bot.Send(msg); err != nil {
+		log.Error(err)
 	}
 }
 
