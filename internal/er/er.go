@@ -1,24 +1,24 @@
-package ex
+package er
 
 import (
 	"fmt"
 	"sync"
 )
 
-// Currency of exchange rate
-type Currency struct {
+// ExchangeRate of exchange rate
+type ExchangeRate struct {
 	sync.RWMutex
 	rate     float64
 	err      error
 	rateFunc func() (float64, error)
 }
 
-func New(rateFunc func() (float64, error)) *Currency {
-	return &Currency{rateFunc: rateFunc}
+func NewExchangeRate(rateFunc func() (float64, error)) *ExchangeRate {
+	return &ExchangeRate{rateFunc: rateFunc}
 }
 
 // Update
-func (c *Currency) Update(wg *sync.WaitGroup) {
+func (c *ExchangeRate) Update(wg *sync.WaitGroup) {
 	update := func() {
 		c.Lock()
 		defer c.Unlock()
@@ -38,14 +38,14 @@ func (c *Currency) Update(wg *sync.WaitGroup) {
 }
 
 // Get exchange rate
-func (c *Currency) Rate() (float64, error) {
+func (c *ExchangeRate) Rate() (float64, error) {
 	c.RLock()
 	defer c.RUnlock()
 	return c.rate, c.err
 }
 
 // Get formatted exchange rate
-func (c *Currency) String() string {
+func (c *ExchangeRate) String() string {
 	c.RLock()
 	defer c.RUnlock()
 	return fmt.Sprintf("%.2f RUB", c.rate)

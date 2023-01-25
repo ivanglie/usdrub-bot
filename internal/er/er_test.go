@@ -1,4 +1,4 @@
-package ex
+package er
 
 import (
 	"math/rand"
@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-func Test_dataRace(t *testing.T) {
-	c := New(func() (float64, error) { return 100 * rand.Float64(), nil })
+func TestExchangeRate_dataRace(t *testing.T) {
+	c := NewExchangeRate(func() (float64, error) { return 100 * rand.Float64(), nil })
 	go func() {
 		for {
 			c.Update(nil)

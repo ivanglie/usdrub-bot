@@ -1,29 +1,15 @@
-package cashex
+package er
 
 import (
-	"os"
-	"path/filepath"
 	"testing"
 	"time"
+
+	br "github.com/ivanglie/go-br-client"
 )
-
-func Test_dataRace(t *testing.T) {
-	c := New("moskva")
-	go func() {
-		for {
-			c.Update(nil)
-		}
-	}()
-
-	for i := 0; i < 10; i++ {
-		c.Rate()
-		time.Sleep(100 * time.Millisecond)
-	}
-}
 
 func Test_mma(t *testing.T) {
 	type args struct {
-		b []branch
+		b []br.Branch
 	}
 	tests := []struct {
 		name     string
@@ -37,7 +23,7 @@ func Test_mma(t *testing.T) {
 	}{
 		{
 			name: "Min, max and avg",
-			args: args{[]branch{
+			args: args{[]br.Branch{
 				{"b", "a", "s", "c", 13.00, 58.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 				{"b", "a", "s", "c", 12.00, 56.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 				{"b", "a", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
@@ -51,7 +37,7 @@ func Test_mma(t *testing.T) {
 		},
 		{
 			name: "Min, max and avg without zeros values",
-			args: args{[]branch{
+			args: args{[]br.Branch{
 				{"b", "a", "s", "c", 13.00, 00.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 				{"b", "a", "s", "c", 00.00, 00.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 				{"b", "a", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
@@ -86,44 +72,5 @@ func Test_mma(t *testing.T) {
 				t.Errorf("mma() got5 = %v, want %v", got5, tt.savgWant)
 			}
 		})
-	}
-}
-
-func Test_parseBranches(t *testing.T) {
-	currency := Currency{}
-
-	dir, _ := os.Getwd()
-	absFilePath := filepath.Join(dir, "../../test/bankiru")
-
-	currency.parseBranches("file:" + absFilePath)
-
-	if len(currency.branches) == 0 {
-		t.Errorf("currency.branches is empty")
-	}
-
-	branchesCount := len(currency.branches)
-
-	buyBranches := buyBranches(currency.branches)
-	buyBranchesCount := 0
-	for _, v := range buyBranches {
-		buyBranchesCount = buyBranchesCount + len(v)
-	}
-
-	sellBranches := sellBranches(currency.branches)
-	sellBranchesCount := 0
-	for _, v := range sellBranches {
-		sellBranchesCount = sellBranchesCount + len(v)
-	}
-
-	if branchesCount != 5 {
-		t.Errorf("branchesCount got = %v, want %v", branchesCount, 5)
-	}
-
-	if buyBranchesCount != 4 {
-		t.Errorf("buyBranchesCount got = %v, want %v", buyBranchesCount, 4)
-	}
-
-	if sellBranchesCount != 4 {
-		t.Errorf("sellBranchesCount got = %v, want %v", sellBranchesCount, 4)
 	}
 }

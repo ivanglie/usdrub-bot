@@ -8,11 +8,11 @@ import (
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	br "github.com/ivanglie/go-br-client"
 	cbr "github.com/ivanglie/go-cbr-client"
 	forex "github.com/ivanglie/go-coingate-client"
 	moex "github.com/ivanglie/go-moex-client"
-	"github.com/ivanglie/usdrub-bot/internal/cashex"
-	"github.com/ivanglie/usdrub-bot/internal/ex"
+	"github.com/ivanglie/usdrub-bot/internal/er"
 	"github.com/ivanglie/usdrub-bot/internal/scheduler"
 	"github.com/ivanglie/usdrub-bot/internal/storage"
 	flags "github.com/jessevdk/go-flags"
@@ -63,8 +63,8 @@ var (
 		),
 	)
 
-	fx, mx, cbrf *ex.Currency
-	cash         *cashex.Currency
+	fx, mx, cbrf *er.ExchangeRate
+	cash         *er.CashExchangeRate
 	cbb, csb     map[int64]int // Current Buy Branches (cbb) and Sell Branches (csb) for chat ID
 )
 
@@ -80,19 +80,19 @@ func main() {
 	}
 
 	setupLog(opts.Dbg)
-	scheduler.Debug, forex.Debug, moex.Debug, cbr.Debug, cashex.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
+	scheduler.Debug, forex.Debug, moex.Debug, cbr.Debug, br.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
 
 	tgbotapi.SetLogger(log)
 	scheduler.SetLogger(log)
 	forex.SetLogger(log)
 	cbr.SetLogger(log)
 	moex.SetLogger(log)
-	cashex.SetLogger(log)
+	br.SetLogger(log)
 
-	mx = ex.New(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
-	fx = ex.New(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
-	cbrf = ex.New(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
-	cash = cashex.New(cashex.Region)
+	mx = er.NewExchangeRate(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
+	fx = er.NewExchangeRate(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
+	cbrf = er.NewExchangeRate(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
+	cash = er.NewCashExchangeRate(func() (*br.Rates, error) { return br.NewClient().Rates(br.USD, br.Moscow) })
 
 	updateRates()
 	scheduler.StartCmdOnSchedule(updateRates)
