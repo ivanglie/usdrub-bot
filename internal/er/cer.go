@@ -85,9 +85,11 @@ func (c *CashExchangeRate) SellBranches() map[int][]string {
 func buyBranches(b []br.Branch) map[int][]string {
 	sort.Sort(sort.Reverse(br.ByBuySorter(b)))
 	d := []string{}
-	for i, v := range b {
+	i := 0
+	for _, v := range b {
 		if v.Buy != 0 {
-			d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i+1, v.Buy, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
+			i++
+			d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i, v.Buy, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
 		}
 	}
 	return func(b []string, n int) map[int][]string {
@@ -114,9 +116,11 @@ func buyBranches(b []br.Branch) map[int][]string {
 func sellBranches(b []br.Branch) map[int][]string {
 	sort.Sort(br.BySellSorter(b))
 	d := []string{}
-	for i, v := range b {
+	i := 0
+	for _, v := range b {
 		if v.Sell != 0 {
-			d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i+1, v.Sell, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
+			i++
+			d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i, v.Sell, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
 		}
 	}
 	return func(b []string, n int) map[int][]string {
