@@ -12,7 +12,7 @@ import (
 	cbr "github.com/ivanglie/go-cbr-client"
 	forex "github.com/ivanglie/go-coingate-client"
 	moex "github.com/ivanglie/go-moex-client"
-	"github.com/ivanglie/usdrub-bot/internal/er"
+	"github.com/ivanglie/usdrub-bot/internal/exrate"
 	"github.com/ivanglie/usdrub-bot/internal/scheduler"
 	"github.com/ivanglie/usdrub-bot/internal/storage"
 	flags "github.com/jessevdk/go-flags"
@@ -63,8 +63,8 @@ var (
 		),
 	)
 
-	fx, mx, cbrf *er.ExchangeRate
-	cash         *er.CashExchangeRate
+	fx, mx, cbrf *exrate.Rate
+	cash         *exrate.CashRate
 	cbb, csb     map[int64]int // Current Buy Branches (cbb) and Sell Branches (csb) for chat ID
 )
 
@@ -89,10 +89,10 @@ func main() {
 	moex.SetLogger(log)
 	br.SetLogger(log)
 
-	mx = er.NewExchangeRate(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
-	fx = er.NewExchangeRate(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
-	cbrf = er.NewExchangeRate(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
-	cash = er.NewCashExchangeRate(func() (*br.Rates, error) { return br.NewClient().Rates(br.USD, br.Moscow) })
+	mx = exrate.NewRate(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
+	fx = exrate.NewRate(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
+	cbrf = exrate.NewRate(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
+	cash = exrate.NewCashRate(func() (*br.Rates, error) { return br.NewClient().Rates(br.USD, br.Moscow) })
 
 	updateRates()
 	scheduler.StartCmdOnSchedule(updateRates)

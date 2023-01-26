@@ -1,4 +1,4 @@
-package er
+package exrate
 
 import (
 	"testing"
@@ -7,7 +7,21 @@ import (
 	br "github.com/ivanglie/go-br-client"
 )
 
-func Test_mma(t *testing.T) {
+func TestCashRate_dataRace(t *testing.T) {
+	c := NewCashRate(func() (*br.Rates, error) { return &br.Rates{}, nil })
+	go func() {
+		for {
+			c.Update(nil)
+		}
+	}()
+
+	for i := 0; i < 10; i++ {
+		c.Rate()
+		time.Sleep(100 * time.Millisecond)
+	}
+}
+
+func Test_findMma(t *testing.T) {
 	type args struct {
 		b []br.Branch
 	}
@@ -72,5 +86,20 @@ func Test_mma(t *testing.T) {
 				t.Errorf("mma() got5 = %v, want %v", got5, tt.savgWant)
 			}
 		})
+	}
+}
+
+func TestNewCashRate(t *testing.T) {
+	if got := NewCashRate(func() (*br.Rates, error) { return &br.Rates{}, nil }); got == nil {
+		t.Errorf("NewCashRate() = %v", got)
+	}
+}
+
+func TestCashRate_String(t *testing.T) {
+	r := &CashRate{}
+	r.branches = []br.Branch{{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 100.0, Sell: 200.0, Updated: time.Now()}}
+
+	if got := r.String(); len(got) == 0 {
+		t.Errorf("CashRate.String() = %v", got)
 	}
 }

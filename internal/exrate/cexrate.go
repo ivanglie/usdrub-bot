@@ -1,4 +1,4 @@
-package er
+package exrate
 
 import (
 	"fmt"
@@ -8,8 +8,8 @@ import (
 	br "github.com/ivanglie/go-br-client"
 )
 
-// CashExchangeRate exchange rate of cash.
-type CashExchangeRate struct {
+// CashRate exchange rate of cash.
+type CashRate struct {
 	sync.RWMutex
 	branches     []br.Branch
 	buyBranches  map[int][]string
@@ -24,12 +24,12 @@ type CashExchangeRate struct {
 	rateFunc     func() (*br.Rates, error)
 }
 
-func NewCashExchangeRate(rateFunc func() (*br.Rates, error)) *CashExchangeRate {
-	return &CashExchangeRate{rateFunc: rateFunc}
+func NewCashRate(rateFunc func() (*br.Rates, error)) *CashRate {
+	return &CashRate{rateFunc: rateFunc}
 }
 
 // Update currency exchange cash rate.
-func (c *CashExchangeRate) Update(wg *sync.WaitGroup) {
+func (c *CashRate) Update(wg *sync.WaitGroup) {
 	update := func() {
 		c.Lock()
 		defer c.Unlock()
@@ -54,14 +54,14 @@ func (c *CashExchangeRate) Update(wg *sync.WaitGroup) {
 }
 
 // Rate of currency exchange cash returns of buyMin, buyMax, buyAvg, sellMin, sellMax, sellAvg.
-func (c *CashExchangeRate) Rate() (float64, float64, float64, float64, float64, float64) {
+func (c *CashRate) Rate() (float64, float64, float64, float64, float64, float64) {
 	c.RLock()
 	defer c.RUnlock()
 	return c.buyMin, c.buyMax, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg
 }
 
 // String representation of currency exchange cash rate.
-func (c *CashExchangeRate) String() string {
+func (c *CashRate) String() string {
 	c.RLock()
 	defer c.RUnlock()
 	return fmt.Sprintf("Buy:\t%.2f .. %.2f RUB (avg %.2f)\nSell:\t%.2f .. %.2f RUB (avg %.2f)",
@@ -69,14 +69,14 @@ func (c *CashExchangeRate) String() string {
 }
 
 // BuyBranches represented as string.
-func (c *CashExchangeRate) BuyBranches() map[int][]string {
+func (c *CashRate) BuyBranches() map[int][]string {
 	c.RLock()
 	defer c.RUnlock()
 	return c.buyBranches
 }
 
 // SellBranches represented as string.
-func (c *CashExchangeRate) SellBranches() map[int][]string {
+func (c *CashRate) SellBranches() map[int][]string {
 	c.RLock()
 	defer c.RUnlock()
 	return c.sellBranches
