@@ -103,3 +103,58 @@ func TestCashRate_String(t *testing.T) {
 		t.Errorf("CashRate.String() = %v", got)
 	}
 }
+
+func TestCashRate_BuyBranches(t *testing.T) {
+	b := []br.Branch{
+		{"b1", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b2", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b3", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b4", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b5", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b6", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+	}
+
+	c := &CashRate{}
+	c.buyBranches = buyBranches(b)
+	bb := c.BuyBranches()
+
+	if got := len(bb); got != 2 {
+		t.Errorf("len(c.BuyBranches()) = %v, want %v", got, 2)
+	}
+
+	if got := len(bb[0]); got != 5 {
+		t.Errorf("len(c.BuyBranches()[0]) = %v, want %v", got, 5)
+	}
+
+	if got := len(bb[1]); got != 1 {
+		t.Errorf("len(c.BuyBranches()[1]) = %v, want %v", got, 1)
+	}
+}
+
+func TestCashRate_SellBranches(t *testing.T) {
+	b := []br.Branch{
+		{"b1", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b2", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b3", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b4", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b5", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b6", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b7", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+	}
+
+	c := &CashRate{}
+	c.sellBranches = sellBranches(b)
+	sb := c.SellBranches()
+
+	if got := len(sb); got != 2 {
+		t.Errorf("len(c.SellBranches()) = %v, want %v", got, 2)
+	}
+
+	if got := len(sb[0]); got != 5 {
+		t.Errorf("len(c.SellBranches()[0]) = %v, want %v", got, 5)
+	}
+
+	if got := len(sb[1]); got != 2 {
+		t.Errorf("len(c.SellBranches()[1]) = %v, want %v", got, 2)
+	}
+}
