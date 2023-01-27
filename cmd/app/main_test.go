@@ -55,9 +55,6 @@ func Test_messageByCallbackData(t *testing.T) {
 	realPtrToSb := (*map[int][]string)(ptrToSb)
 	*realPtrToSb = map[int][]string{0: {"10", "9", "8", "7", "6"}, 1: {"5", "4", "3", "2", "1"}, 2: {"0"}}
 
-	t.Log("cash.BuyBranches()", cash.BuyBranches())
-	t.Log("cash.SellBranches()=", cash.SellBranches())
-
 	for _, v := range []string{"Buy", "BuyMore", "Sell", "SellMore", "Help", " "} {
 		if got := messageByCallbackData(1, v); got.ChatID != 1 && len(got.Text) == 0 {
 			t.Errorf("messageByCallbackData() = %v", got)
