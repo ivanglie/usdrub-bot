@@ -247,6 +247,9 @@ func updateRates() {
 	if _, err := cbrf.Rate(); err != nil {
 		log.Errorf("error by Russian Central Bank: %v", err)
 	}
+	if _, _, _, _, _, _, err := cash.Rate(); err != nil {
+		log.Errorf("error by Exchange rates of cash: %v", err)
+	}
 }
 
 func setupLog(dbg bool) {
