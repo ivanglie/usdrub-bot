@@ -1,5 +1,8 @@
 # USDRUB Telegram Bot
 
+[![Test](https://github.com/ivanglie/usdrub-bot/actions/workflows/test.yml/badge.svg)](https://github.com/ivanglie/usdrub-bot/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/ivanglie/usdrub-bot/branch/master/graph/badge.svg?token=NE2AU5KV3L)](https://codecov.io/gh/ivanglie/usdrub-bot)
+
 Telegram bot that provides latest US Dollar to Russian Ruble exchange rate. 
 
 ## Features
