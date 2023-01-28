@@ -23,7 +23,7 @@ const (
 	helpCmd    = "Just use /forex, /moex, /cbrf, /cash and /dashboard command."
 	unknownCmd = "Unknown command"
 	exPrefix   = "1 US Dollar equals"
-	cashPrefix = "Cash exchange rates"
+	cashPrefix = "Exchange rates of cash"
 	fxSuffix   = "by Forex"
 	mxSuffix   = "by Moscow Exchange"
 	cbrfSuffix = "by Russian Central Bank"
@@ -83,7 +83,6 @@ func main() {
 	scheduler.Debug, forex.Debug, moex.Debug, cbr.Debug, br.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
 
 	tgbotapi.SetLogger(log)
-	scheduler.SetLogger(log)
 	forex.SetLogger(log)
 	cbr.SetLogger(log)
 	moex.SetLogger(log)
@@ -95,7 +94,7 @@ func main() {
 	cash = exrate.NewCashRate(func() (*br.Rates, error) { return br.NewClient().Rates(br.USD, br.Moscow) })
 
 	updateRates()
-	scheduler.StartCmdOnSchedule(updateRates)
+	scheduler.StartCmdOnSchedule(updateRates, log)
 
 	run()
 }

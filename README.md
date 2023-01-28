@@ -20,4 +20,4 @@ For more information check out the following links:
 * Coingate API [go-coingate-client](https://github.com/ivanglie/go-coingate-client)
 * Moscow Exchange ISS API [go-moex-client](https://github.com/ivanglie/go-moex-client)
 * CBR API [go-cbr-client](https://github.com/ivanglie/go-cbr-client)
-* Cash exchange rates by [Banki.ru](https://banki.ru)
+* Exchange rates of cash API [go-br-client](https://github.com/ivanglie/go-br-client)
