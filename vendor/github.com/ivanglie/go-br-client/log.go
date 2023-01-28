@@ -1,4 +1,4 @@
-package cashex
+package br
 
 import (
 	"errors"
