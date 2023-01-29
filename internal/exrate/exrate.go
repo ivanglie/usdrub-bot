@@ -2,6 +2,7 @@ package exrate
 
 import (
 	"fmt"
+	"log"
 	"sync"
 )
 
@@ -23,6 +24,9 @@ func (c *Rate) Update(wg *sync.WaitGroup) {
 		c.Lock()
 		defer c.Unlock()
 		c.rate, c.err = c.rateFunc()
+		if c.err != nil {
+			log.Println(c.err)
+		}
 	}
 
 	if wg == nil {

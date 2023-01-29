@@ -1,10 +1,13 @@
 package main
 
 import (
+	"errors"
+	"math/rand"
 	"reflect"
 	"testing"
 	"unsafe"
 
+	br "github.com/ivanglie/go-br-client"
 	"github.com/ivanglie/usdrub-bot/internal/exrate"
 )
 
@@ -60,4 +63,22 @@ func Test_messageByCallbackData(t *testing.T) {
 			t.Errorf("messageByCallbackData() = %v", got)
 		}
 	}
+}
+
+func Test_updateRates(t *testing.T) {
+	setupLog(false)
+
+	mx = exrate.NewRate(func() (float64, error) { return 100 * rand.Float64(), nil })
+	fx = exrate.NewRate(func() (float64, error) { return 100 * rand.Float64(), nil })
+	cbrf = exrate.NewRate(func() (float64, error) { return 100 * rand.Float64(), nil })
+	cash = exrate.NewCashRate(func() (*br.Rates, error) { return &br.Rates{}, nil })
+
+	updateRates()
+
+	mx = exrate.NewRate(func() (float64, error) { return 0, errors.New("error") })
+	fx = exrate.NewRate(func() (float64, error) { return 0, errors.New("error") })
+	cbrf = exrate.NewRate(func() (float64, error) { return 0, errors.New("error") })
+	cash = exrate.NewCashRate(func() (*br.Rates, error) { return &br.Rates{}, errors.New("error") })
+
+	updateRates()
 }

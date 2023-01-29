@@ -1,6 +1,8 @@
 package exrate
 
 import (
+	"errors"
+	"sync"
 	"testing"
 	"time"
 
@@ -157,4 +159,21 @@ func TestCashRate_SellBranches(t *testing.T) {
 	if got := len(sb[1]); got != 2 {
 		t.Errorf("len(c.SellBranches()[1]) = %v, want %v", got, 2)
 	}
+}
+
+func TestCashRate_Rate(t *testing.T) {
+	c := &CashRate{buyMin: 0, buyMax: 0, buyAvg: 0, sellMin: 0, sellMax: 0, sellAvg: 0}
+	if _, _, _, _, _, _, err := c.Rate(); err == nil {
+		t.Errorf("CashRate.Rate() error = %v", err)
+	}
+
+	c = &CashRate{buyMin: 0, buyMax: 0, buyAvg: 0, sellMin: 0, sellMax: 1, sellAvg: 0}
+	if _, _, _, _, _, _, err := c.Rate(); err != nil {
+		t.Errorf("CashRate.Rate() error = %v", err)
+	}
+}
+
+func TestCashRate_Update(t *testing.T) {
+	c := &CashRate{rateFunc: func() (*br.Rates, error) { return nil, errors.New("error") }}
+	c.Update(&sync.WaitGroup{})
 }

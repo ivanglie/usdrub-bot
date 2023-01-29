@@ -1,7 +1,9 @@
 package exrate
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"sort"
 	"sync"
 
@@ -36,6 +38,11 @@ func (c *CashRate) Update(wg *sync.WaitGroup) {
 
 		var r *br.Rates
 		r, c.err = c.rateFunc()
+		if c.err != nil {
+			log.Println(c.err)
+			return
+		}
+
 		c.branches = r.Branches
 		c.buyMin, c.sellMin, c.buyMax, c.sellMax, c.buyAvg, c.sellAvg = findMma(c.branches)
 		c.buyBranches, c.sellBranches = buyBranches(c.branches), sellBranches(c.branches)
@@ -54,10 +61,13 @@ func (c *CashRate) Update(wg *sync.WaitGroup) {
 }
 
 // Rate of currency exchange cash returns of buyMin, buyMax, buyAvg, sellMin, sellMax, sellAvg.
-func (c *CashRate) Rate() (float64, float64, float64, float64, float64, float64) {
+func (c *CashRate) Rate() (float64, float64, float64, float64, float64, float64, error) {
 	c.RLock()
 	defer c.RUnlock()
-	return c.buyMin, c.buyMax, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg
+	if c.buyMin == 0 && c.buyMax == 0 && c.buyAvg == 0 && c.sellMin == 0 && c.sellMax == 0 && c.sellAvg == 0 {
+		return 0, 0, 0, 0, 0, 0, errors.New("values of c.buyMin, c.buyMax, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg are 0")
+	}
+	return c.buyMin, c.buyMax, c.buyAvg, c.sellMin, c.sellMax, c.sellAvg, nil
 }
 
 // String representation of currency exchange cash rate.
