@@ -100,49 +100,49 @@ func main() {
 	cbrfRateCh = make(chan *exrate.Rate)
 	cashRateCh = make(chan *exrate.CashRate)
 
-	updateRates := func() {
-		t := time.Now()
-
-		go func() {
-			forexRateCh <- func() *exrate.Rate {
-				rate, err := forex.NewClient().GetRate("USD", "RUB")
-				return exrate.NewRate(rate, err)
-			}()
-		}()
-
-		go func() {
-			moexRateCh <- func() *exrate.Rate {
-				rate, err := moex.NewClient().GetRate(moex.USDRUB)
-				return exrate.NewRate(rate, err)
-			}()
-		}()
-
-		go func() {
-			cbrfRateCh <- func() *exrate.Rate {
-				rate, err := cbr.NewClient().GetRate("USD", time.Now())
-				return exrate.NewRate(rate, err)
-			}()
-		}()
-
-		go func() {
-			cashRateCh <- func() *exrate.CashRate {
-				rates, err := br.NewClient().Rates(br.USD, br.Moscow)
-				return exrate.NewCashRate(rates, err)
-			}()
-		}()
-
-		cashRate = <-cashRateCh
-		cbrfRate = <-cbrfRateCh
-		moexRate = <-moexRateCh
-		forexRate = <-forexRateCh
-
-		log.Debugln("Elapsed time:", time.Since(t))
-	}
-
 	updateRates()
 	scheduler.StartCmdOnSchedule(updateRates, log)
 
 	run()
+}
+
+func updateRates() {
+	t := time.Now()
+
+	go func() {
+		forexRateCh <- func() *exrate.Rate {
+			rate, err := forex.NewClient().GetRate("USD", "RUB")
+			return exrate.NewRate(rate, err)
+		}()
+	}()
+
+	go func() {
+		moexRateCh <- func() *exrate.Rate {
+			rate, err := moex.NewClient().GetRate(moex.USDRUB)
+			return exrate.NewRate(rate, err)
+		}()
+	}()
+
+	go func() {
+		cbrfRateCh <- func() *exrate.Rate {
+			rate, err := cbr.NewClient().GetRate("USD", time.Now())
+			return exrate.NewRate(rate, err)
+		}()
+	}()
+
+	go func() {
+		cashRateCh <- func() *exrate.CashRate {
+			rates, err := br.NewClient().Rates(br.USD, br.Moscow)
+			return exrate.NewCashRate(rates, err)
+		}()
+	}()
+
+	cashRate = <-cashRateCh
+	cbrfRate = <-cbrfRateCh
+	moexRate = <-moexRateCh
+	forexRate = <-forexRateCh
+
+	log.Debugln("Elapsed time:", time.Since(t))
 }
 
 func run() {
