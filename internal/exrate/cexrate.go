@@ -24,6 +24,7 @@ type CashRate struct {
 	err          error
 }
 
+// New exchange rate of cash.
 func NewCashRate(rates *br.Rates, err error) *CashRate {
 	r := &CashRate{}
 	r.Lock()
@@ -33,6 +34,12 @@ func NewCashRate(rates *br.Rates, err error) *CashRate {
 	r.buyMin, r.sellMin, r.buyMax, r.sellMax, r.buyAvg, r.sellAvg = findMma(r.branches)
 	r.buyBranches, r.sellBranches = buyBranches(r.branches), sellBranches(r.branches)
 	return r
+}
+
+// Update exchange rate of cash.
+func UpdateCashRate(f func() (*br.Rates, error)) *CashRate {
+	r, err := f()
+	return NewCashRate(r, err)
 }
 
 // Rate of currency exchange cash returns of buyMin, buyMax, buyAvg, sellMin, sellMax, sellAvg.

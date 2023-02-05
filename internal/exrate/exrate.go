@@ -22,6 +22,12 @@ func NewRate(rate float64, err error) *Rate {
 	return er
 }
 
+// Update exchange rate.
+func UpdateRate(f func() (float64, error)) *Rate {
+	r, err := f()
+	return NewRate(r, err)
+}
+
 // Get formatted exchange rate.
 func (er *Rate) String() string {
 	er.RLock()

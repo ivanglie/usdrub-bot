@@ -110,31 +110,19 @@ func updateRates() {
 	t := time.Now()
 
 	go func() {
-		forexRateCh <- func() *exrate.Rate {
-			rate, err := forex.NewClient().GetRate("USD", "RUB")
-			return exrate.NewRate(rate, err)
-		}()
+		forexRateCh <- exrate.UpdateRate(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
 	}()
 
 	go func() {
-		moexRateCh <- func() *exrate.Rate {
-			rate, err := moex.NewClient().GetRate(moex.USDRUB)
-			return exrate.NewRate(rate, err)
-		}()
+		moexRateCh <- exrate.UpdateRate(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
 	}()
 
 	go func() {
-		cbrfRateCh <- func() *exrate.Rate {
-			rate, err := cbr.NewClient().GetRate("USD", time.Now())
-			return exrate.NewRate(rate, err)
-		}()
+		cbrfRateCh <- exrate.UpdateRate(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
 	}()
 
 	go func() {
-		cashRateCh <- func() *exrate.CashRate {
-			rates, err := br.NewClient().Rates(br.USD, br.Moscow)
-			return exrate.NewCashRate(rates, err)
-		}()
+		cashRateCh <- exrate.UpdateCashRate(func() (*br.Rates, error) { return br.NewClient().Rates(br.USD, br.Moscow) })
 	}()
 
 	cashRate = <-cashRateCh

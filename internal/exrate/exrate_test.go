@@ -7,7 +7,13 @@ import (
 
 func TestNewRate(t *testing.T) {
 	if got := NewRate(100*rand.Float64(), nil); got == nil {
-		t.Errorf("NewCashRate() = %v", got)
+		t.Errorf("NewRate() = %v", got)
+	}
+}
+
+func TestUpdateRate(t *testing.T) {
+	if got := UpdateRate(func() (float64, error) { return rand.Float64(), nil }); got.rate == 0 || got.err != nil {
+		t.Errorf("UpdateRate() = %v", got)
 	}
 }
 

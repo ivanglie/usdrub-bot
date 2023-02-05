@@ -13,6 +13,12 @@ func TestNewCashRate(t *testing.T) {
 	}
 }
 
+func TestUpdateCashRate(t *testing.T) {
+	if got := UpdateCashRate(func() (*br.Rates, error) { return &br.Rates{Currency: br.USD, City: br.Moscow}, nil }); got == nil {
+		t.Errorf("UpdateCashRate() = %v", got)
+	}
+}
+
 func TestCashRate_String(t *testing.T) {
 	r := &CashRate{}
 	r.branches = []br.Branch{{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 100.0, Sell: 200.0, Updated: time.Now()}}
