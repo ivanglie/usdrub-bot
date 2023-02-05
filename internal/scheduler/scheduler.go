@@ -4,6 +4,7 @@ import (
 	"errors"
 	stdlog "log"
 	"os"
+	"time"
 
 	"github.com/robfig/cron/v3"
 )
@@ -31,13 +32,19 @@ func StartCmdOnSchedule(cmd func(), logger Logger) {
 		log.Printf("Cron spec = %s\n", spec)
 	}
 
-	c := cron.New()
-	defer c.Stop()
-
-	_, err := c.AddFunc(spec, cmd)
+	moscowTime, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
 		log.Println(err)
 	}
+
+	c := cron.New(cron.WithLocation(moscowTime))
+	defer c.Stop()
+
+	_, err = c.AddFunc(spec, cmd)
+	if err != nil {
+		log.Println(err)
+	}
+
 	go c.Start()
 }
 

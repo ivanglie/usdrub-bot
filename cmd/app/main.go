@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -63,9 +62,17 @@ var (
 		),
 	)
 
-	fx, mx, cbrf *exrate.Rate
-	cash         *exrate.CashRate
-	cbb, csb     map[int64]int // Current Buy Branches (cbb) and Sell Branches (csb) for chat ID
+	forexRate,
+	moexRate,
+	cbrfRate *exrate.Rate
+	cashRate *exrate.CashRate
+
+	cbb, csb map[int64]int // Current Buy Branches (cbb) and Sell Branches (csb) for chat ID
+
+	forexRateCh,
+	moexRateCh,
+	cbrfRateCh chan *exrate.Rate
+	cashRateCh chan *exrate.CashRate
 )
 
 func main() {
@@ -88,15 +95,42 @@ func main() {
 	moex.SetLogger(log)
 	br.SetLogger(log)
 
-	mx = exrate.NewRate(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
-	fx = exrate.NewRate(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
-	cbrf = exrate.NewRate(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
-	cash = exrate.NewCashRate(func() (*br.Rates, error) { return br.NewClient().Rates(br.USD, br.Moscow) })
+	forexRateCh = make(chan *exrate.Rate)
+	moexRateCh = make(chan *exrate.Rate)
+	cbrfRateCh = make(chan *exrate.Rate)
+	cashRateCh = make(chan *exrate.CashRate)
 
 	updateRates()
 	scheduler.StartCmdOnSchedule(updateRates, log)
 
 	run()
+}
+
+func updateRates() {
+	t := time.Now()
+
+	go func() {
+		forexRateCh <- exrate.UpdateRate(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
+	}()
+
+	go func() {
+		moexRateCh <- exrate.UpdateRate(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
+	}()
+
+	go func() {
+		cbrfRateCh <- exrate.UpdateRate(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
+	}()
+
+	go func() {
+		cashRateCh <- exrate.UpdateCashRate(func() (*br.Rates, error) { return br.NewClient().Rates(br.USD, br.Moscow) })
+	}()
+
+	cashRate = <-cashRateCh
+	cbrfRate = <-cbrfRateCh
+	moexRate = <-moexRateCh
+	forexRate = <-forexRateCh
+
+	log.Debugln("Elapsed time:", time.Since(t))
 }
 
 func run() {
@@ -153,16 +187,16 @@ func messageByCommand(chatId int64, command string) (m tgbotapi.MessageConfig) {
 	switch command {
 	case "start", "dashboard":
 		m.Text = fmt.Sprintf("*%s*\n%s %s\n%s %s\n%s %s\n*%s*\n%s\n%s",
-			exPrefix, fx, fxSuffix, mx, mxSuffix, cbrf, cbrfSuffix, cashPrefix, cash, cashSuffix)
+			exPrefix, forexRate, fxSuffix, moexRate, mxSuffix, cbrfRate, cbrfSuffix, cashPrefix, cashRate, cashSuffix)
 		m.ReplyMarkup = cashKeyboard
 	case "forex":
-		m.Text = fmt.Sprintln(exPrefix, fx, fxSuffix)
+		m.Text = fmt.Sprintln(exPrefix, forexRate, fxSuffix)
 	case "moex":
-		m.Text = fmt.Sprintln(exPrefix, mx, mxSuffix)
+		m.Text = fmt.Sprintln(exPrefix, moexRate, mxSuffix)
 	case "cbrf":
-		m.Text = fmt.Sprintln(exPrefix, cbrf, cbrfSuffix)
+		m.Text = fmt.Sprintln(exPrefix, cbrfRate, cbrfSuffix)
 	case "cash":
-		m.Text = fmt.Sprintf("%s\n%s\n%s", cashPrefix, cash, cashSuffix)
+		m.Text = fmt.Sprintf("%s\n%s\n%s", cashPrefix, cashRate, cashSuffix)
 		m.ReplyMarkup = cashKeyboard
 	case "help":
 		m.Text = helpCmd
@@ -178,7 +212,7 @@ func messageByCallbackData(chatId int64, data string) (m tgbotapi.MessageConfig)
 
 	switch data {
 	case "Buy":
-		b := cash.BuyBranches()
+		b := cashRate.BuyBranches()
 		cbb = make(map[int64]int)
 		cbb[chatId] = 0
 		m.Text = "*Buy cash*\n" + strings.Join(b[cbb[chatId]], "\n")
@@ -186,7 +220,7 @@ func messageByCallbackData(chatId int64, data string) (m tgbotapi.MessageConfig)
 			m.ReplyMarkup = cashBuyMoreKeyboard
 		}
 	case "BuyMore":
-		b := cash.BuyBranches()
+		b := cashRate.BuyBranches()
 		if cbb[chatId] < len(b) {
 			cbb[chatId] = cbb[chatId] + 1
 		}
@@ -199,7 +233,7 @@ func messageByCallbackData(chatId int64, data string) (m tgbotapi.MessageConfig)
 			m.ReplyMarkup = cashBuyMoreKeyboard
 		}
 	case "Sell":
-		b := cash.SellBranches()
+		b := cashRate.SellBranches()
 		csb = make(map[int64]int)
 		csb[chatId] = 0
 		m.Text = "*Sell cash*\n" + strings.Join(b[csb[chatId]], "\n")
@@ -207,7 +241,7 @@ func messageByCallbackData(chatId int64, data string) (m tgbotapi.MessageConfig)
 			m.ReplyMarkup = cashSellMoreKeyboard
 		}
 	case "SellMore":
-		b := cash.SellBranches()
+		b := cashRate.SellBranches()
 		if csb[chatId] < len(b) {
 			csb[chatId] = csb[chatId] + 1
 		}
@@ -226,30 +260,6 @@ func messageByCallbackData(chatId int64, data string) (m tgbotapi.MessageConfig)
 	}
 
 	return
-}
-
-func updateRates() {
-	t := time.Now()
-	wg := &sync.WaitGroup{}
-	fx.Update(wg)
-	mx.Update(wg)
-	cbrf.Update(wg)
-	cash.Update(wg)
-	wg.Wait()
-	log.Debugln("Elapsed time:", time.Since(t))
-
-	if _, err := fx.Rate(); err != nil {
-		log.Errorf("error by Forex: %v\n", err)
-	}
-	if _, err := mx.Rate(); err != nil {
-		log.Errorf("error by Moscow Exchange: %v", err)
-	}
-	if _, err := cbrf.Rate(); err != nil {
-		log.Errorf("error by Russian Central Bank: %v", err)
-	}
-	if _, _, _, _, _, _, err := cash.Rate(); err != nil {
-		log.Errorf("error by Exchange rates of cash: %v", err)
-	}
 }
 
 func setupLog(dbg bool) {

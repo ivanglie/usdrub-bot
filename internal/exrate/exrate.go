@@ -2,55 +2,36 @@ package exrate
 
 import (
 	"fmt"
-	"log"
 	"sync"
 )
 
-// Rate of exchange rate
 type Rate struct {
 	sync.RWMutex
-	rate     float64
-	err      error
-	rateFunc func() (float64, error)
+	rate float64
+	err  error
 }
 
-func NewRate(rateFunc func() (float64, error)) *Rate {
-	return &Rate{rateFunc: rateFunc}
+// New exchange rate.
+func NewRate(rate float64, err error) *Rate {
+	er := &Rate{}
+	er.Lock()
+	defer er.Unlock()
+	er.rate = rate
+	er.err = err
+
+	return er
 }
 
-// Update
-func (c *Rate) Update(wg *sync.WaitGroup) {
-	update := func() {
-		c.Lock()
-		defer c.Unlock()
-		c.rate, c.err = c.rateFunc()
-		if c.err != nil {
-			log.Println(c.err)
-		}
-	}
-
-	if wg == nil {
-		update()
-		return
-	}
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		update()
-	}()
+// Update exchange rate.
+func UpdateRate(f func() (float64, error)) *Rate {
+	r, err := f()
+	return NewRate(r, err)
 }
 
-// Get exchange rate
-func (c *Rate) Rate() (float64, error) {
-	c.RLock()
-	defer c.RUnlock()
-	return c.rate, c.err
-}
+// Get formatted exchange rate.
+func (er *Rate) String() string {
+	er.RLock()
+	defer er.RUnlock()
 
-// Get formatted exchange rate
-func (c *Rate) String() string {
-	c.RLock()
-	defer c.RUnlock()
-	return fmt.Sprintf("%.2f RUB", c.rate)
+	return fmt.Sprintf("%.2f RUB", er.rate)
 }
