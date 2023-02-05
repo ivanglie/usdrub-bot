@@ -1,25 +1,24 @@
 package exrate
 
 import (
-	"errors"
-	"sync"
 	"testing"
 	"time"
 
 	br "github.com/ivanglie/go-br-client"
 )
 
-func TestCashRate_dataRace(t *testing.T) {
-	c := NewCashRate(func() (*br.Rates, error) { return &br.Rates{}, nil })
-	go func() {
-		for {
-			c.Update(nil)
-		}
-	}()
+func TestNewCashRate(t *testing.T) {
+	if got := NewCashRate(&br.Rates{}, nil); got == nil {
+		t.Errorf("NewCashRate() = %v", got)
+	}
+}
 
-	for i := 0; i < 10; i++ {
-		c.Rate()
-		time.Sleep(100 * time.Millisecond)
+func TestCashRate_String(t *testing.T) {
+	r := &CashRate{}
+	r.branches = []br.Branch{{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 100.0, Sell: 200.0, Updated: time.Now()}}
+
+	if got := r.String(); len(got) == 0 {
+		t.Errorf("CashRate.String() = %v", got)
 	}
 }
 
@@ -91,21 +90,6 @@ func Test_findMma(t *testing.T) {
 	}
 }
 
-func TestNewCashRate(t *testing.T) {
-	if got := NewCashRate(func() (*br.Rates, error) { return &br.Rates{}, nil }); got == nil {
-		t.Errorf("NewCashRate() = %v", got)
-	}
-}
-
-func TestCashRate_String(t *testing.T) {
-	r := &CashRate{}
-	r.branches = []br.Branch{{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 100.0, Sell: 200.0, Updated: time.Now()}}
-
-	if got := r.String(); len(got) == 0 {
-		t.Errorf("CashRate.String() = %v", got)
-	}
-}
-
 func TestCashRate_BuyBranches(t *testing.T) {
 	b := []br.Branch{
 		{"b1", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
@@ -171,9 +155,4 @@ func TestCashRate_Rate(t *testing.T) {
 	if _, _, _, _, _, _, err := c.Rate(); err != nil {
 		t.Errorf("CashRate.Rate() error = %v", err)
 	}
-}
-
-func TestCashRate_Update(t *testing.T) {
-	c := &CashRate{rateFunc: func() (*br.Rates, error) { return nil, errors.New("error") }}
-	c.Update(&sync.WaitGroup{})
 }

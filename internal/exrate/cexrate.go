@@ -3,7 +3,6 @@ package exrate
 import (
 	"errors"
 	"fmt"
-	"log"
 	"sort"
 	"sync"
 
@@ -23,41 +22,17 @@ type CashRate struct {
 	sellMax      float64
 	sellAvg      float64
 	err          error
-	rateFunc     func() (*br.Rates, error)
 }
 
-func NewCashRate(rateFunc func() (*br.Rates, error)) *CashRate {
-	return &CashRate{rateFunc: rateFunc}
-}
-
-// Update currency exchange cash rate.
-func (c *CashRate) Update(wg *sync.WaitGroup) {
-	update := func() {
-		c.Lock()
-		defer c.Unlock()
-
-		var r *br.Rates
-		r, c.err = c.rateFunc()
-		if c.err != nil {
-			log.Println(c.err)
-			return
-		}
-
-		c.branches = r.Branches
-		c.buyMin, c.sellMin, c.buyMax, c.sellMax, c.buyAvg, c.sellAvg = findMma(c.branches)
-		c.buyBranches, c.sellBranches = buyBranches(c.branches), sellBranches(c.branches)
-	}
-
-	if wg == nil {
-		update()
-		return
-	}
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		update()
-	}()
+func NewCashRate(rates *br.Rates, err error) *CashRate {
+	r := &CashRate{}
+	r.Lock()
+	defer r.Unlock()
+	r.err = err
+	r.branches = rates.Branches
+	r.buyMin, r.sellMin, r.buyMax, r.sellMax, r.buyAvg, r.sellAvg = findMma(r.branches)
+	r.buyBranches, r.sellBranches = buyBranches(r.branches), sellBranches(r.branches)
+	return r
 }
 
 // Rate of currency exchange cash returns of buyMin, buyMax, buyAvg, sellMin, sellMax, sellAvg.
