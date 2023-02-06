@@ -86,14 +86,8 @@ func main() {
 	}
 
 	setupLog(opts.Dbg)
+	setLogger(log)
 	forex.Debug, moex.Debug, cbr.Debug, br.Debug, utils.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
-
-	tgbotapi.SetLogger(log)
-	forex.SetLogger(log)
-	cbr.SetLogger(log)
-	moex.SetLogger(log)
-	br.SetLogger(log)
-	utils.SetLogger(log)
 
 	forexRateCh = make(chan *exrate.Rate)
 	moexRateCh = make(chan *exrate.Rate)
@@ -276,4 +270,13 @@ func setupLog(dbg bool) {
 		return
 	}
 	log.SetLevel(logrus.ErrorLevel)
+}
+
+func setLogger(log *logrus.Logger) {
+	tgbotapi.SetLogger(log)
+	forex.SetLogger(log)
+	cbr.SetLogger(log)
+	moex.SetLogger(log)
+	br.SetLogger(log)
+	utils.SetLogger(log)
 }

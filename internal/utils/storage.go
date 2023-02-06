@@ -39,8 +39,7 @@ func Persist(user *tgbotapi.User) (err error) {
 	}
 
 	defer func() {
-		err := db.Close()
-		if err != nil {
+		if err := db.Close(); err != nil {
 			return
 		}
 	}()
@@ -56,8 +55,7 @@ func Persist(user *tgbotapi.User) (err error) {
 			return
 		}
 
-		err = b.Put(id, u)
-		if err != nil {
+		if err = b.Put(id, u); err != nil {
 			return
 		}
 

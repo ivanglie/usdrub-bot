@@ -26,8 +26,7 @@ func StartCmdOnSchedule(cmd func()) (err error) {
 	c := cron.New(cron.WithLocation(moscowTime))
 	defer c.Stop()
 
-	_, err = c.AddFunc(spec, cmd)
-	if err != nil {
+	if _, err = c.AddFunc(spec, cmd); err != nil {
 		return
 	}
 
