@@ -9,6 +9,10 @@ func TestNewRate(t *testing.T) {
 	if got := NewRate(100*rand.Float64(), nil); got == nil {
 		t.Errorf("NewRate() = %v", got)
 	}
+
+	if got := NewRate(0, nil); got.rate != 0 {
+		t.Errorf("NewRate() = %v", got)
+	}
 }
 
 func TestUpdateRate(t *testing.T) {

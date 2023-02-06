@@ -13,6 +13,10 @@ type Rate struct {
 
 // New exchange rate.
 func NewRate(rate float64, err error) *Rate {
+	if rate == 0 || err != nil {
+		return &Rate{}
+	}
+
 	er := &Rate{}
 	er.Lock()
 	defer er.Unlock()

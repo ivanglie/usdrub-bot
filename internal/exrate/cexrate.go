@@ -26,6 +26,10 @@ type CashRate struct {
 
 // New exchange rate of cash.
 func NewCashRate(rates *br.Rates, err error) *CashRate {
+	if rates == nil || err != nil {
+		return &CashRate{}
+	}
+
 	r := &CashRate{}
 	r.Lock()
 	defer r.Unlock()
@@ -33,6 +37,7 @@ func NewCashRate(rates *br.Rates, err error) *CashRate {
 	r.branches = rates.Branches
 	r.buyMin, r.sellMin, r.buyMax, r.sellMax, r.buyAvg, r.sellAvg = findMma(r.branches)
 	r.buyBranches, r.sellBranches = buyBranches(r.branches), sellBranches(r.branches)
+
 	return r
 }
 
@@ -136,7 +141,7 @@ func sellBranches(b []br.Branch) map[int][]string {
 	}(d, 5)
 }
 
-// Find min, max and avg
+// Find min, max and avg.
 func findMma(r []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
 	if len(r) == 0 {
 		return

@@ -11,6 +11,10 @@ func TestNewCashRate(t *testing.T) {
 	if got := NewCashRate(&br.Rates{}, nil); got == nil {
 		t.Errorf("NewCashRate() = %v", got)
 	}
+
+	if got := NewCashRate(nil, nil); got.branches != nil {
+		t.Errorf("NewCashRate() = %v", got)
+	}
 }
 
 func TestUpdateCashRate(t *testing.T) {
