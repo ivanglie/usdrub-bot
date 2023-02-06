@@ -1,7 +1,8 @@
-package storage
+package utils
 
 import (
 	"encoding/json"
+	"os"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -18,21 +19,33 @@ type User struct {
 func Persist(user *tgbotapi.User) (err error) {
 	id, err := json.Marshal(user.ID)
 	if err != nil {
-		return
-	}
-	usr := User{User: user, Date: time.Now().Local()}
-	u, err := json.Marshal(usr)
-	if err != nil {
+		log.Println(err)
 		return
 	}
 
-	db, err := bolt.Open("users.db", 0600, nil)
+	usr := User{User: user, Date: time.Now().Local()}
+	u, err := json.Marshal(usr)
 	if err != nil {
+		log.Println(err)
 		return
 	}
+
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	db, err := bolt.Open(wd+"/users.db", 0600, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	defer func() {
 		err := db.Close()
 		if err != nil {
+			log.Println(err)
 			return
 		}
 	}()
@@ -40,14 +53,19 @@ func Persist(user *tgbotapi.User) (err error) {
 	err = db.Update(func(tx *bolt.Tx) (err error) {
 		b, err := tx.CreateBucketIfNotExists([]byte("root"))
 		if err != nil {
+			log.Println(err)
 			return
 		}
+
 		b, err = b.CreateBucketIfNotExists([]byte("users"))
 		if err != nil {
+			log.Println(err)
 			return
 		}
+
 		err = b.Put(id, u)
 		if err != nil {
+			log.Println(err)
 			return
 		}
 
