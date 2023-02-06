@@ -8,7 +8,7 @@ import (
 )
 
 // StartCmdOnSchedule specified by cmd.
-func StartCmdOnSchedule(cmd func()) {
+func StartCmdOnSchedule(cmd func()) (err error) {
 	spec := os.Getenv("CRON_SPEC")
 	if spec == "" {
 		spec = "* * * * 1-5" // See https://crontab.guru/
@@ -20,7 +20,6 @@ func StartCmdOnSchedule(cmd func()) {
 
 	moscowTime, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
-		log.Println(err)
 		return
 	}
 
@@ -29,9 +28,10 @@ func StartCmdOnSchedule(cmd func()) {
 
 	_, err = c.AddFunc(spec, cmd)
 	if err != nil {
-		log.Println(err)
 		return
 	}
 
 	go c.Start()
+
+	return
 }

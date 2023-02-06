@@ -101,7 +101,9 @@ func main() {
 	cashRateCh = make(chan *exrate.CashRate)
 
 	updateRates()
-	utils.StartCmdOnSchedule(updateRates)
+	if err := utils.StartCmdOnSchedule(updateRates); err != nil {
+		log.Panic(err)
+	}
 
 	run()
 }
@@ -158,8 +160,7 @@ func run() {
 
 			switch update.Message.Command() {
 			case "start", "dashboard", "help":
-				err := utils.Persist(update.Message.From)
-				if err != nil {
+				if err := utils.Persist(update.Message.From); err != nil {
 					log.Error(err)
 				}
 			}

@@ -9,43 +9,38 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-// User data
+// User data.
 type User struct {
 	User *tgbotapi.User `json:"user"`
 	Date time.Time      `json:"date"`
 }
 
-// Persist data
+// Persist data.
 func Persist(user *tgbotapi.User) (err error) {
 	id, err := json.Marshal(user.ID)
 	if err != nil {
-		log.Println(err)
 		return
 	}
 
 	usr := User{User: user, Date: time.Now().Local()}
 	u, err := json.Marshal(usr)
 	if err != nil {
-		log.Println(err)
 		return
 	}
 
 	wd, err := os.Getwd()
 	if err != nil {
-		log.Println(err)
 		return
 	}
 
 	db, err := bolt.Open(wd+"/users.db", 0600, nil)
 	if err != nil {
-		log.Println(err)
 		return
 	}
 
 	defer func() {
 		err := db.Close()
 		if err != nil {
-			log.Println(err)
 			return
 		}
 	}()
@@ -53,19 +48,16 @@ func Persist(user *tgbotapi.User) (err error) {
 	err = db.Update(func(tx *bolt.Tx) (err error) {
 		b, err := tx.CreateBucketIfNotExists([]byte("root"))
 		if err != nil {
-			log.Println(err)
 			return
 		}
 
 		b, err = b.CreateBucketIfNotExists([]byte("users"))
 		if err != nil {
-			log.Println(err)
 			return
 		}
 
 		err = b.Put(id, u)
 		if err != nil {
-			log.Println(err)
 			return
 		}
 
