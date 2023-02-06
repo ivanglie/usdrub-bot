@@ -6,6 +6,7 @@ import (
 	"unsafe"
 
 	"github.com/ivanglie/usdrub-bot/internal/exrate"
+	"github.com/sirupsen/logrus"
 )
 
 func Test_setupLog(t *testing.T) {
@@ -30,6 +31,11 @@ func Test_setupLog(t *testing.T) {
 			setupLog(tt.args.dbg)
 		})
 	}
+}
+
+func Test_setLogger(t *testing.T) {
+	var log *logrus.Logger
+	setLogger(log)
 }
 
 func Test_messageByCommand(t *testing.T) {

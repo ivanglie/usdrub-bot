@@ -12,8 +12,7 @@ import (
 	forex "github.com/ivanglie/go-coingate-client"
 	moex "github.com/ivanglie/go-moex-client"
 	"github.com/ivanglie/usdrub-bot/internal/exrate"
-	"github.com/ivanglie/usdrub-bot/internal/scheduler"
-	"github.com/ivanglie/usdrub-bot/internal/storage"
+	"github.com/ivanglie/usdrub-bot/internal/utils"
 	flags "github.com/jessevdk/go-flags"
 	"github.com/sirupsen/logrus"
 )
@@ -87,13 +86,8 @@ func main() {
 	}
 
 	setupLog(opts.Dbg)
-	scheduler.Debug, forex.Debug, moex.Debug, cbr.Debug, br.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
-
-	tgbotapi.SetLogger(log)
-	forex.SetLogger(log)
-	cbr.SetLogger(log)
-	moex.SetLogger(log)
-	br.SetLogger(log)
+	setLogger(log)
+	forex.Debug, moex.Debug, cbr.Debug, br.Debug, utils.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
 
 	forexRateCh = make(chan *exrate.Rate)
 	moexRateCh = make(chan *exrate.Rate)
@@ -101,7 +95,9 @@ func main() {
 	cashRateCh = make(chan *exrate.CashRate)
 
 	updateRates()
-	scheduler.StartCmdOnSchedule(updateRates, log)
+	if err := utils.StartCmdOnSchedule(updateRates); err != nil {
+		log.Panic(err)
+	}
 
 	run()
 }
@@ -158,8 +154,7 @@ func run() {
 
 			switch update.Message.Command() {
 			case "start", "dashboard", "help":
-				err := storage.Persist(update.Message.From)
-				if err != nil {
+				if err := utils.Persist(update.Message.From); err != nil {
 					log.Error(err)
 				}
 			}
@@ -275,4 +270,13 @@ func setupLog(dbg bool) {
 		return
 	}
 	log.SetLevel(logrus.ErrorLevel)
+}
+
+func setLogger(log *logrus.Logger) {
+	tgbotapi.SetLogger(log)
+	forex.SetLogger(log)
+	cbr.SetLogger(log)
+	moex.SetLogger(log)
+	br.SetLogger(log)
+	utils.SetLogger(log)
 }
