@@ -38,4 +38,4 @@ jobs:
           run: |
             ssh ${{ secrets.USER }}@${{ secrets.HOST }} "
             echo ${{ secrets.PASSWORD }} | sudo -S docker load -i /usr/src/usdrub-bot/usdrub-bot.tar
-            export BOT_TOKEN=${{ secrets.BOT_TOKEN }} && echo ${{ secrets.PASSWORD }} | sudo -S docker compose -f /usr/src/usdrub-bot/docker-compose.yml up -d"
+            env BOT_TOKEN=${{ secrets.BOT_TOKEN }} && echo ${{ secrets.PASSWORD }} | sudo -S docker compose -f /usr/src/usdrub-bot/docker-compose.yml up -d"
