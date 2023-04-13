@@ -10,5 +10,5 @@ services:
     ports:
       - "18001:18001"
     environment:
-      - BOT_TOKEN=$${{ secrets.BOT_TOKEN }}
+      - BOT_TOKEN
       - CRON_SPEC=* 9-20 * * *

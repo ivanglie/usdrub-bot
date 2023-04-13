@@ -37,5 +37,6 @@ jobs:
         - name: Load and run docker container on remote host
           run: |
             ssh ${{ secrets.USER }}@${{ secrets.HOST }} "
+            export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
             echo ${{ secrets.PASSWORD }} | sudo -S docker load -i /usr/src/usdrub-bot/usdrub-bot.tar
             echo ${{ secrets.PASSWORD }} | sudo -S docker compose -f /usr/src/usdrub-bot/docker-compose.yml up -d"
