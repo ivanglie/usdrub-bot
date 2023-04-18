@@ -1,19 +1,23 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
-	"strings"
+	"strconv"
 	"time"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	br "github.com/ivanglie/go-br-client"
-	cbr "github.com/ivanglie/go-cbr-client"
-	forex "github.com/ivanglie/go-coingate-client"
-	moex "github.com/ivanglie/go-moex-client"
+	"github.com/go-telegram/bot"
+	"github.com/go-telegram/bot/models"
+	"github.com/go-telegram/ui/keyboard/inline"
+	"github.com/go-telegram/ui/paginator"
+	"github.com/ivanglie/go-br-client"
+	"github.com/ivanglie/go-cbr-client"
+	"github.com/ivanglie/go-coingate-client"
+	"github.com/ivanglie/go-moex-client"
 	"github.com/ivanglie/usdrub-bot/internal/exrate"
 	"github.com/ivanglie/usdrub-bot/internal/utils"
-	flags "github.com/jessevdk/go-flags"
+	"github.com/jessevdk/go-flags"
 	"github.com/sirupsen/logrus"
 )
 
@@ -39,34 +43,10 @@ var (
 
 	version = "unknown"
 
-	bot *tgbotapi.BotAPI
-
-	cashKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Buy cash", "Buy"),
-			tgbotapi.NewInlineKeyboardButtonData("Sell cash", "Sell"),
-			tgbotapi.NewInlineKeyboardButtonData("Help", "Help"),
-		),
-	)
-
-	cashBuyMoreKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("More", "BuyMore"),
-		),
-	)
-
-	cashSellMoreKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("More", "SellMore"),
-		),
-	)
-
 	forexRate,
 	moexRate,
 	cbrfRate *exrate.Rate
 	cashRate *exrate.CashRate
-
-	cbb, csb map[int64]int // Current Buy Branches (cbb) and Sell Branches (csb) for chat ID
 
 	forexRateCh,
 	moexRateCh,
@@ -87,7 +67,7 @@ func main() {
 
 	setupLog(opts.Dbg)
 	setLogger(log)
-	forex.Debug, moex.Debug, cbr.Debug, br.Debug, utils.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
+	coingate.Debug, moex.Debug, cbr.Debug, br.Debug, utils.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
 
 	forexRateCh = make(chan *exrate.Rate)
 	moexRateCh = make(chan *exrate.Rate)
@@ -99,14 +79,28 @@ func main() {
 		log.Panic(err)
 	}
 
-	run()
+	b, err := bot.New(opts.BotToken, []bot.Option{bot.WithDebug(), bot.WithDefaultHandler(dashboardHandler)}...)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/forex", bot.MatchTypeExact, forexHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/moex", bot.MatchTypeExact, moexHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/cbrf", bot.MatchTypeExact, cbrfHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/cash", bot.MatchTypeExact, cashHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/help", bot.MatchTypeExact, helpHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, dashboardHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/dashboard", bot.MatchTypeExact, dashboardHandler)
+
+	ctx := context.TODO()
+	b.Start(ctx)
 }
 
 func updateRates() {
 	t := time.Now()
 
 	go func() {
-		forexRateCh <- exrate.UpdateRate(func() (float64, error) { return forex.NewClient().GetRate("USD", "RUB") })
+		forexRateCh <- exrate.UpdateRate(func() (float64, error) { return coingate.NewClient().GetRate("USD", "RUB") })
 	}()
 
 	go func() {
@@ -129,132 +123,113 @@ func updateRates() {
 	log.Debugln("Elapsed time:", time.Since(t))
 }
 
-func run() {
-	var err error
-	bot, err = tgbotapi.NewBotAPI(opts.BotToken)
-	if err != nil {
-		log.Panic(err)
-	}
+func forexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   fmt.Sprintln(exPrefix, forexRate, fxSuffix),
+	})
+}
 
-	bot.Debug = opts.Dbg
-	log.Debugf("Authorized on account %s", bot.Self.UserName)
+func moexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   fmt.Sprintln(exPrefix, moexRate, mxSuffix),
+	})
+}
 
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
+func cbrfHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   fmt.Sprintln(exPrefix, cbrfRate, cbrfSuffix),
+	})
+}
 
-	updates := bot.GetUpdatesChan(u)
+func cashHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	kb := inline.New(b).
+		Row().
+		Button("Buy cash", []byte("buy"), onBuy).
+		Button("Sell cash", []byte("sell"), onSell).
+		Button("Help", []byte("help"), onHelp)
 
-	for update := range updates {
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID:      update.Message.Chat.ID,
+		Text:        fmt.Sprintf("%s\n%s\n%s", cashPrefix, cashRate, cashSuffix),
+		ReplyMarkup: kb,
+	})
+}
 
-		msg := tgbotapi.MessageConfig{}
-		if update.Message != nil {
-			if !update.Message.IsCommand() {
-				continue
-			}
+func helpHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   helpCmd,
+	})
+}
 
-			switch update.Message.Command() {
-			case "start", "dashboard", "help":
-				if err := utils.Persist(update.Message.From); err != nil {
-					log.Error(err)
-				}
-			}
+func dashboardHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	kb := inline.New(b).
+		Row().
+		Button("Buy cash", []byte("buy"), onBuy).
+		Button("Sell cash", []byte("sell"), onSell).
+		Button("Help", []byte("help"), onHelp)
 
-			msg = messageByCommand(update.Message.Chat.ID, update.Message.Command())
-		} else if update.CallbackQuery != nil {
-			callback := tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)
-			if _, err := bot.Request(callback); err != nil {
-				log.Error(err)
-			}
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text: fmt.Sprintf("<b>%s</b>\n%s %s\n%s %s\n%s %s\n<b>%s</b>\n%s\n%s",
+			exPrefix, forexRate, fxSuffix, moexRate, mxSuffix, cbrfRate, cbrfSuffix, cashPrefix, cashRate, cashSuffix),
+		ParseMode:   models.ParseModeHTML,
+		ReplyMarkup: kb,
+	})
 
-			msg = messageByCallbackData(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
-		}
-
-		msg.ParseMode = tgbotapi.ModeMarkdown
-		if _, err := bot.Send(msg); err != nil {
-			log.Error(err)
-		}
+	if err := utils.Persist(update.Message.From); err != nil {
+		log.Error(err)
 	}
 }
 
-func messageByCommand(chatId int64, command string) (m tgbotapi.MessageConfig) {
-	m.ChatID = chatId
-
-	switch command {
-	case "start", "dashboard":
-		m.Text = fmt.Sprintf("*%s*\n%s %s\n%s %s\n%s %s\n*%s*\n%s\n%s",
-			exPrefix, forexRate, fxSuffix, moexRate, mxSuffix, cbrfRate, cbrfSuffix, cashPrefix, cashRate, cashSuffix)
-		m.ReplyMarkup = cashKeyboard
-	case "forex":
-		m.Text = fmt.Sprintln(exPrefix, forexRate, fxSuffix)
-	case "moex":
-		m.Text = fmt.Sprintln(exPrefix, moexRate, mxSuffix)
-	case "cbrf":
-		m.Text = fmt.Sprintln(exPrefix, cbrfRate, cbrfSuffix)
-	case "cash":
-		m.Text = fmt.Sprintf("%s\n%s\n%s", cashPrefix, cashRate, cashSuffix)
-		m.ReplyMarkup = cashKeyboard
-	case "help":
-		m.Text = helpCmd
-	default:
-		m.Text = unknownCmd
+func onBuy(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
+	bb := cashRate.BuyBranches()
+	s := []string{}
+	for i, v := range bb {
+		i++
+		fs := fmt.Sprintf("%d) %s", i, v)
+		s = append(s, bot.EscapeMarkdownUnescaped(fs))
 	}
 
-	return
+	opts := []paginator.Option{
+		paginator.PerPage(5),
+		paginator.WithCloseButton("Close"),
+	}
+
+	log.Debugln(s)
+	p := paginator.New(s, opts...)
+
+	p.Show(ctx, b, strconv.FormatInt(mes.Chat.ID, 10))
 }
 
-func messageByCallbackData(chatId int64, data string) (m tgbotapi.MessageConfig) {
-	m.ChatID = chatId
-
-	switch data {
-	case "Buy":
-		b := cashRate.BuyBranches()
-		cbb = make(map[int64]int)
-		cbb[chatId] = 0
-		m.Text = "*Buy cash*\n" + strings.Join(b[cbb[chatId]], "\n")
-		if len(b) > 1 {
-			m.ReplyMarkup = cashBuyMoreKeyboard
-		}
-	case "BuyMore":
-		b := cashRate.BuyBranches()
-		if cbb[chatId] < len(b) {
-			cbb[chatId] = cbb[chatId] + 1
-		}
-
-		if b[cbb[chatId]] != nil {
-			m.Text = "*Buy cash*\n" + strings.Join(b[cbb[chatId]], "\n")
-		}
-
-		if cbb[chatId] != len(b)-1 {
-			m.ReplyMarkup = cashBuyMoreKeyboard
-		}
-	case "Sell":
-		b := cashRate.SellBranches()
-		csb = make(map[int64]int)
-		csb[chatId] = 0
-		m.Text = "*Sell cash*\n" + strings.Join(b[csb[chatId]], "\n")
-		if len(b) > 1 {
-			m.ReplyMarkup = cashSellMoreKeyboard
-		}
-	case "SellMore":
-		b := cashRate.SellBranches()
-		if csb[chatId] < len(b) {
-			csb[chatId] = csb[chatId] + 1
-		}
-
-		if b[csb[chatId]] != nil {
-			m.Text = "*Sell cash*\n" + strings.Join(b[csb[chatId]], "\n")
-		}
-
-		if csb[chatId] != len(b)-1 {
-			m.ReplyMarkup = cashSellMoreKeyboard
-		}
-	case "Help":
-		m.Text = helpCmd
-	default:
-		m.Text = data
+func onSell(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
+	sb := cashRate.SellBranches()
+	s := []string{}
+	for i, v := range sb {
+		i++
+		fs := fmt.Sprintf("%d) %s", i, v)
+		s = append(s, bot.EscapeMarkdownUnescaped(fs))
 	}
 
-	return
+	opts := []paginator.Option{
+		paginator.PerPage(5),
+		paginator.WithCloseButton("Close"),
+	}
+
+	log.Debugln(s)
+	p := paginator.New(s, opts...)
+
+	p.Show(ctx, b, strconv.FormatInt(mes.Chat.ID, 10))
+}
+
+func onHelp(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: mes.Chat.ID,
+		Text:   helpCmd,
+	})
 }
 
 func setupLog(dbg bool) {
@@ -273,8 +248,7 @@ func setupLog(dbg bool) {
 }
 
 func setLogger(log *logrus.Logger) {
-	tgbotapi.SetLogger(log)
-	forex.SetLogger(log)
+	coingate.SetLogger(log)
 	cbr.SetLogger(log)
 	moex.SetLogger(log)
 	br.SetLogger(log)

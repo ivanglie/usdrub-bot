@@ -3,7 +3,7 @@ package moex
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 const (
@@ -30,6 +30,7 @@ type currency struct {
 	Charsetinfo struct {
 		Name string `json:"name"`
 	} `json:"charsetinfo,omitempty"`
+
 	Securities []struct {
 		Secid       string      `json:"SECID"`
 		Boardid     string      `json:"BOARDID"`
@@ -51,6 +52,7 @@ type currency struct {
 		Latname     string      `json:"LATNAME"`
 		Lotdivider  int         `json:"LOTDIVIDER"`
 	} `json:"securities,omitempty"`
+
 	Marketdata []struct {
 		Highbid               interface{} `json:"HIGHBID"`
 		Biddepth              interface{} `json:"BIDDEPTH"`
@@ -100,6 +102,20 @@ type currency struct {
 	} `json:"marketdata,omitempty"`
 }
 
+// String returns the string representation of the currency.
+func (s *Currency) String() string {
+	if len(s.values) == 0 {
+		return ""
+	}
+
+	b, err := json.Marshal(s.values)
+	if err != nil {
+		return ""
+	}
+
+	return string(b)
+}
+
 // Current exchange rate for two currencies.
 // This endpoint is public, authentication is not required.
 // Example: EURRUB, USDRUB, etc.
@@ -113,15 +129,17 @@ func getRate(code string, fetch fetchFunction) (float64, error) {
 	url := fmt.Sprintf("%s%s%s", baseURL,
 		"/engines/currency/markets/selt/securities.json?iss.only=securities,marketdata&lang=en&iss.meta=off&iss.json=extended",
 		"&securities=CETS:"+code)
+
 	resp, err := fetch(url)
 	if err != nil {
 		return res, err
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return res, err
 	}
+
 	defer resp.Body.Close()
 
 	var c *Currency = &Currency{}
@@ -129,20 +147,25 @@ func getRate(code string, fetch fetchFunction) (float64, error) {
 	if err != nil {
 		return res, err
 	}
+
 	if c == (&Currency{}) {
-		return res, fmt.Errorf("MOEX error: c is zero")
+		return res, fmt.Errorf("error: c is zero")
 	}
+
 	if len(c.values) < 2 {
-		return res, fmt.Errorf("MOEX error: length of c.values less than 2")
+		return res, fmt.Errorf("error: length of c.values less than 2")
 	}
+
 	val := c.values[1]
 	if val.Marketdata == nil {
-		return res, fmt.Errorf("MOEX error: val.Marketdata is zero")
+		return res, fmt.Errorf("error: val.Marketdata is zero")
 	}
+
 	md := val.Marketdata
 	if len(md) == 0 {
-		return 0, fmt.Errorf("MOEX error: length of md equals 0")
+		return 0, fmt.Errorf("error: length of md equals 0")
 	}
+
 	res = md[0].Last
 	return res, nil
 }

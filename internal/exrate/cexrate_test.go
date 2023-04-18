@@ -114,16 +114,8 @@ func TestCashRate_BuyBranches(t *testing.T) {
 	c.buyBranches = buyBranches(b)
 	bb := c.BuyBranches()
 
-	if got := len(bb); got != 2 {
+	if got := len(bb); got != 6 {
 		t.Errorf("len(c.BuyBranches()) = %v, want %v", got, 2)
-	}
-
-	if got := len(bb[0]); got != 5 {
-		t.Errorf("len(c.BuyBranches()[0]) = %v, want %v", got, 5)
-	}
-
-	if got := len(bb[1]); got != 1 {
-		t.Errorf("len(c.BuyBranches()[1]) = %v, want %v", got, 1)
 	}
 }
 
@@ -142,16 +134,8 @@ func TestCashRate_SellBranches(t *testing.T) {
 	c.sellBranches = sellBranches(b)
 	sb := c.SellBranches()
 
-	if got := len(sb); got != 2 {
+	if got := len(sb); got != 7 {
 		t.Errorf("len(c.SellBranches()) = %v, want %v", got, 2)
-	}
-
-	if got := len(sb[0]); got != 5 {
-		t.Errorf("len(c.SellBranches()[0]) = %v, want %v", got, 5)
-	}
-
-	if got := len(sb[1]); got != 2 {
-		t.Errorf("len(c.SellBranches()[1]) = %v, want %v", got, 2)
 	}
 }
 
