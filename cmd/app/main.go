@@ -23,7 +23,6 @@ import (
 
 const (
 	helpCmd    = "Just use /forex, /moex, /cbrf, /cash and /dashboard command."
-	unknownCmd = "Unknown command"
 	exPrefix   = "1 US Dollar equals"
 	cashPrefix = "Exchange rates of cash"
 	fxSuffix   = "by Forex"
@@ -79,7 +78,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	b, err := bot.New(opts.BotToken, []bot.Option{bot.WithDebug(), bot.WithDefaultHandler(dashboardHandler)}...)
+	b, err := bot.New(opts.BotToken, bot.WithDebug())
 	if err != nil {
 		log.Panic(err)
 	}
@@ -166,7 +165,7 @@ func helpHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 }
 
 func dashboardHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	kb := inline.New(b).
+	kb := inline.New(b, inline.NoDeleteAfterClick()).
 		Row().
 		Button("Buy cash", []byte("buy"), onBuy).
 		Button("Sell cash", []byte("sell"), onSell).
@@ -190,8 +189,8 @@ func onBuy(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 	s := []string{}
 	for i, v := range bb {
 		i++
-		fs := fmt.Sprintf("%d) %s", i, v)
-		s = append(s, bot.EscapeMarkdownUnescaped(fs))
+		v = fmt.Sprintf("*%d* %s", i, bot.EscapeMarkdownUnescaped(v))
+		s = append(s, v)
 	}
 
 	opts := []paginator.Option{
@@ -200,7 +199,7 @@ func onBuy(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 	}
 
 	log.Debugln(s)
-	p := paginator.New(s, opts...)
+	p := paginator.New(append([]string{"*Buy cash*"}, s...), opts...)
 
 	p.Show(ctx, b, strconv.FormatInt(mes.Chat.ID, 10))
 }
@@ -210,8 +209,8 @@ func onSell(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 	s := []string{}
 	for i, v := range sb {
 		i++
-		fs := fmt.Sprintf("%d) %s", i, v)
-		s = append(s, bot.EscapeMarkdownUnescaped(fs))
+		v := fmt.Sprintf("*%d* %s", i, bot.EscapeMarkdownUnescaped(v))
+		s = append(s, v)
 	}
 
 	opts := []paginator.Option{
@@ -220,7 +219,7 @@ func onSell(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 	}
 
 	log.Debugln(s)
-	p := paginator.New(s, opts...)
+	p := paginator.New(append([]string{"*Sell cash*"}, s...), opts...)
 
 	p.Show(ctx, b, strconv.FormatInt(mes.Chat.ID, 10))
 }
