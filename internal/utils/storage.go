@@ -5,18 +5,18 @@ import (
 	"os"
 	"time"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/go-telegram/bot/models"
 	bolt "go.etcd.io/bbolt"
 )
 
 // User data.
 type User struct {
-	User *tgbotapi.User `json:"user"`
-	Date time.Time      `json:"date"`
+	User *models.User `json:"user"`
+	Date time.Time    `json:"date"`
 }
 
 // Persist data.
-func Persist(user *tgbotapi.User) (err error) {
+func Persist(user *models.User) (err error) {
 	id, err := json.Marshal(user.ID)
 	if err != nil {
 		return

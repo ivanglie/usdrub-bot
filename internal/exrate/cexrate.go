@@ -13,8 +13,8 @@ import (
 type CashRate struct {
 	sync.RWMutex
 	branches     []br.Branch
-	buyBranches  map[int][]string
-	sellBranches map[int][]string
+	buyBranches  []string
+	sellBranches []string
 	buyMin       float64
 	buyMax       float64
 	buyAvg       float64
@@ -66,79 +66,43 @@ func (c *CashRate) String() string {
 }
 
 // BuyBranches represented as string.
-func (c *CashRate) BuyBranches() map[int][]string {
+func (c *CashRate) BuyBranches() []string {
 	c.RLock()
 	defer c.RUnlock()
 	return c.buyBranches
 }
 
 // SellBranches represented as string.
-func (c *CashRate) SellBranches() map[int][]string {
+func (c *CashRate) SellBranches() []string {
 	c.RLock()
 	defer c.RUnlock()
 	return c.sellBranches
 }
 
-func buyBranches(b []br.Branch) map[int][]string {
-	sort.Sort(sort.Reverse(br.ByBuySorter(b)))
-	d := []string{}
-	i := 0
-	for _, v := range b {
-		if v.Buy != 0 {
-			i++
-			d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i, v.Buy, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
+func buyBranches(branch []br.Branch) []string {
+	sort.Sort(sort.Reverse(br.ByBuySorter(branch)))
+
+	s := []string{}
+	for _, b := range branch {
+		if b.Buy != 0 {
+			s = append(s, fmt.Sprintf("%.2f RUB (%v): %s, %s, %s", b.Buy, b.Updated.Format("02.01.2006 15:04"), b.Bank, b.Address, b.Subway))
 		}
 	}
-	return func(b []string, n int) map[int][]string {
-		m := make(map[int][]string)
-		j := 0
-		for i := range b {
-			if i%n == 0 {
-				j = i + n
 
-				var s []string
-				if j < len(b) {
-					s = b[i:j]
-				} else {
-					s = b[i:]
-				}
-
-				m[(j-n)/n] = s
-			}
-		}
-		return m
-	}(d, 5)
+	return s
 }
 
-func sellBranches(b []br.Branch) map[int][]string {
-	sort.Sort(br.BySellSorter(b))
-	d := []string{}
-	i := 0
-	for _, v := range b {
+func sellBranches(branch []br.Branch) []string {
+	sort.Sort(br.BySellSorter(branch))
+
+	s := []string{}
+	for _, v := range branch {
 		if v.Sell != 0 {
-			i++
-			d = append(d, fmt.Sprintf("%d) %.2f RUB (_%v_): %s, %s, %s", i, v.Sell, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
+			s = append(s, fmt.Sprintf("%.2f RUB (%v): %s, %s, %s", v.Sell, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
 		}
 	}
-	return func(b []string, n int) map[int][]string {
-		m := make(map[int][]string)
-		j := 0
-		for i := range b {
-			if i%n == 0 {
-				j = i + n
 
-				var s []string
-				if j < len(b) {
-					s = b[i:j]
-				} else {
-					s = b[i:]
-				}
-
-				m[(j-n)/n] = s
-			}
-		}
-		return m
-	}(d, 5)
+	return s
 }
 
 // Find min, max and avg.

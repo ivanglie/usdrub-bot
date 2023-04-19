@@ -2,12 +2,17 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/ivanglie/go-moex-client.svg)](https://pkg.go.dev/github.com/ivanglie/go-moex-client)
 [![Test](https://github.com/ivanglie/go-moex-client/actions/workflows/test.yml/badge.svg)](https://github.com/ivanglie/go-moex-client/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/ivanglie/go-moex-client/branch/master/graph/badge.svg?token=W918OB580J)](https://codecov.io/gh/ivanglie/go-moex-client)
 
 Golang client for the [Moscow Exchange ISS API](https://www.moex.com/a2920).
 
 ## Example
 
-First, ensure the library is installed and up to date by running ```go get -u github.com/ivanglie/go-moex-client```.
+First, ensure the library is installed and up to date by running 
+
+```
+go get -u github.com/ivanglie/go-moex-client
+```
 
 This is a very simple app that just displays Chinese Yuan Renminbi to Russian Ruble conversion.
 

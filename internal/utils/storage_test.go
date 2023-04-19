@@ -3,11 +3,11 @@ package utils
 import (
 	"testing"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/go-telegram/bot/models"
 )
 
 func TestPersist(t *testing.T) {
-	usr := &tgbotapi.User{ID: 1, FirstName: "Test", LastName: "Test"}
+	usr := &models.User{ID: 1, FirstName: "Test", LastName: "Test"}
 	if err := Persist(usr); err != nil {
 		t.Errorf("Persist() error = %v", err)
 	}
