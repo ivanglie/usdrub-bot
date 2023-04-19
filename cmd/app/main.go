@@ -78,7 +78,12 @@ func main() {
 		log.Panic(err)
 	}
 
-	b, err := bot.New(opts.BotToken, bot.WithDebug())
+	bOpts := []bot.Option{}
+	if opts.Dbg {
+		bOpts = append(bOpts, bot.WithDebug())
+	}
+
+	b, err := bot.New(opts.BotToken, bOpts...)
 	if err != nil {
 		log.Panic(err)
 	}
