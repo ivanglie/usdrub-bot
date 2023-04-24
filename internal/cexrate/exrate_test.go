@@ -1,30 +1,53 @@
-package exrate
+package cexrate
 
 import (
+	"errors"
 	"testing"
 	"time"
 
-	br "github.com/ivanglie/go-br-client"
+	"github.com/ivanglie/go-br-client"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestNewCashRate(t *testing.T) {
-	if got := NewCashRate(&br.Rates{}, nil); got == nil {
-		t.Errorf("NewCashRate() = %v", got)
+func Test_rate_Update(t *testing.T) {
+	r := Get()
+	r.f = func() (*br.Rates, error) {
+		rates := &br.Rates{
+			Currency: br.USD,
+			City:     br.Moscow,
+			Branches: []br.Branch{
+				{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 49.0, Sell: 51.0, Updated: time.Now()},
+				{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 50.0, Sell: 52.0, Updated: time.Now()},
+				{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 51.0, Sell: 53.0, Updated: time.Now()},
+			},
+		}
+
+		return rates, nil
 	}
 
-	if got := NewCashRate(nil, nil); got.branches != nil {
-		t.Errorf("NewCashRate() = %v", got)
+	r.Update()
+	assert.Equal(t, 3, len(r.branches))
+
+	// Error
+	r.f = func() (*br.Rates, error) {
+		rates := &br.Rates{
+			Currency: br.USD,
+			City:     br.Moscow,
+			Branches: []br.Branch{
+				{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 49.0, Sell: 51.0, Updated: time.Now()},
+				{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 50.0, Sell: 52.0, Updated: time.Now()},
+			},
+		}
+
+		return rates, errors.New("error")
 	}
+
+	r.Update()
+	assert.Equal(t, 3, len(r.branches))
 }
 
-func TestUpdateCashRate(t *testing.T) {
-	if got := UpdateCashRate(func() (*br.Rates, error) { return &br.Rates{Currency: br.USD, City: br.Moscow}, nil }); got == nil {
-		t.Errorf("UpdateCashRate() = %v", got)
-	}
-}
-
-func TestCashRate_String(t *testing.T) {
-	r := &CashRate{}
+func Test_rate_String(t *testing.T) {
+	r := &rate{}
 	r.branches = []br.Branch{{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 100.0, Sell: 200.0, Updated: time.Now()}}
 
 	if got := r.String(); len(got) == 0 {
@@ -100,7 +123,7 @@ func Test_findMma(t *testing.T) {
 	}
 }
 
-func TestCashRate_BuyBranches(t *testing.T) {
+func Test_rate_BuyBranches(t *testing.T) {
 	b := []br.Branch{
 		{"b1", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 		{"b2", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
@@ -110,7 +133,7 @@ func TestCashRate_BuyBranches(t *testing.T) {
 		{"b6", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 	}
 
-	c := &CashRate{}
+	c := &rate{}
 	c.buyBranches = buyBranches(b)
 	bb := c.BuyBranches()
 
@@ -119,7 +142,7 @@ func TestCashRate_BuyBranches(t *testing.T) {
 	}
 }
 
-func TestCashRate_SellBranches(t *testing.T) {
+func Test_rate_SellBranches(t *testing.T) {
 	b := []br.Branch{
 		{"b1", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 		{"b2", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
@@ -130,23 +153,11 @@ func TestCashRate_SellBranches(t *testing.T) {
 		{"b7", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 	}
 
-	c := &CashRate{}
+	c := &rate{}
 	c.sellBranches = sellBranches(b)
 	sb := c.SellBranches()
 
 	if got := len(sb); got != 7 {
 		t.Errorf("len(c.SellBranches()) = %v, want %v", got, 2)
-	}
-}
-
-func TestCashRate_Rate(t *testing.T) {
-	c := &CashRate{buyMin: 0, buyMax: 0, buyAvg: 0, sellMin: 0, sellMax: 0, sellAvg: 0}
-	if _, _, _, _, _, _, err := c.Rate(); err == nil {
-		t.Errorf("CashRate.Rate() error = %v", err)
-	}
-
-	c = &CashRate{buyMin: 0, buyMax: 0, buyAvg: 0, sellMin: 0, sellMax: 1, sellAvg: 0}
-	if _, _, _, _, _, _, err := c.Rate(); err != nil {
-		t.Errorf("CashRate.Rate() error = %v", err)
 	}
 }
