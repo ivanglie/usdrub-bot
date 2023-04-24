@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/go-telegram/bot"
@@ -15,6 +16,7 @@ import (
 	"github.com/ivanglie/go-cbr-client"
 	"github.com/ivanglie/go-coingate-client"
 	"github.com/ivanglie/go-moex-client"
+	"github.com/ivanglie/usdrub-bot/internal/cexrate"
 	"github.com/ivanglie/usdrub-bot/internal/exrate"
 	"github.com/ivanglie/usdrub-bot/internal/utils"
 	"github.com/jessevdk/go-flags"
@@ -22,13 +24,7 @@ import (
 )
 
 const (
-	helpCmd    = "Just use /forex, /moex, /cbrf, /cash and /dashboard command."
-	exPrefix   = "1 US Dollar equals"
-	cashPrefix = "Exchange rates of cash"
-	fxSuffix   = "by Forex"
-	mxSuffix   = "by Moscow Exchange"
-	cbrfSuffix = "by Russian Central Bank"
-	cashSuffix = "in branches in Moscow, Russia by Banki.ru"
+	helpCmd = "Just use /forex, /moex, /cbrf, /cash and /dashboard command."
 )
 
 var (
@@ -41,16 +37,6 @@ var (
 	}
 
 	version = "unknown"
-
-	forexRate,
-	moexRate,
-	cbrfRate *exrate.Rate
-	cashRate *exrate.CashRate
-
-	forexRateCh,
-	moexRateCh,
-	cbrfRateCh chan *exrate.Rate
-	cashRateCh chan *exrate.CashRate
 )
 
 func main() {
@@ -68,12 +54,30 @@ func main() {
 	setLogger(log)
 	coingate.Debug, moex.Debug, cbr.Debug, br.Debug, utils.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
 
-	forexRateCh = make(chan *exrate.Rate)
-	moexRateCh = make(chan *exrate.Rate)
-	cbrfRateCh = make(chan *exrate.Rate)
-	cashRateCh = make(chan *exrate.CashRate)
+	updateRates := func() {
+		t := time.Now()
+
+		type RateInterface interface {
+			Update()
+		}
+
+		rates := []RateInterface{exrate.Get(), cexrate.Get()}
+
+		wg := sync.WaitGroup{}
+		for _, r := range rates {
+			wg.Add(1)
+			go func(r RateInterface) {
+				defer wg.Done()
+				r.Update()
+			}(r)
+		}
+
+		wg.Wait()
+		log.Debugln("Elapsed time:", time.Since(t))
+	}
 
 	updateRates()
+
 	if err := utils.StartCmdOnSchedule(updateRates); err != nil {
 		log.Panic(err)
 	}
@@ -100,51 +104,24 @@ func main() {
 	b.Start(ctx)
 }
 
-func updateRates() {
-	t := time.Now()
-
-	go func() {
-		forexRateCh <- exrate.UpdateRate(func() (float64, error) { return coingate.NewClient().GetRate("USD", "RUB") })
-	}()
-
-	go func() {
-		moexRateCh <- exrate.UpdateRate(func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) })
-	}()
-
-	go func() {
-		cbrfRateCh <- exrate.UpdateRate(func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) })
-	}()
-
-	go func() {
-		cashRateCh <- exrate.UpdateCashRate(func() (*br.Rates, error) { return br.NewClient().Rates(br.USD, br.Moscow) })
-	}()
-
-	cashRate = <-cashRateCh
-	cbrfRate = <-cbrfRateCh
-	moexRate = <-moexRateCh
-	forexRate = <-forexRateCh
-
-	log.Debugln("Elapsed time:", time.Since(t))
-}
-
 func forexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
-		Text:   fmt.Sprintln(exPrefix, forexRate, fxSuffix),
+		Text:   fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.Forex)),
 	})
 }
 
 func moexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
-		Text:   fmt.Sprintln(exPrefix, moexRate, mxSuffix),
+		Text:   fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.MOEX)),
 	})
 }
 
 func cbrfHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
-		Text:   fmt.Sprintln(exPrefix, cbrfRate, cbrfSuffix),
+		Text:   fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.CBRF)),
 	})
 }
 
@@ -157,7 +134,7 @@ func cashHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:      update.Message.Chat.ID,
-		Text:        fmt.Sprintf("%s\n%s\n%s", cashPrefix, cashRate, cashSuffix),
+		Text:        fmt.Sprintf("%s\n%s\n%s", cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix),
 		ReplyMarkup: kb,
 	})
 }
@@ -178,9 +155,9 @@ func dashboardHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
-		Text: fmt.Sprintf("<b>%s</b>\n%s %s\n%s %s\n%s %s\n<b>%s</b>\n%s\n%s",
-			exPrefix, forexRate, fxSuffix, moexRate, mxSuffix, cbrfRate, cbrfSuffix, cashPrefix, cashRate, cashSuffix),
-		ParseMode:   models.ParseModeHTML,
+		Text: fmt.Sprintf("*%s*\n%s*%s*\n%s\n%s", exrate.Prefix, bot.EscapeMarkdownUnescaped(exrate.Get().String()),
+			cexrate.Prefix, bot.EscapeMarkdownUnescaped(cexrate.Get().String()), bot.EscapeMarkdownUnescaped(cexrate.Suffix)),
+		ParseMode:   models.ParseModeMarkdown,
 		ReplyMarkup: kb,
 	})
 
@@ -190,7 +167,7 @@ func dashboardHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 }
 
 func onBuy(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
-	bb := cashRate.BuyBranches()
+	bb := cexrate.Get().BuyBranches()
 	s := []string{}
 	for i, v := range bb {
 		i++
@@ -210,7 +187,7 @@ func onBuy(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 }
 
 func onSell(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
-	sb := cashRate.SellBranches()
+	sb := cexrate.Get().SellBranches()
 	s := []string{}
 	for i, v := range sb {
 		i++

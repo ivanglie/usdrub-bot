@@ -1,31 +1,43 @@
 package exrate
 
 import (
-	"math/rand"
+	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestNewRate(t *testing.T) {
-	if got := NewRate(100*rand.Float64(), nil); got == nil {
-		t.Errorf("NewRate() = %v", got)
-	}
+func Test_rate_Update(t *testing.T) {
+	r := Get()
+	r.Value(Forex).f = func() (float64, error) { return 50.0, nil }
 
-	if got := NewRate(0, nil); got.rate != 0 {
-		t.Errorf("NewRate() = %v", got)
-	}
+	r.Update()
+	assert.Equal(t, 50.0, r.Value(Forex).value)
+
+	// Error
+	r.Value(Forex).f = func() (float64, error) { return 51.0, errors.New("error") }
+
+	r.Update()
+	assert.Equal(t, 50.0, r.Value(Forex).value)
 }
 
-func TestUpdateRate(t *testing.T) {
-	if got := UpdateRate(func() (float64, error) { return rand.Float64(), nil }); got.rate == 0 || got.err != nil {
-		t.Errorf("UpdateRate() = %v", got)
-	}
+func Test_rate_String(t *testing.T) {
+	r := Get()
+	r.Value(Forex).value = 50.0
+	r.Value(MOEX).value = 51.0
+	r.Value(CBRF).value = 52.0
+
+	t.Log(r)
+
+	assert.Equal(t, "50.00 RUB by Forex\n51.00 RUB by Moscow Exchange\n52.00 RUB by Russian Central Bank\n", r.String())
 }
 
-func TestRate_String(t *testing.T) {
-	r := &Rate{}
-	r.rate = 200.0
+func Test_rates_Value(t *testing.T) {
+	r := Get()
+	r.Value(Forex).value = 50.0
 
-	if got := r.String(); len(got) == 0 {
-		t.Errorf("Rate.String() = %v", got)
-	}
+	assert.Equal(t, 50.0, r.Value(Forex).value)
+
+	// Error
+	assert.Nil(t, r.Value("Phorex"))
 }
