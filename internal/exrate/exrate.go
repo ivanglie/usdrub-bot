@@ -2,6 +2,7 @@ package exrate
 
 import (
 	"fmt"
+	"log"
 	"sync"
 	"time"
 
@@ -35,6 +36,8 @@ func (r *rate) update() {
 
 	v, err := r.f()
 	if err != nil || v == 0 {
+		log.Printf("[ERROR] %s: value=%f, error=%v", r.name, v, err)
+
 		r.err = err
 		r.errDate = time.Now()
 		return
