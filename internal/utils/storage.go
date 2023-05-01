@@ -9,13 +9,13 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-// User data.
+// User.
 type User struct {
 	User *models.User `json:"user"`
 	Date time.Time    `json:"date"`
 }
 
-// Persist data.
+// Persist user.
 func Persist(user *models.User) (err error) {
 	id, err := json.Marshal(user.ID)
 	if err != nil {
@@ -37,12 +37,7 @@ func Persist(user *models.User) (err error) {
 	if err != nil {
 		return
 	}
-
-	defer func() {
-		if err := db.Close(); err != nil {
-			return
-		}
-	}()
+	defer db.Close()
 
 	err = db.Update(func(tx *bolt.Tx) (err error) {
 		b, err := tx.CreateBucketIfNotExists([]byte("root"))
