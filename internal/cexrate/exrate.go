@@ -2,6 +2,7 @@ package cexrate
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"sync"
 	"time"
@@ -54,15 +55,17 @@ func (r *rate) Update() {
 	r.Lock()
 	defer r.Unlock()
 
-	rates, err := r.f()
-	if rates == nil || err != nil {
+	v, err := r.f()
+	if v == nil || err != nil {
+		log.Printf("[ERROR] %s: value=%v, error=%v", r.name, v, err)
+
 		r.err = err
 		r.errDate = time.Now()
 		return
 	}
 
 	r.err = nil
-	r.branches = rates.Branches
+	r.branches = v.Branches
 	r.buyMin, r.sellMin, r.buyMax, r.sellMax, r.buyAvg, r.sellAvg = findMma(r.branches)
 	r.buyBranches, r.sellBranches = buyBranches(r.branches), sellBranches(r.branches)
 }

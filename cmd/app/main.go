@@ -106,22 +106,25 @@ func main() {
 
 func forexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.Message.Chat.ID,
-		Text:   fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.Forex)),
+		ChatID:           update.Message.Chat.ID,
+		Text:             fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.Forex)),
+		ReplyToMessageID: getReplyMessageID(update.Message),
 	})
 }
 
 func moexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.Message.Chat.ID,
-		Text:   fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.MOEX)),
+		ChatID:           update.Message.Chat.ID,
+		Text:             fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.MOEX)),
+		ReplyToMessageID: getReplyMessageID(update.Message),
 	})
 }
 
 func cbrfHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.Message.Chat.ID,
-		Text:   fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.CBRF)),
+		ChatID:           update.Message.Chat.ID,
+		Text:             fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.CBRF)),
+		ReplyToMessageID: getReplyMessageID(update.Message),
 	})
 }
 
@@ -133,16 +136,18 @@ func cashHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		Button("Help", []byte("help"), onHelp)
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID:      update.Message.Chat.ID,
-		Text:        fmt.Sprintf("%s\n%s\n%s", cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix),
-		ReplyMarkup: kb,
+		ChatID:           update.Message.Chat.ID,
+		Text:             fmt.Sprintf("%s\n%s\n%s", cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix),
+		ReplyMarkup:      kb,
+		ReplyToMessageID: getReplyMessageID(update.Message),
 	})
 }
 
 func helpHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.Message.Chat.ID,
-		Text:   helpCmd,
+		ChatID:           update.Message.Chat.ID,
+		Text:             helpCmd,
+		ReplyToMessageID: getReplyMessageID(update.Message),
 	})
 }
 
@@ -155,10 +160,12 @@ func dashboardHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
-		Text: fmt.Sprintf("*%s*\n%s*%s*\n%s\n%s", exrate.Prefix, bot.EscapeMarkdownUnescaped(exrate.Get().String()),
+		Text: fmt.Sprintf("*%s*\n%s*%s*\n%s\n%s",
+			exrate.Prefix, bot.EscapeMarkdownUnescaped(exrate.Get().String()),
 			cexrate.Prefix, bot.EscapeMarkdownUnescaped(cexrate.Get().String()), bot.EscapeMarkdownUnescaped(cexrate.Suffix)),
-		ParseMode:   models.ParseModeMarkdown,
-		ReplyMarkup: kb,
+		ParseMode:        models.ParseModeMarkdown,
+		ReplyMarkup:      kb,
+		ReplyToMessageID: getReplyMessageID(update.Message),
 	})
 
 	if err := utils.Persist(update.Message.From); err != nil {
@@ -208,9 +215,19 @@ func onSell(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 
 func onHelp(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: mes.Chat.ID,
-		Text:   helpCmd,
+		ChatID:           mes.Chat.ID,
+		Text:             helpCmd,
+		ReplyToMessageID: getReplyMessageID(mes),
 	})
+}
+
+// getReplyMessageID returns message to reply to.
+func getReplyMessageID(message *models.Message) int {
+	if message.Chat.Type != "private" {
+		return message.ID
+	}
+
+	return 0
 }
 
 func setupLog(dbg bool) {
