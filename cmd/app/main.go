@@ -92,13 +92,13 @@ func main() {
 		log.Panic(err)
 	}
 
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/forex", bot.MatchTypeExact, forexHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/moex", bot.MatchTypeExact, moexHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/cbrf", bot.MatchTypeExact, cbrfHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/cash", bot.MatchTypeExact, cashHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/help", bot.MatchTypeExact, helpHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, dashboardHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/dashboard", bot.MatchTypeExact, dashboardHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/forex", bot.MatchTypePrefix, forexHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/moex", bot.MatchTypePrefix, moexHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/cbrf", bot.MatchTypePrefix, cbrfHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/cash", bot.MatchTypePrefix, cashHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/help", bot.MatchTypePrefix, helpHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypePrefix, dashboardHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/dashboard", bot.MatchTypePrefix, dashboardHandler)
 
 	ctx := context.TODO()
 	b.Start(ctx)
