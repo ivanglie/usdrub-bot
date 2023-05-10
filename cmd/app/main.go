@@ -160,10 +160,10 @@ func dashboardHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
-		Text: fmt.Sprintf("*%s*\n%s*%s*\n%s\n%s",
-			exrate.Prefix, bot.EscapeMarkdownUnescaped(exrate.Get().String()),
-			cexrate.Prefix, bot.EscapeMarkdownUnescaped(cexrate.Get().String()), bot.EscapeMarkdownUnescaped(cexrate.Suffix)),
-		ParseMode:        models.ParseModeMarkdown,
+		Text: fmt.Sprintf("<b>%s</b>\n%s<b>%s</b>\n%s\n%s",
+			exrate.Prefix, exrate.Get().String(),
+			cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix),
+		ParseMode:        models.ParseModeHTML,
 		ReplyMarkup:      kb,
 		ReplyToMessageID: getReplyMessageID(update.Message),
 	})
