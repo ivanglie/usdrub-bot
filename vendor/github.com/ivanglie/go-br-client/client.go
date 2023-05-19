@@ -59,35 +59,28 @@ const (
 )
 
 var (
-	Debug bool              // Debug mode. Default: false.
-	Crnc  Currency = USD    // Default currency.
-	Ct    City     = Moscow // Default city.
+	// Debug mode. Default: false.
+	Debug bool
 )
-
-// URL type.
-type URL struct {
-	buildFunc func() string
-}
-
-// build returns a URL.
-func (u *URL) build() string {
-	return u.buildFunc()
-}
 
 // Client.
 type Client struct {
+	currency  Currency
+	city      City
+	buildURL  func() string
 	collector *colly.Collector
-	url       *URL
 }
 
 // NewClient creates a new client.
 func NewClient() *Client {
-	c := &Client{
-		collector: colly.NewCollector(colly.AllowURLRevisit()),
-		url: &URL{buildFunc: func() string {
-			return fmt.Sprintf(baseURL, strings.ToLower(string(Crnc)), Ct)
-		}},
+	c := &Client{}
+
+	c.currency = USD
+	c.city = Moscow
+	c.buildURL = func() string {
+		return fmt.Sprintf(baseURL, strings.ToLower(string(c.currency)), c.city)
 	}
+	c.collector = colly.NewCollector(colly.AllowURLRevisit())
 
 	t := &http.Transport{}
 	t.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
@@ -101,15 +94,15 @@ func NewClient() *Client {
 // Rates by currency (USD, if empty) and city (Moscow, if empty).
 func (c *Client) Rates(crnc Currency, ct City) (*Rates, error) {
 	if len(crnc) > 0 {
-		Crnc = crnc
+		c.currency = crnc
 	}
 
 	if len(ct) > 0 {
-		Ct = ct
+		c.city = ct
 	}
 
 	if Debug {
-		log.Printf("Fetching the currency rate from %s", c.url.build())
+		log.Printf("Fetching the currency rate from %s", c.buildURL())
 	}
 
 	r := &Rates{Currency: crnc, City: ct}
@@ -190,7 +183,7 @@ func (c *Client) parseBranches() ([]Branch, error) {
 		log.Println(err)
 	})
 
-	err = c.collector.Visit(c.url.build())
+	err = c.collector.Visit(c.buildURL())
 
 	return b, err
 }
