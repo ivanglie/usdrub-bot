@@ -97,7 +97,7 @@ func main() {
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/cbrf", bot.MatchTypePrefix, cbrfHandler)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/cash", bot.MatchTypePrefix, cashHandler)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/help", bot.MatchTypePrefix, helpHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypePrefix, dashboardHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypePrefix, startHandler)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/dashboard", bot.MatchTypePrefix, dashboardHandler)
 
 	ctx := context.TODO()
@@ -105,6 +105,8 @@ func main() {
 }
 
 func forexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	logInfo("Request forex", update.Message)
+
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:           update.Message.Chat.ID,
 		Text:             fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.Forex)),
@@ -113,6 +115,8 @@ func forexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 }
 
 func moexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	logInfo("Request moex", update.Message)
+
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:           update.Message.Chat.ID,
 		Text:             fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.MOEX)),
@@ -121,6 +125,8 @@ func moexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 }
 
 func cbrfHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	logInfo("Request cbrf", update.Message)
+
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:           update.Message.Chat.ID,
 		Text:             fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.CBRF)),
@@ -129,6 +135,8 @@ func cbrfHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 }
 
 func cashHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	logInfo("Request cash", update.Message)
+
 	kb := inline.New(b).
 		Row().
 		Button("Buy cash", []byte("buy"), onBuy).
@@ -144,6 +152,8 @@ func cashHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 }
 
 func helpHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	logInfo("Request help", update.Message)
+
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:           update.Message.Chat.ID,
 		Text:             helpCmd,
@@ -151,7 +161,15 @@ func helpHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	})
 }
 
+func startHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	logInfo("Request start", update.Message)
+
+	dashboardHandler(ctx, b, update)
+}
+
 func dashboardHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	logInfo("Request dashboard", update.Message)
+
 	kb := inline.New(b, inline.NoDeleteAfterClick()).
 		Row().
 		Button("Buy cash", []byte("buy"), onBuy).
@@ -167,13 +185,11 @@ func dashboardHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		ReplyMarkup:      kb,
 		ReplyToMessageID: getReplyMessageID(update.Message),
 	})
-
-	if err := utils.Persist(update.Message.From); err != nil {
-		log.Error(err)
-	}
 }
 
 func onBuy(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
+	logInfo("Request onBuy", mes)
+
 	bb := cexrate.Get().BuyBranches()
 	s := []string{}
 	for i, v := range bb {
@@ -194,6 +210,8 @@ func onBuy(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 }
 
 func onSell(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
+	logInfo("Request onSell", mes)
+
 	sb := cexrate.Get().SellBranches()
 	s := []string{}
 	for i, v := range sb {
@@ -214,6 +232,8 @@ func onSell(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 }
 
 func onHelp(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
+	logInfo("Request onHelp", mes)
+
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:           mes.Chat.ID,
 		Text:             helpCmd,
@@ -230,6 +250,49 @@ func getReplyMessageID(message *models.Message) int {
 	return 0
 }
 
+// logInfo logs info about message.
+func logInfo(info string, mes *models.Message) {
+	log.Infoln(info)
+
+	user := mes.From
+	if user == nil {
+		return
+	}
+
+	log.Infof("User"+
+		" (id: %d,"+
+		" is_bot: %t,"+
+		" first_name: %s,"+
+		" last_name: %s,"+
+		" username: %s,"+
+		" language_code: %s,"+
+		" is_premium: %t,"+
+		" added_to_attachment_menu: %t,"+
+		" can_join_groups: %t,"+
+		" can_read_all_group_messages: %t,"+
+		" support_inline_queries: %t)",
+		user.ID, user.IsBot, user.FirstName, user.LastName, user.Username, user.LanguageCode, user.IsPremium,
+		user.AddedToAttachmentMenu, user.CanJoinGroups, user.CanReadAllGroupMessages, user.SupportInlineQueries)
+
+	chat := &mes.Chat
+	if chat == nil {
+		return
+	}
+
+	log.Infof("Chat"+
+		" (id: %d,"+
+		" type: %s,"+
+		" title: %s,"+
+		" bio: %s,"+
+		" description: %s,"+
+		" invite_link: %s,"+
+		" username: %s,"+
+		" first_name: %s,"+
+		" last_name: %s)",
+		chat.ID, chat.Type, chat.Title, chat.Bio, chat.Description, chat.InviteLink, chat.Username, chat.FirstName,
+		chat.LastName)
+}
+
 func setupLog(dbg bool) {
 	log = logrus.New()
 	log.SetOutput(os.Stdout)
@@ -242,7 +305,7 @@ func setupLog(dbg bool) {
 		log.SetLevel(logrus.DebugLevel)
 		return
 	}
-	log.SetLevel(logrus.ErrorLevel)
+	log.SetLevel(logrus.InfoLevel)
 }
 
 func setLogger(log *logrus.Logger) {
