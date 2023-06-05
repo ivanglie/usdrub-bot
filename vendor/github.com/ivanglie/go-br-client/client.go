@@ -12,10 +12,10 @@ import (
 )
 
 const (
-	// Example: https://www.banki.ru/products/currency/cash/usd/moskva/
+	// Example: https://www.banki.ru/products/currency/cash/usd/moskva/.
 	baseURL = "https://www.banki.ru/products/currency/cash/%s/%s/"
 
-	// Currency
+	// Currency.
 	USD Currency = "USD"
 	EUR Currency = "EUR"
 	GBP Currency = "GBP"
@@ -25,7 +25,7 @@ const (
 	CZK Currency = "CZK"
 	PLN Currency = "PLN"
 
-	// City
+	// City.
 	Barnaul         City = "barnaul"
 	Voronezh        City = "voronezh"
 	Volgograd       City = "volgograd"
@@ -58,43 +58,51 @@ const (
 	Chelyabinsk     City = "chelyabinsk"
 )
 
+var (
+	// Debug mode. Default: false.
+	Debug bool
+)
+
+// Client.
 type Client struct {
+	currency  Currency
+	city      City
+	buildURL  func() string
 	collector *colly.Collector
-	url       string
 }
 
+// NewClient creates a new client.
 func NewClient() *Client {
-	c := colly.NewCollector()
+	c := &Client{}
+
+	c.currency = USD
+	c.city = Moscow
+	c.buildURL = func() string {
+		return fmt.Sprintf(baseURL, strings.ToLower(string(c.currency)), c.city)
+	}
+	c.collector = colly.NewCollector(colly.AllowURLRevisit())
 
 	t := &http.Transport{}
 	t.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
 
-	c.WithTransport(t)
-	c.AllowURLRevisit = true
+	c.collector.WithTransport(t)
+	extensions.RandomUserAgent(c.collector)
 
-	extensions.RandomUserAgent(c)
-
-	return &Client{c, ""}
+	return c
 }
-
-var Debug bool
 
 // Rates by currency (USD, if empty) and city (Moscow, if empty).
 func (c *Client) Rates(crnc Currency, ct City) (*Rates, error) {
-	if len(crnc) == 0 {
-		crnc = USD
+	if len(crnc) > 0 {
+		c.currency = crnc
 	}
 
-	if len(ct) == 0 {
-		ct = Moscow
-	}
-
-	if len(c.url) == 0 { // for tests
-		c.url = fmt.Sprintf(baseURL, strings.ToLower(string(crnc)), ct)
+	if len(ct) > 0 {
+		c.city = ct
 	}
 
 	if Debug {
-		log.Printf("Fetching the currency rate from %s", c.url)
+		log.Printf("Fetching the currency rate from %s", c.buildURL())
 	}
 
 	r := &Rates{Currency: crnc, City: ct}
@@ -165,7 +173,9 @@ func (c *Client) parseBranches() ([]Branch, error) {
 	})
 
 	c.collector.OnRequest(func(r *colly.Request) {
-		log.Printf("UserAgent: %s", r.Headers.Get("User-Agent"))
+		if Debug {
+			log.Printf("UserAgent: %s", r.Headers.Get("User-Agent"))
+		}
 	})
 
 	c.collector.OnError(func(r *colly.Response, e error) {
@@ -173,7 +183,7 @@ func (c *Client) parseBranches() ([]Branch, error) {
 		log.Println(err)
 	})
 
-	err = c.collector.Visit(c.url)
+	err = c.collector.Visit(c.buildURL())
 
 	return b, err
 }
