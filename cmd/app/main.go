@@ -18,7 +18,9 @@ import (
 	"github.com/ivanglie/go-moex-client"
 	"github.com/ivanglie/usdrub-bot/internal/cexrate"
 	"github.com/ivanglie/usdrub-bot/internal/exrate"
-	"github.com/ivanglie/usdrub-bot/internal/utils"
+	"github.com/ivanglie/usdrub-bot/internal/logger"
+	"github.com/ivanglie/usdrub-bot/internal/scheduler"
+
 	"github.com/jessevdk/go-flags"
 	"github.com/sirupsen/logrus"
 )
@@ -52,7 +54,7 @@ func main() {
 
 	setupLog(opts.Dbg)
 	setLogger(log)
-	coingate.Debug, moex.Debug, cbr.Debug, br.Debug, utils.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
+	coingate.Debug, moex.Debug, cbr.Debug, br.Debug, logger.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
 
 	updateRates := func() {
 		t := time.Now()
@@ -78,7 +80,7 @@ func main() {
 
 	updateRates()
 
-	if err := utils.StartCmdOnSchedule(updateRates); err != nil {
+	if err := scheduler.StartCmdOnSchedule(updateRates); err != nil {
 		log.Panic(err)
 	}
 
@@ -301,10 +303,12 @@ func setupLog(dbg bool) {
 		FullTimestamp:          true,
 		TimestampFormat:        time.RFC3339,
 	})
+
 	if dbg {
 		log.SetLevel(logrus.DebugLevel)
 		return
 	}
+
 	log.SetLevel(logrus.InfoLevel)
 }
 
@@ -313,5 +317,5 @@ func setLogger(log *logrus.Logger) {
 	cbr.SetLogger(log)
 	moex.SetLogger(log)
 	br.SetLogger(log)
-	utils.SetLogger(log)
+	logger.SetLogger(log)
 }

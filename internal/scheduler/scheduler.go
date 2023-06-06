@@ -1,9 +1,11 @@
-package utils
+package scheduler
 
 import (
+	"log"
 	"os"
 	"time"
 
+	"github.com/ivanglie/usdrub-bot/internal/logger"
 	"github.com/robfig/cron/v3"
 )
 
@@ -14,8 +16,8 @@ func StartCmdOnSchedule(cmd func()) (err error) {
 		spec = "* * * * 1-5" // See https://crontab.guru/
 	}
 
-	if Debug {
-		log.Printf("Cron spec = %s\n", spec)
+	if logger.Debug {
+		log.Printf("[DEBUG] Cron spec = %s\n", spec)
 	}
 
 	moscowTime, err := time.LoadLocation("Europe/Moscow")

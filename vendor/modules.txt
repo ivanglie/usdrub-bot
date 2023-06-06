@@ -46,6 +46,8 @@ github.com/golang/groupcache/lru
 # github.com/golang/protobuf v1.4.2
 ## explicit; go 1.9
 github.com/golang/protobuf/proto
+# github.com/google/go-cmp v0.5.8
+## explicit; go 1.13
 # github.com/ivanglie/go-br-client v0.0.3
 ## explicit; go 1.19
 github.com/ivanglie/go-br-client
@@ -73,7 +75,7 @@ github.com/robfig/cron/v3
 # github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca
 ## explicit
 github.com/saintfish/chardet
-# github.com/sirupsen/logrus v1.9.0
+# github.com/sirupsen/logrus v1.9.3
 ## explicit; go 1.13
 github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.7.1
