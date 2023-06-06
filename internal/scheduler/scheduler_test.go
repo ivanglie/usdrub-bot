@@ -1,9 +1,13 @@
-package utils
+package scheduler
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/ivanglie/usdrub-bot/internal/logger"
+)
 
 func TestStartCmdOnSchedule(t *testing.T) {
-	Debug = true
+	logger.Debug = true
 	if err := StartCmdOnSchedule(func() {}); err != nil {
 		t.Errorf("StartCmdOnSchedule() error = %v", err)
 	}

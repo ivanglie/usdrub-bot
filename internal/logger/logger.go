@@ -1,7 +1,8 @@
-package utils
+package logger
 
 import (
 	"errors"
+	"io"
 	stdlog "log"
 	"os"
 )
@@ -13,7 +14,7 @@ type Logger interface {
 }
 
 var (
-	log   Logger = stdlog.New(os.Stderr, "", stdlog.LstdFlags)
+	log   Logger = stdlog.New(io.MultiWriter(os.Stdout, os.Stderr), "", stdlog.LstdFlags)
 	Debug bool
 )
 
@@ -22,6 +23,8 @@ func SetLogger(logger Logger) error {
 	if logger == nil {
 		return errors.New("logger is nil")
 	}
+
 	log = logger
+
 	return nil
 }
