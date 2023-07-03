@@ -101,10 +101,6 @@ func buyBranches(b []br.Branch) []string {
 
 	s := []string{}
 	for _, v := range b {
-		if v.Buy == 0 {
-			return s
-		}
-
 		s = append(s, fmt.Sprintf("%.2f RUB (%v): %s, %s", v.Buy, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Subway))
 	}
 
@@ -117,10 +113,6 @@ func sellBranches(b []br.Branch) []string {
 
 	s := []string{}
 	for _, v := range b {
-		if v.Sell == 0 {
-			return s
-		}
-
 		s = append(s, fmt.Sprintf("%.2f RUB (%v): %s, %s", v.Sell, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Subway))
 	}
 
@@ -129,10 +121,6 @@ func sellBranches(b []br.Branch) []string {
 
 // findMma returns min, max and average values of buy and sell rates.
 func findMma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
-	if len(b) == 0 {
-		return
-	}
-
 	btotal, stotal := float64(0), float64(0)
 
 	bb, sb := []br.Branch{}, []br.Branch{}
