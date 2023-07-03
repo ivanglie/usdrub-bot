@@ -1,17 +1,13 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
-	"strconv"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
-	"github.com/go-telegram/ui/keyboard/inline"
-	"github.com/go-telegram/ui/paginator"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/ivanglie/go-br-client"
 	"github.com/ivanglie/go-cbr-client"
 	"github.com/ivanglie/go-coingate-client"
@@ -37,6 +33,14 @@ var (
 		BotToken string `long:"bottoken" env:"BOT_TOKEN" description:"Telegram API Token"`
 		CronSpec string `long:"cronspec" env:"CRON_SPEC" description:"Cron spec"`
 	}
+
+	kb = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("Buy cash", "Buy"),
+			tgbotapi.NewInlineKeyboardButtonData("Sell cash", "Sell"),
+			tgbotapi.NewInlineKeyboardButtonData("Help", "Help"),
+		),
+	)
 
 	version = "unknown"
 )
@@ -84,215 +88,225 @@ func main() {
 		log.Panic(err)
 	}
 
-	bOpts := []bot.Option{}
-	if opts.Dbg {
-		bOpts = append(bOpts, bot.WithDebug())
-	}
-
-	b, err := bot.New(opts.BotToken, bOpts...)
+	bot, err := tgbotapi.NewBotAPI(opts.BotToken)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/forex", bot.MatchTypePrefix, forexHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/moex", bot.MatchTypePrefix, moexHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/cbrf", bot.MatchTypePrefix, cbrfHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/cash", bot.MatchTypePrefix, cashHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/help", bot.MatchTypePrefix, helpHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypePrefix, startHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/dashboard", bot.MatchTypePrefix, dashboardHandler)
+	bot.Debug = opts.Dbg
 
-	ctx := context.TODO()
-	b.Start(ctx)
+	log.Debugf("Authorized on account %s", bot.Self.UserName)
+
+	u := tgbotapi.NewUpdate(0)
+	u.Timeout = 60
+
+	updates := bot.GetUpdatesChan(u)
+
+	for update := range updates {
+		if update.Message != nil {
+
+			if !update.Message.IsCommand() {
+				continue
+			}
+
+			switch update.Message.Command() {
+			case "forex":
+				forex(bot, update)
+			case "moex":
+				moexHandler(bot, update)
+			case "cbrf":
+				cbrf(bot, update)
+			case "cash":
+				cash(bot, update)
+			case "help":
+				help(bot, update)
+			case "start":
+				start(bot, update)
+			case "dashboard":
+				dashboard(bot, update)
+			default:
+				log.Warnf("Unknown command %q", update.Message.Command())
+			}
+		}
+
+		if update.CallbackQuery != nil {
+			switch update.CallbackQuery.Data {
+			case "Buy":
+				onBuy(bot, update.CallbackQuery)
+			case "Sell":
+				onSell(bot, update.CallbackQuery)
+			case "Help":
+				onHelp(bot, update.CallbackQuery)
+			default:
+				log.Warnf("Unknown callback %q", update.CallbackQuery.Data)
+			}
+		}
+	}
 }
 
-func forexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	logInfo("Request forex", update.Message)
+func forex(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	log.Infof("Forex request from %s", update.Message.From)
 
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID:           update.Message.Chat.ID,
-		Text:             fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.Forex)),
-		ReplyToMessageID: getReplyMessageID(update.Message),
-	})
+	msg := tgbotapi.NewMessage(
+		update.Message.Chat.ID,
+		fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.Forex)),
+	)
+
+	msg.ParseMode = tgbotapi.ModeHTML
+	msg.ReplyToMessageID = getReplyMessageID(update.Message)
+
+	bot.Send(msg)
 }
 
-func moexHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	logInfo("Request moex", update.Message)
+func moexHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	log.Infof("Moex request from %s", update.Message.From)
 
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID:           update.Message.Chat.ID,
-		Text:             fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.MOEX)),
-		ReplyToMessageID: getReplyMessageID(update.Message),
-	})
+	msg := tgbotapi.NewMessage(
+		update.Message.Chat.ID,
+		fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.MOEX)),
+	)
+
+	msg.ParseMode = tgbotapi.ModeHTML
+	msg.ReplyToMessageID = getReplyMessageID(update.Message)
+
+	bot.Send(msg)
 }
 
-func cbrfHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	logInfo("Request cbrf", update.Message)
+func cbrf(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	log.Infof("Cbrf request from %s", update.Message.From)
 
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID:           update.Message.Chat.ID,
-		Text:             fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.CBRF)),
-		ReplyToMessageID: getReplyMessageID(update.Message),
-	})
+	msg := tgbotapi.NewMessage(
+		update.Message.Chat.ID,
+		fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.CBRF)),
+	)
+
+	msg.ParseMode = tgbotapi.ModeHTML
+	msg.ReplyToMessageID = getReplyMessageID(update.Message)
+
+	bot.Send(msg)
 }
 
-func cashHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	logInfo("Request cash", update.Message)
+func cash(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	log.Infof("Cash request from %s", update.Message.From)
 
-	kb := inline.New(b).
-		Row().
-		Button("Buy cash", []byte("buy"), onBuy).
-		Button("Sell cash", []byte("sell"), onSell).
-		Button("Help", []byte("help"), onHelp)
+	msg := tgbotapi.NewMessage(
+		update.Message.Chat.ID,
+		fmt.Sprintf("<b>%s</b>\n%s\n%s", cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix),
+	)
 
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID:           update.Message.Chat.ID,
-		Text:             fmt.Sprintf("%s\n%s\n%s", cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix),
-		ReplyMarkup:      kb,
-		ReplyToMessageID: getReplyMessageID(update.Message),
-	})
+	msg.ParseMode = tgbotapi.ModeHTML
+	msg.ReplyToMessageID = getReplyMessageID(update.Message)
+	msg.ReplyMarkup = &kb
+
+	bot.Send(msg)
 }
 
-func helpHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	logInfo("Request help", update.Message)
+func help(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	log.Infof("Help request from %s", update.Message.From)
 
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID:           update.Message.Chat.ID,
-		Text:             helpCmd,
-		ReplyToMessageID: getReplyMessageID(update.Message),
-	})
+	msg := tgbotapi.NewMessage(
+		update.Message.Chat.ID,
+		helpCmd,
+	)
+
+	msg.ParseMode = tgbotapi.ModeHTML
+	msg.ReplyToMessageID = getReplyMessageID(update.Message)
+
+	bot.Send(msg)
 }
 
-func startHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	logInfo("Request start", update.Message)
+func start(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	log.Infof("Start request from %s", update.Message.From)
 
-	dashboardHandler(ctx, b, update)
+	dashboard(bot, update)
 }
 
-func dashboardHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	logInfo("Request dashboard", update.Message)
+func dashboard(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	log.Infof("Dashboard request from %s", update.Message.From)
 
-	kb := inline.New(b, inline.NoDeleteAfterClick()).
-		Row().
-		Button("Buy cash", []byte("buy"), onBuy).
-		Button("Sell cash", []byte("sell"), onSell).
-		Button("Help", []byte("help"), onHelp)
-
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.Message.Chat.ID,
-		Text: fmt.Sprintf("<b>%s</b>\n%s<b>%s</b>\n%s\n%s",
+	msg := tgbotapi.NewMessage(
+		update.Message.Chat.ID,
+		fmt.Sprintf("<b>%s</b>\n%s<b>%s</b>\n%s\n%s",
 			exrate.Prefix, exrate.Get().String(),
 			cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix),
-		ParseMode:        models.ParseModeHTML,
-		ReplyMarkup:      kb,
-		ReplyToMessageID: getReplyMessageID(update.Message),
-	})
+	)
+
+	msg.ParseMode = tgbotapi.ModeHTML
+	msg.ReplyToMessageID = getReplyMessageID(update.Message)
+	msg.ReplyMarkup = &kb
+
+	bot.Send(msg)
 }
 
-func onBuy(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
-	logInfo("Request onBuy", mes)
+func onBuy(bot *tgbotapi.BotAPI, cq *tgbotapi.CallbackQuery) {
+	log.Infof("OnBuy request from %s", cq.From)
 
 	bb := cexrate.Get().BuyBranches()
 	s := []string{}
 	for i, v := range bb {
 		i++
-		v = fmt.Sprintf("*%d* %s", i, bot.EscapeMarkdownUnescaped(v))
+		v = fmt.Sprintf("<b>%d</b> %s", i, v)
 		s = append(s, v)
 	}
 
-	opts := []paginator.Option{
-		paginator.PerPage(2),
-		paginator.WithCloseButton("Close"),
-	}
-
 	log.Debugln(s)
-	p := paginator.New(append([]string{"*Buy cash*"}, s...), opts...)
 
-	p.Show(ctx, b, strconv.FormatInt(mes.Chat.ID, 10))
+	msg := tgbotapi.NewMessage(
+		cq.Message.Chat.ID,
+		strings.Join(append([]string{"<b>Buy cash</b>"}, s...), "\n"),
+	)
+
+	msg.ParseMode = tgbotapi.ModeHTML
+	msg.ReplyToMessageID = getReplyMessageID(cq.Message)
+
+	bot.Send(msg)
 }
 
-func onSell(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
-	logInfo("Request onSell", mes)
+func onSell(bot *tgbotapi.BotAPI, cq *tgbotapi.CallbackQuery) {
+	log.Infof("OnSell request from %s", cq.From)
 
 	sb := cexrate.Get().SellBranches()
 	s := []string{}
 	for i, v := range sb {
 		i++
-		v := fmt.Sprintf("*%d* %s", i, bot.EscapeMarkdownUnescaped(v))
+		v := fmt.Sprintf("<b>%d</b> %s", i, v)
 		s = append(s, v)
 	}
 
-	opts := []paginator.Option{
-		paginator.PerPage(2),
-		paginator.WithCloseButton("Close"),
-	}
-
 	log.Debugln(s)
-	p := paginator.New(append([]string{"*Sell cash*"}, s...), opts...)
 
-	p.Show(ctx, b, strconv.FormatInt(mes.Chat.ID, 10))
+	msg := tgbotapi.NewMessage(
+		cq.Message.Chat.ID,
+		strings.Join(append([]string{"<b>Sell cash</b>"}, s...), "\n"),
+	)
+
+	msg.ParseMode = tgbotapi.ModeHTML
+	msg.ReplyToMessageID = getReplyMessageID(cq.Message)
+
+	bot.Send(msg)
 }
 
-func onHelp(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
-	logInfo("Request onHelp", mes)
+func onHelp(bot *tgbotapi.BotAPI, cq *tgbotapi.CallbackQuery) {
+	log.Infof("OnHelp request from %s", cq.From)
 
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID:           mes.Chat.ID,
-		Text:             helpCmd,
-		ReplyToMessageID: getReplyMessageID(mes),
-	})
+	msg := tgbotapi.NewMessage(
+		cq.Message.Chat.ID,
+		helpCmd,
+	)
+
+	msg.ParseMode = tgbotapi.ModeHTML
+	msg.ReplyToMessageID = getReplyMessageID(cq.Message)
+
+	bot.Send(msg)
 }
 
 // getReplyMessageID returns message to reply to.
-func getReplyMessageID(message *models.Message) int {
+func getReplyMessageID(message *tgbotapi.Message) int {
 	if message.Chat.Type != "private" {
-		return message.ID
+		return message.MessageID
 	}
 
 	return 0
-}
-
-// logInfo logs info about message.
-func logInfo(info string, mes *models.Message) {
-	log.Infoln(info)
-
-	user := mes.From
-	if user == nil {
-		return
-	}
-
-	log.Infof("User"+
-		" (id: %d,"+
-		" is_bot: %t,"+
-		" first_name: %s,"+
-		" last_name: %s,"+
-		" username: %s,"+
-		" language_code: %s,"+
-		" is_premium: %t,"+
-		" added_to_attachment_menu: %t,"+
-		" can_join_groups: %t,"+
-		" can_read_all_group_messages: %t,"+
-		" support_inline_queries: %t)",
-		user.ID, user.IsBot, user.FirstName, user.LastName, user.Username, user.LanguageCode, user.IsPremium,
-		user.AddedToAttachmentMenu, user.CanJoinGroups, user.CanReadAllGroupMessages, user.SupportInlineQueries)
-
-	chat := &mes.Chat
-	if chat == nil {
-		return
-	}
-
-	log.Infof("Chat"+
-		" (id: %d,"+
-		" type: %s,"+
-		" title: %s,"+
-		" bio: %s,"+
-		" description: %s,"+
-		" invite_link: %s,"+
-		" username: %s,"+
-		" first_name: %s,"+
-		" last_name: %s)",
-		chat.ID, chat.Type, chat.Title, chat.Bio, chat.Description, chat.InviteLink, chat.Username, chat.FirstName,
-		chat.LastName)
 }
 
 func setupLog(dbg bool) {
