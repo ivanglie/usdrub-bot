@@ -4,7 +4,7 @@
 [![Test](https://github.com/ivanglie/go-br-client/actions/workflows/test.yml/badge.svg)](https://github.com/ivanglie/go-br-client/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/ivanglie/go-br-client/branch/master/graph/badge.svg?token=8lRyze5RSQ)](https://codecov.io/gh/ivanglie/go-br-client)
 
-Golang client that provides latest exchange rate of cash currency in largest cities of Russia.
+Golang client that provides latest exchange rate of USDRUB cash in largest cities of Russia.
 
 ## Example
 
@@ -14,7 +14,7 @@ First, ensure the library is installed and up to date by running
 go get -u github.com/ivanglie/go-br-client
 ```
 
-This is a very simple app that just displays exhange rate of Chinese Yuan Renminbi in Novosibirsk.
+This is a very simple app that just displays USDRUB exhange rate in Novosibirsk.
 
 ```golang
 package main
@@ -27,7 +27,7 @@ import (
 
 func main() {
 	client := br.NewClient()
-	rates, err := client.Rates(br.CNY, br.Novosibirsk)
+	rates, err := client.Rates(br.Novosibirsk)
 	if err != nil {
 		panic(err)
 	}
@@ -39,17 +39,32 @@ Console output:
 
 ```json
 {
-    "currency": "CNY",
+    "currency": "USD",
     "city": "novosibirsk",
     "branches": [
         {
-            "bank": "Банк «Открытие»",
-            "address": "630102, г. Новосибирск, ул. Кирова, дом. 44",
-            "subway": "м. Октябрьская",
-            "currency": "CNY",
-            "buy": 9.61,
-            "sell": 11.64,
-            "updated": "2023-01-24T16:54:00+03:00"
+            "bank": "ОП № 029/0000 Филиала \"Газпромбанк\" АО",
+            "subway": "Заельцовская, Гагаринская, Сибирская",
+            "currency": "USD",
+            "buy": 87.1,
+            "sell": 91.3,
+            "updated": "2023-07-03T13:00:00+03:00"
+        },
+        {
+            "bank": "ДО № 029/1007 Филиала \"Газпромбанк\" АО",
+            "subway": "Заельцовская, Берёзовая роща, Гагаринская",
+            "currency": "USD",
+            "buy": 87.1,
+            "sell": 91.3,
+            "updated": "2023-07-03T13:00:00+03:00"
+        },
+        {
+            "bank": "ДО № 029/1003 Филиала \"Газпромбанк\" АО",
+            "subway": "Берёзовая роща, Маршала Покрышкина, Золотая Нива",
+            "currency": "USD",
+            "buy": 87.1,
+            "sell": 91.3,
+            "updated": "2023-07-03T13:00:00+03:00"
         }
     ]
 }
@@ -60,4 +75,4 @@ See [main.go](./_example/main.go).
 
 For more information check out the following links:
 
-* Cash currency exchange rates by [Banki.ru](https://www.banki.ru/products/currency/cash/moskva/) (RU)
+* Cash currency exchange rates by [Banki.ru](https://www.banki.ru/products/currency/map/moskva/) (RU)

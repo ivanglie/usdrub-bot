@@ -3,6 +3,7 @@ package br
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -12,18 +13,11 @@ import (
 )
 
 const (
-	// Example: https://www.banki.ru/products/currency/cash/usd/moskva/.
-	baseURL = "https://www.banki.ru/products/currency/cash/%s/%s/"
+	// Example: https://www.banki.ru/products/currency/map/moskva/.
+	baseURL = "https://www.banki.ru/products/currency/map/%s/"
 
 	// Currency.
-	USD Currency = "USD"
-	EUR Currency = "EUR"
-	GBP Currency = "GBP"
-	CHF Currency = "CHF"
-	JPY Currency = "JPY"
-	CNY Currency = "CNY"
-	CZK Currency = "CZK"
-	PLN Currency = "PLN"
+	currency = "USD"
 
 	// City.
 	Barnaul         City = "barnaul"
@@ -65,7 +59,6 @@ var (
 
 // Client.
 type Client struct {
-	currency  Currency
 	city      City
 	buildURL  func() string
 	collector *colly.Collector
@@ -75,10 +68,9 @@ type Client struct {
 func NewClient() *Client {
 	c := &Client{}
 
-	c.currency = USD
 	c.city = Moscow
 	c.buildURL = func() string {
-		return fmt.Sprintf(baseURL, strings.ToLower(string(c.currency)), c.city)
+		return fmt.Sprintf(baseURL, c.city)
 	}
 	c.collector = colly.NewCollector(colly.AllowURLRevisit())
 
@@ -91,21 +83,17 @@ func NewClient() *Client {
 	return c
 }
 
-// Rates by currency (USD, if empty) and city (Moscow, if empty).
-func (c *Client) Rates(crnc Currency, ct City) (*Rates, error) {
-	if len(crnc) > 0 {
-		c.currency = crnc
-	}
-
+// Rates USDRUB by and city (Moscow, if empty).
+func (c *Client) Rates(ct City) (*Rates, error) {
 	if len(ct) > 0 {
 		c.city = ct
 	}
 
 	if Debug {
-		log.Printf("Fetching the currency rate from %s", c.buildURL())
+		log.Printf("[DEBUG] Fetching the currency rate from %s", c.buildURL())
 	}
 
-	r := &Rates{Currency: crnc, City: ct}
+	r := &Rates{Currency: currency, City: ct}
 	b, err := c.parseBranches()
 	if err != nil {
 		r = nil
@@ -113,64 +101,17 @@ func (c *Client) Rates(crnc Currency, ct City) (*Rates, error) {
 		r.Branches = b
 	}
 
+	if Debug {
+		log.Printf("[DEBUG] Found %d branches", len(b))
+	}
+
 	return r, err
 }
 
-// Parse banks and their branches info.
+// parseBranches parses branches info.
 func (c *Client) parseBranches() ([]Branch, error) {
 	var b []Branch
 	var err error
-
-	c.collector.OnHTML("div.table-flex.trades-table.table-product", func(e *colly.HTMLElement) {
-		e.ForEach("div.table-flex__row.item.calculator-hover-icon__container", func(i int, row *colly.HTMLElement) {
-			var location *time.Location
-			location, err = time.LoadLocation("Europe/Moscow")
-			if err != nil {
-				log.Println(err)
-				return
-			}
-
-			var updated time.Time
-			updated, err = time.ParseInLocation("02.01.2006 15:04", row.ChildText("span.text-nowrap"), location)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-
-			if time.Now().In(location).Sub(updated) > 24*time.Hour {
-				err = fmt.Errorf("exchange rate is out of date for 24 hours: %v", updated)
-				log.Println(err)
-				return
-			}
-
-			bank := row.ChildText("a.font-bold")
-
-			a := strings.Split(row.ChildAttr("a.font-bold", "data-currency-rates-tab-item"), "_")
-			address := a[len(a)-1]
-
-			subway := row.ChildText("div.font-size-small")
-			currency := row.ChildAttr("div.table-flex__rate.font-size-large", "data-currencies-code")
-
-			var buy float64
-			buy, err = strconv.ParseFloat(row.ChildAttr("div.table-flex__rate.font-size-large", "data-currencies-rate-buy"), 64)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-
-			var sell float64
-			sell, err = strconv.ParseFloat(row.ChildAttr("div.table-flex__rate.font-size-large.text-nowrap", "data-currencies-rate-sell"), 64)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-
-			raw := newBranch(bank, address, subway, currency, buy, sell, updated)
-			if raw != (Branch{}) && (buy != 0 || sell != 0) {
-				b = append(b, raw)
-			}
-		})
-	})
 
 	c.collector.OnRequest(func(r *colly.Request) {
 		if Debug {
@@ -178,12 +119,91 @@ func (c *Client) parseBranches() ([]Branch, error) {
 		}
 	})
 
-	c.collector.OnError(func(r *colly.Response, e error) {
-		err = e
+	c.collector.OnError(func(r *colly.Response, err error) {
 		log.Println(err)
 	})
 
+	c.collector.OnHTML(".fdpae", func(e *colly.HTMLElement) {
+		e.ForEach(".cITBmP", func(i int, row *colly.HTMLElement) {
+			raw, err := parseBranch(row)
+			if raw != (Branch{}) && err == nil {
+				b = append(b, raw)
+			}
+		})
+	})
+
 	err = c.collector.Visit(c.buildURL())
+	if err != nil {
+		log.Printf("Error visiting page %v", err)
+	}
 
 	return b, err
+}
+
+// parseBranch parses branch info from the HTML element.
+func parseBranch(e *colly.HTMLElement) (Branch, error) {
+	bank := sanitaze(e.ChildText(".dPnGDN"))
+
+	updatedDateString := sanitaze(e.ChildText(".cURBaH"))
+	if len(updatedDateString) == 0 {
+		updatedDateString = sanitaze(e.ChildText(".kiIzbr"))
+	}
+
+	s := strings.Split(updatedDateString, " ")
+	if count := len(s); count >= 3 {
+		updatedDateString = strings.Join(s[count-2:], " ")
+	}
+
+	loc, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		return Branch{}, err
+	}
+
+	updatedDate, err := time.ParseInLocation("02.01.2006 15:04", updatedDateString, loc)
+	if err != nil {
+		return Branch{}, err
+	}
+
+	if time.Now().In(loc).Sub(updatedDate) > 24*time.Hour {
+		return Branch{}, fmt.Errorf("exchange rate is out of date for 24 hours: %v", updatedDate)
+	}
+
+	ratesString := sanitaze(e.ChildText(".fvORFF"))
+	if len(ratesString) == 0 {
+		ratesString = sanitaze(e.ChildText(".guOAzm"))
+	}
+
+	var buyRateString, sellRateString string
+	if s := strings.Split(ratesString, "₽"); len(s) >= 2 {
+		buyRateString = s[0]
+		sellRateString = s[1]
+	}
+
+	buyRateString = strings.Replace(buyRateString, " ", "", -1)
+	buyRate, err := strconv.ParseFloat(strings.ReplaceAll(buyRateString, ",", "."), 64)
+	if err != nil || buyRate <= 0 {
+		return Branch{}, err
+	}
+
+	sellRateString = strings.Replace(sellRateString, " ", "", -1)
+	sellRate, err := strconv.ParseFloat(strings.ReplaceAll(sellRateString, ",", "."), 64)
+	if err != nil || sellRate <= 0 {
+		return Branch{}, err
+	}
+
+	subway := sanitaze(e.ChildText(".eybsgm"))
+
+	return newBranch(bank, subway, currency, buyRate, sellRate, updatedDate), nil
+}
+
+// sanitaize string.
+func sanitaze(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+
+	s = strings.Replace(s, "\n", "", -1)
+	s = regexp.MustCompile(`\s+`).ReplaceAllString(s, " ")
+
+	return s
 }

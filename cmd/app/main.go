@@ -201,7 +201,7 @@ func onBuy(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 	}
 
 	opts := []paginator.Option{
-		paginator.PerPage(5),
+		paginator.PerPage(2),
 		paginator.WithCloseButton("Close"),
 	}
 
@@ -223,7 +223,7 @@ func onSell(ctx context.Context, b *bot.Bot, mes *models.Message, data []byte) {
 	}
 
 	opts := []paginator.Option{
-		paginator.PerPage(5),
+		paginator.PerPage(2),
 		paginator.WithCloseButton("Close"),
 	}
 

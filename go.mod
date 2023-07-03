@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/go-telegram/bot v0.7.5
 	github.com/go-telegram/ui v0.1.1
-	github.com/ivanglie/go-br-client v0.0.3
+	github.com/ivanglie/go-br-client v1.0.0
 	github.com/ivanglie/go-cbr-client v1.0.4
 	github.com/ivanglie/go-coingate-client v1.0.4
 	github.com/ivanglie/go-moex-client v0.0.3

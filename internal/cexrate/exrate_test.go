@@ -13,12 +13,12 @@ func Test_rate_Update(t *testing.T) {
 	r := Get()
 	r.f = func() (*br.Rates, error) {
 		rates := &br.Rates{
-			Currency: br.USD,
+			Currency: "USD",
 			City:     br.Moscow,
 			Branches: []br.Branch{
-				{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 49.0, Sell: 51.0, Updated: time.Now()},
-				{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 50.0, Sell: 52.0, Updated: time.Now()},
-				{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 51.0, Sell: 53.0, Updated: time.Now()},
+				{Bank: "b", Subway: "s", Currency: "c", Buy: 49.0, Sell: 51.0, Updated: time.Now()},
+				{Bank: "b", Subway: "s", Currency: "c", Buy: 50.0, Sell: 52.0, Updated: time.Now()},
+				{Bank: "b", Subway: "s", Currency: "c", Buy: 51.0, Sell: 53.0, Updated: time.Now()},
 			},
 		}
 
@@ -31,11 +31,11 @@ func Test_rate_Update(t *testing.T) {
 	// Error
 	r.f = func() (*br.Rates, error) {
 		rates := &br.Rates{
-			Currency: br.USD,
+			Currency: "USD",
 			City:     br.Moscow,
 			Branches: []br.Branch{
-				{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 49.0, Sell: 51.0, Updated: time.Now()},
-				{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 50.0, Sell: 52.0, Updated: time.Now()},
+				{Bank: "b", Subway: "s", Currency: "c", Buy: 49.0, Sell: 51.0, Updated: time.Now()},
+				{Bank: "b", Subway: "s", Currency: "c", Buy: 50.0, Sell: 52.0, Updated: time.Now()},
 			},
 		}
 
@@ -48,7 +48,7 @@ func Test_rate_Update(t *testing.T) {
 
 func Test_rate_String(t *testing.T) {
 	r := &rate{}
-	r.branches = []br.Branch{{Bank: "b", Address: "a", Subway: "s", Currency: "c", Buy: 100.0, Sell: 200.0, Updated: time.Now()}}
+	r.branches = []br.Branch{{Bank: "b", Subway: "s", Currency: "c", Buy: 100.0, Sell: 200.0, Updated: time.Now()}}
 
 	if got := r.String(); len(got) == 0 {
 		t.Errorf("CashRate.String() = %v", got)
@@ -72,9 +72,9 @@ func Test_findMma(t *testing.T) {
 		{
 			name: "Min, max and avg",
 			args: args{[]br.Branch{
-				{"b", "a", "s", "c", 13.00, 58.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 12.00, 56.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+				{"b", "s", "c", 13.00, 58.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+				{"b", "s", "c", 12.00, 56.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+				{"b", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 			}},
 			bminWant: 12,
 			sminWant: 56,
@@ -86,9 +86,9 @@ func Test_findMma(t *testing.T) {
 		{
 			name: "Min, max and avg without zeros values",
 			args: args{[]br.Branch{
-				{"b", "a", "s", "c", 13.00, 00.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 00.00, 00.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "a", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+				{"b", "s", "c", 13.00, 00.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+				{"b", "s", "c", 00.00, 00.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+				{"b", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 			}},
 			bminWant: 13,
 			sminWant: 57,
@@ -125,12 +125,12 @@ func Test_findMma(t *testing.T) {
 
 func Test_rate_BuyBranches(t *testing.T) {
 	b := []br.Branch{
-		{"b1", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b2", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b3", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b4", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b5", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b6", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b1", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b2", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b3", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b4", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b5", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b6", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 	}
 
 	c := &rate{}
@@ -144,13 +144,13 @@ func Test_rate_BuyBranches(t *testing.T) {
 
 func Test_rate_SellBranches(t *testing.T) {
 	b := []br.Branch{
-		{"b1", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b2", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b3", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b4", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b5", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b6", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-		{"b7", "a", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b1", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b2", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b3", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b4", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b5", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b6", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
+		{"b7", "s", "c", 1.5, 1.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
 	}
 
 	c := &rate{}

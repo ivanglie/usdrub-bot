@@ -44,7 +44,7 @@ func Get() *rate {
 	defer lock.Unlock()
 
 	if RateInstance == nil {
-		RateInstance = &rate{name: Prefix, f: func() (*br.Rates, error) { return br.NewClient().Rates(br.USD, br.Moscow) }}
+		RateInstance = &rate{name: Prefix, f: func() (*br.Rates, error) { return br.NewClient().Rates(br.Moscow) }}
 	}
 
 	return RateInstance
@@ -101,9 +101,7 @@ func buyBranches(b []br.Branch) []string {
 
 	s := []string{}
 	for _, v := range b {
-		if v.Buy != 0 {
-			s = append(s, fmt.Sprintf("%.2f RUB (%v): %s, %s, %s", v.Buy, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
-		}
+		s = append(s, fmt.Sprintf("%.2f RUB (%v): %s, %s", v.Buy, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Subway))
 	}
 
 	return s
@@ -115,9 +113,7 @@ func sellBranches(b []br.Branch) []string {
 
 	s := []string{}
 	for _, v := range b {
-		if v.Sell != 0 {
-			s = append(s, fmt.Sprintf("%.2f RUB (%v): %s, %s, %s", v.Sell, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Address, v.Subway))
-		}
+		s = append(s, fmt.Sprintf("%.2f RUB (%v): %s, %s", v.Sell, v.Updated.Format("02.01.2006 15:04"), v.Bank, v.Subway))
 	}
 
 	return s
@@ -125,10 +121,6 @@ func sellBranches(b []br.Branch) []string {
 
 // findMma returns min, max and average values of buy and sell rates.
 func findMma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
-	if len(b) == 0 {
-		return
-	}
-
 	btotal, stotal := float64(0), float64(0)
 
 	bb, sb := []br.Branch{}, []br.Branch{}
@@ -147,9 +139,11 @@ func findMma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
 		if v.Buy < bmin {
 			bmin = v.Buy
 		}
+
 		if v.Buy > bmax {
 			bmax = v.Buy
 		}
+
 		btotal += v.Buy
 	}
 
@@ -158,9 +152,11 @@ func findMma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
 		if v.Sell < smin {
 			smin = v.Sell
 		}
+
 		if v.Sell > smax {
 			smax = v.Sell
 		}
+
 		stotal += v.Sell
 	}
 
