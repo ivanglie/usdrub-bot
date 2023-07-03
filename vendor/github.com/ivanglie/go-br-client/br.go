@@ -9,7 +9,6 @@ import (
 // Bank or branch.
 type Branch struct {
 	Bank     string    `json:"bank"`
-	Address  string    `json:"address"`
 	Subway   string    `json:"subway"`
 	Currency string    `json:"currency"`
 	Buy      float64   `json:"buy"`
@@ -31,8 +30,8 @@ type Rates struct {
 }
 
 // NewBranch creates a new Branch instance.
-func newBranch(bank, address, subway, currency string, buy, sell float64, updated time.Time) Branch {
-	return Branch{bank, address, subway, currency, buy, sell, updated}
+func newBranch(bank, subway, currency string, buy, sell float64, updated time.Time) Branch {
+	return Branch{bank, subway, currency, buy, sell, updated}
 }
 
 // ByBuySorter implements sort.Interface based on the Buy field.
