@@ -1,3 +1,6 @@
+# To execute this docker-compose yml file use `BOT_TOKEN=YOUR_BOT_TOKEN docker compose -f docker-compose.yml up -d`
+# The `-d` flag at the end for detached execution
+# To stop the execution, hit Ctrl+C, and then `docker-compose -f docker-compose.yml down`
 version: "3"
 services:
   usdrub-bot:

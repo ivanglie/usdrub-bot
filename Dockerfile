@@ -7,5 +7,5 @@ FROM --platform=$BUILDPLATFORM alpine:3.17.0
 RUN apk add --no-cache tzdata
 ENV TZ=Europe/Moscow
 COPY --from=builder /usr/src/usdrub-bot/usdrub-bot /usr/local/bin/usdrub-bot
-EXPOSE 18001
+EXPOSE 8080
 CMD ["usdrub-bot"]
