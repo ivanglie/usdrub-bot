@@ -28,7 +28,7 @@ jobs:
           
         - name: Save image
           run: |
-            sudo docker save -o usdrub-bot.tar usdrub-bot:latest
+            sudo docker save -o usdrub-bot.tar ivanglie/usdrub-bot:latest
             sudo chmod 777 usdrub-bot.tar
 
         - name: Copy files to remote host
