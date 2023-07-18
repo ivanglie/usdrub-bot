@@ -7,8 +7,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: usdrub-bot:latest
-    container_name: "usdrub-bot"
+    image: ivanglie/usdrub-bot:latest
+    container_name: usdrub-bot
     restart: always
     ports:
       - "8080:8080"

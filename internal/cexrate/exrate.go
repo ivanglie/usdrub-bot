@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	Prefix = "Exchange rates of cash"
+	Prefix = "Top 10 exchange rates of cash"
 	Suffix = "in branches in Moscow, Russia by Banki.ru"
 )
 
