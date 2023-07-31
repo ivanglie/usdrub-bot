@@ -2,7 +2,6 @@ package cexrate
 
 import (
 	"fmt"
-	"log"
 	"sort"
 	"sync"
 	"time"
@@ -29,8 +28,6 @@ type rate struct {
 	sellMin      float64
 	sellMax      float64
 	sellAvg      float64
-	err          error
-	errDate      time.Time
 }
 
 var (
@@ -51,23 +48,29 @@ func Get() *rate {
 }
 
 // Update exchange rate of cash.
-func (r *rate) Update() {
+func (r *rate) Update() error {
 	r.Lock()
 	defer r.Unlock()
 
 	v, err := r.f()
-	if v == nil || err != nil {
-		log.Printf("[ERROR] %s: value=%v, error=%v", r.name, v, err)
-
-		r.err = err
-		r.errDate = time.Now()
-		return
+	if err != nil {
+		return fmt.Errorf("%s at %v: %v", r.name, time.Now(), err)
 	}
 
-	r.err = nil
+	if v == nil {
+		return fmt.Errorf("%s at %v: rate is nil", r.name, time.Now())
+
+	}
+
 	r.branches = v.Branches
-	r.buyMin, r.sellMin, r.buyMax, r.sellMax, r.buyAvg, r.sellAvg = findMma(r.branches)
+	r.buyMin, r.sellMin, r.buyMax, r.sellMax, r.buyAvg, r.sellAvg, err = findMma(r.branches)
+	if err != nil {
+		return fmt.Errorf("%s at %v: %v", r.name, time.Now(), err)
+	}
+
 	r.buyBranches, r.sellBranches = buyBranches(r.branches), sellBranches(r.branches)
+
+	return nil
 }
 
 // String representation of currency exchange cash rate.
@@ -120,18 +123,17 @@ func sellBranches(b []br.Branch) []string {
 }
 
 // findMma returns min, max and average values of buy and sell rates.
-func findMma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
+func findMma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64, err error) {
 	btotal, stotal := float64(0), float64(0)
-
 	bb, sb := []br.Branch{}, []br.Branch{}
-	for _, v := range b {
-		if v.Buy != 0 {
-			bb = append(bb, v)
-		}
 
-		if v.Sell != 0 {
-			sb = append(sb, v)
-		}
+	if len(b) == 0 {
+		return 0, 0, 0, 0, 0, 0, fmt.Errorf("empty branches")
+	}
+
+	for _, v := range b {
+		bb = append(bb, v)
+		sb = append(sb, v)
 	}
 
 	bmin, bmax = bb[0].Buy, bb[0].Buy

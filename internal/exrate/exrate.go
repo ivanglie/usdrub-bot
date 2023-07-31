@@ -22,37 +22,9 @@ const (
 // rate represents exchange rate.
 type rate struct {
 	sync.RWMutex
-	name    string
-	f       func() (float64, error)
-	value   float64
-	err     error
-	errDate time.Time
-}
-
-// update exchange rate.
-func (r *rate) update() {
-	r.Lock()
-	defer r.Unlock()
-
-	v, err := r.f()
-	if err != nil || v == 0 {
-		log.Printf("[ERROR] %s: value=%f, error=%v", r.name, v, err)
-
-		r.err = err
-		r.errDate = time.Now()
-		return
-	}
-
-	r.value = v
-	r.err = nil
-}
-
-// String representation of rate.
-func (r *rate) String() string {
-	r.RLock()
-	defer r.RUnlock()
-
-	return fmt.Sprintf("%.2f RUB by %s", r.value, r.name)
+	name  string
+	f     func() (float64, error)
+	value float64
 }
 
 // rates represents exchange rates.
@@ -65,6 +37,33 @@ var (
 	ratesInstance *rates
 	lock          = &sync.Mutex{}
 )
+
+// update exchange rate.
+func (r *rate) update() error {
+	r.Lock()
+	defer r.Unlock()
+
+	v, err := r.f()
+	if err != nil {
+		return fmt.Errorf("%s at %v: %v", r.name, time.Now(), err)
+	}
+
+	if v == 0 {
+		return fmt.Errorf("%s at %v: rate is nil", r.name, time.Now())
+	}
+
+	r.value = v
+
+	return nil
+}
+
+// String representation of rate.
+func (r *rate) String() string {
+	r.RLock()
+	defer r.RUnlock()
+
+	return fmt.Sprintf("%.2f RUB by %s", r.value, r.name)
+}
 
 // Get returns instance of Rates.
 func Get() *rates {
@@ -83,13 +82,19 @@ func Get() *rates {
 }
 
 // Update exchange rates.
-func (r *rates) Update() {
+func (r *rates) Update() error {
 	r.Lock()
 	defer r.Unlock()
 
 	for _, v := range r.values {
-		v.update()
+		err := v.update()
+		if err != nil {
+			log.Printf("[ERROR] %s: %v", v.name, err)
+			continue
+		}
 	}
+
+	return nil
 }
 
 // Value returns rate by name.

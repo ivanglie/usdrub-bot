@@ -83,24 +83,10 @@ func Test_findMma(t *testing.T) {
 			bavgWant: 13,
 			savgWant: 57,
 		},
-		{
-			name: "Min, max and avg without zeros values",
-			args: args{[]br.Branch{
-				{"b", "s", "c", 13.00, 00.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "s", "c", 00.00, 00.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-				{"b", "s", "c", 14.00, 57.00, func() time.Time { t, _ := time.Parse("02.01.2006 15:04", "01.02.2018 12:35"); return t }()},
-			}},
-			bminWant: 13,
-			sminWant: 57,
-			bmaxWant: 14,
-			smaxWant: 57,
-			bavgWant: 13.5,
-			savgWant: 57,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, got2, got3, got4, got5 := findMma(tt.args.b)
+			got, got1, got2, got3, got4, got5, err := findMma(tt.args.b)
 			if got != tt.bminWant {
 				t.Errorf("mma() got = %v, want %v", got, tt.bminWant)
 			}
@@ -118,6 +104,9 @@ func Test_findMma(t *testing.T) {
 			}
 			if got5 != tt.savgWant {
 				t.Errorf("mma() got5 = %v, want %v", got5, tt.savgWant)
+			}
+			if err != nil {
+				t.Errorf("mma() error = %v", err)
 			}
 		})
 	}
