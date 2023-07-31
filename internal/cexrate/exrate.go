@@ -1,6 +1,7 @@
 package cexrate
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 	"sync"
@@ -55,11 +56,6 @@ func (r *rate) Update() error {
 	v, err := r.f()
 	if err != nil {
 		return fmt.Errorf("%s at %v: %v", r.name, time.Now(), err)
-	}
-
-	if v == nil {
-		return fmt.Errorf("%s at %v: rate is nil", r.name, time.Now())
-
 	}
 
 	r.branches = v.Branches
@@ -128,7 +124,7 @@ func findMma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64, err err
 	bb, sb := []br.Branch{}, []br.Branch{}
 
 	if len(b) == 0 {
-		return 0, 0, 0, 0, 0, 0, fmt.Errorf("empty branches")
+		return 0, 0, 0, 0, 0, 0, errors.New("empty branches")
 	}
 
 	for _, v := range b {

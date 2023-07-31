@@ -48,10 +48,6 @@ func (r *rate) update() error {
 		return fmt.Errorf("%s at %v: %v", r.name, time.Now(), err)
 	}
 
-	if v == 0 {
-		return fmt.Errorf("%s at %v: rate is nil", r.name, time.Now())
-	}
-
 	r.value = v
 
 	return nil
