@@ -43,7 +43,7 @@ github.com/golang/groupcache/lru
 github.com/golang/protobuf/proto
 # github.com/google/go-cmp v0.5.8
 ## explicit; go 1.13
-# github.com/ivanglie/go-br-client v1.0.0
+# github.com/ivanglie/go-br-client v1.1.0
 ## explicit; go 1.19
 github.com/ivanglie/go-br-client
 # github.com/ivanglie/go-cbr-client v1.0.4

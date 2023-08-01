@@ -47,8 +47,8 @@ github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMyw
 github.com/google/go-cmp v0.4.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.8 h1:e6P7q2lk1O+qJJb4BtCQXlK8vWEO8V1ZeuEdJNOqZyg=
 github.com/google/go-cmp v0.5.8/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-github.com/ivanglie/go-br-client v1.0.0 h1:HbabvUa9LFYsScJoXBgzKskpn4+4m2UkYoWw5QcXljI=
-github.com/ivanglie/go-br-client v1.0.0/go.mod h1:3JrCmtTM1QGfrr+nVycfHJPZOL8D1mX6o+uLz91QgQ0=
+github.com/ivanglie/go-br-client v1.1.0 h1:uuEUVYC5OBEQQI8Abx/hYJ/hLHxpAz0aIMUjklOmZbw=
+github.com/ivanglie/go-br-client v1.1.0/go.mod h1:3JrCmtTM1QGfrr+nVycfHJPZOL8D1mX6o+uLz91QgQ0=
 github.com/ivanglie/go-cbr-client v1.0.4 h1:maYR+RtFU69zQAmKeOvwCsJixaNkdEXimhV+SjxJxps=
 github.com/ivanglie/go-cbr-client v1.0.4/go.mod h1:FOwxqkSEoGRYwg1D8x5DyIIS2pY/WnfGAmKPBPk7U/w=
 github.com/ivanglie/go-coingate-client v1.0.4 h1:MfO3VpR6Pymg3kZ0rURy4nBkJMKPLK7FdJciS0nm4U4=

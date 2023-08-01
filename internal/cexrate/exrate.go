@@ -19,7 +19,7 @@ const (
 type rate struct {
 	sync.RWMutex
 	name         string
-	f            func() (*br.Rates, error)
+	f            func() (*br.Branches, error)
 	branches     []br.Branch
 	buyBranches  []string
 	sellBranches []string
@@ -44,7 +44,7 @@ func Get() *rate {
 	defer lock.Unlock()
 
 	if RateInstance == nil {
-		RateInstance = &rate{name: Prefix, f: func() (*br.Rates, error) { return br.NewClient().Rates(br.Moscow) }}
+		RateInstance = &rate{name: Prefix, f: func() (*br.Branches, error) { return br.NewClient().Rates(br.Moscow) }}
 	}
 
 	return RateInstance
@@ -65,7 +65,7 @@ func (r *rate) Update() {
 	}
 
 	r.err = nil
-	r.branches = v.Branches
+	r.branches = v.Items
 	r.buyMin, r.sellMin, r.buyMax, r.sellMax, r.buyAvg, r.sellAvg = mma(r.branches)
 	r.buyBranches, r.sellBranches = buyBranches(r.branches), sellBranches(r.branches)
 }
