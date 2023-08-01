@@ -84,7 +84,7 @@ func NewClient() *Client {
 }
 
 // Rates USDRUB by and city (Moscow, if empty).
-func (c *Client) Rates(ct City) (*Rates, error) {
+func (c *Client) Rates(ct City) (*Branches, error) {
 	if len(ct) > 0 {
 		c.city = ct
 	}
@@ -93,12 +93,12 @@ func (c *Client) Rates(ct City) (*Rates, error) {
 		log.Printf("[DEBUG] Fetching the currency rate from %s", c.buildURL())
 	}
 
-	r := &Rates{Currency: currency, City: ct}
+	r := &Branches{Currency: currency, City: ct}
 	b, err := c.parseBranches()
 	if err != nil {
 		r = nil
 	} else {
-		r.Branches = b
+		r.Items = b
 	}
 
 	if Debug {
@@ -142,16 +142,14 @@ func (c *Client) parseBranches() ([]Branch, error) {
 
 // parseBranch parses branch info from the HTML element.
 func parseBranch(e *colly.HTMLElement) (Branch, error) {
-	bank := sanitaze(e.ChildText(".dPnGDN"))
-
-	updatedDateString := sanitaze(e.ChildText(".cURBaH"))
-	if len(updatedDateString) == 0 {
-		updatedDateString = sanitaze(e.ChildText(".kiIzbr"))
+	sUpdatedDate := sanitaze(e.ChildText(".hDxmZl"))
+	if len(sUpdatedDate) == 0 {
+		return Branch{}, fmt.Errorf("can't find element .hDxmZl")
 	}
 
-	s := strings.Split(updatedDateString, " ")
+	s := strings.Split(sUpdatedDate, " ")
 	if count := len(s); count >= 3 {
-		updatedDateString = strings.Join(s[count-2:], " ")
+		sUpdatedDate = strings.Join(s[count-2:], " ")
 	}
 
 	loc, err := time.LoadLocation("Europe/Moscow")
@@ -159,7 +157,7 @@ func parseBranch(e *colly.HTMLElement) (Branch, error) {
 		return Branch{}, err
 	}
 
-	updatedDate, err := time.ParseInLocation("02.01.2006 15:04", updatedDateString, loc)
+	updatedDate, err := time.ParseInLocation("02.01.2006 15:04", sUpdatedDate, loc)
 	if err != nil {
 		return Branch{}, err
 	}
@@ -168,30 +166,35 @@ func parseBranch(e *colly.HTMLElement) (Branch, error) {
 		return Branch{}, fmt.Errorf("exchange rate is out of date for 24 hours: %v", updatedDate)
 	}
 
-	ratesString := sanitaze(e.ChildText(".fvORFF"))
-	if len(ratesString) == 0 {
-		ratesString = sanitaze(e.ChildText(".guOAzm"))
+	sRates := sanitaze(e.ChildText(".jzaqdw"))
+	if len(sRates) == 0 {
+		return Branch{}, fmt.Errorf("can't find element .jzaqdw")
 	}
 
-	var buyRateString, sellRateString string
-	if s := strings.Split(ratesString, "₽"); len(s) >= 2 {
-		buyRateString = s[0]
-		sellRateString = s[1]
+	var sBuyRate, sSellRate string
+	if s := strings.Split(sRates, "₽"); len(s) >= 2 {
+		sBuyRate = s[0]
+		sSellRate = s[1]
 	}
 
-	buyRateString = strings.Replace(buyRateString, " ", "", -1)
-	buyRate, err := strconv.ParseFloat(strings.ReplaceAll(buyRateString, ",", "."), 64)
-	if err != nil || buyRate <= 0 {
+	sBuyRate = strings.Replace(sBuyRate, " ", "", -1)
+	buyRate, err := strconv.ParseFloat(strings.ReplaceAll(sBuyRate, ",", "."), 64)
+	if err != nil {
 		return Branch{}, err
 	}
 
-	sellRateString = strings.Replace(sellRateString, " ", "", -1)
-	sellRate, err := strconv.ParseFloat(strings.ReplaceAll(sellRateString, ",", "."), 64)
-	if err != nil || sellRate <= 0 {
+	if buyRate <= 0 {
+		return Branch{}, fmt.Errorf("buy rate is zero or less: %v", buyRate)
+	}
+
+	sSellRate = strings.Replace(sSellRate, " ", "", -1)
+	sellRate, err := strconv.ParseFloat(strings.ReplaceAll(sSellRate, ",", "."), 64)
+	if err != nil {
 		return Branch{}, err
 	}
 
-	subway := sanitaze(e.ChildText(".eybsgm"))
+	bank := sanitaze(e.ChildText(".gfTHqP"))
+	subway := sanitaze(e.ChildText(".dJGHYE"))
 
 	return newBranch(bank, subway, currency, buyRate, sellRate, updatedDate), nil
 }

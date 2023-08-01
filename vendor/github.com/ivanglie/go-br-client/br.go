@@ -22,11 +22,11 @@ type Currency string
 // City type.
 type City string
 
-// Rates by banks and their branches.
-type Rates struct {
+// Banks or branches.
+type Branches struct {
 	Currency Currency `json:"currency"`
 	City     City     `json:"city"`
-	Branches []Branch `json:"branches"`
+	Items    []Branch `json:"items"`
 }
 
 // NewBranch creates a new Branch instance.
@@ -51,7 +51,7 @@ func (s BySellSorter) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s BySellSorter) Less(i, j int) bool { return s[i].Sell < s[j].Sell }
 
 // String representation of cash currency exchange rates.
-func (r *Rates) String() string {
+func (r *Branches) String() string {
 	b, err := json.Marshal(r)
 	if err != nil {
 		fmt.Println(err)

@@ -11,11 +11,11 @@ import (
 
 func Test_rate_Update(t *testing.T) {
 	r := Get()
-	r.f = func() (*br.Rates, error) {
-		rates := &br.Rates{
+	r.f = func() (*br.Branches, error) {
+		rates := &br.Branches{
 			Currency: "USD",
 			City:     br.Moscow,
-			Branches: []br.Branch{
+			Items: []br.Branch{
 				{Bank: "b", Subway: "s", Currency: "c", Buy: 49.0, Sell: 51.0, Updated: time.Now()},
 				{Bank: "b", Subway: "s", Currency: "c", Buy: 50.0, Sell: 52.0, Updated: time.Now()},
 				{Bank: "b", Subway: "s", Currency: "c", Buy: 51.0, Sell: 53.0, Updated: time.Now()},
@@ -29,11 +29,11 @@ func Test_rate_Update(t *testing.T) {
 	assert.Equal(t, 3, len(r.branches))
 
 	// Error
-	r.f = func() (*br.Rates, error) {
-		rates := &br.Rates{
+	r.f = func() (*br.Branches, error) {
+		rates := &br.Branches{
 			Currency: "USD",
 			City:     br.Moscow,
-			Branches: []br.Branch{
+			Items: []br.Branch{
 				{Bank: "b", Subway: "s", Currency: "c", Buy: 49.0, Sell: 51.0, Updated: time.Now()},
 				{Bank: "b", Subway: "s", Currency: "c", Buy: 50.0, Sell: 52.0, Updated: time.Now()},
 			},
