@@ -66,7 +66,7 @@ func (r *rate) Update() {
 
 	r.err = nil
 	r.branches = v.Branches
-	r.buyMin, r.sellMin, r.buyMax, r.sellMax, r.buyAvg, r.sellAvg = findMma(r.branches)
+	r.buyMin, r.sellMin, r.buyMax, r.sellMax, r.buyAvg, r.sellAvg = mma(r.branches)
 	r.buyBranches, r.sellBranches = buyBranches(r.branches), sellBranches(r.branches)
 }
 
@@ -119,19 +119,19 @@ func sellBranches(b []br.Branch) []string {
 	return s
 }
 
-// findMma returns min, max and average values of buy and sell rates.
-func findMma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
+// mma returns min, max and average values of buy and sell rates.
+func mma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
+	if len(b) == 0 {
+		log.Println("[WARNING] mma: empty branches")
+		return
+	}
+
 	btotal, stotal := float64(0), float64(0)
 
 	bb, sb := []br.Branch{}, []br.Branch{}
 	for _, v := range b {
-		if v.Buy != 0 {
-			bb = append(bb, v)
-		}
-
-		if v.Sell != 0 {
-			sb = append(sb, v)
-		}
+		bb = append(bb, v)
+		sb = append(sb, v)
 	}
 
 	bmin, bmax = bb[0].Buy, bb[0].Buy
