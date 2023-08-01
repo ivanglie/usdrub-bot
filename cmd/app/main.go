@@ -224,13 +224,16 @@ func start(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 func dashboard(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Infof("Dashboard request from %s", update.Message.From)
 
-	msg := tgbotapi.NewMessage(
-		update.Message.Chat.ID,
-		fmt.Sprintf("<b>%s</b>\n%s<b>%s</b>\n%s\n%s",
-			exrate.Prefix, exrate.Get().String(),
-			cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix),
-	)
+	t := fmt.Sprintf("<b>%s</b>\n%s<b>%s</b>\n%s\n%s",
+		exrate.Prefix, exrate.Get().String(),
+		cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix)
 
+	if len(cexrate.Get().BuyBranches()) == 0 || len(cexrate.Get().SellBranches()) == 0 {
+		t = fmt.Sprintf("<b>%s</b>\n%s", exrate.Prefix, exrate.Get().String())
+		log.Warn("No branches")
+	}
+
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, t)
 	msg.ParseMode = tgbotapi.ModeHTML
 	msg.ReplyToMessageID = getReplyMessageID(update.Message)
 	msg.ReplyMarkup = &kb
@@ -242,6 +245,11 @@ func onBuy(bot *tgbotapi.BotAPI, cq *tgbotapi.CallbackQuery) {
 	log.Infof("OnBuy request from %s", cq.From)
 
 	bb := cexrate.Get().BuyBranches()
+	if len(bb) == 0 {
+		log.Warn("No buy branches")
+		return
+	}
+
 	s := []string{}
 	for i, v := range bb {
 		i++
@@ -266,6 +274,11 @@ func onSell(bot *tgbotapi.BotAPI, cq *tgbotapi.CallbackQuery) {
 	log.Infof("OnSell request from %s", cq.From)
 
 	sb := cexrate.Get().SellBranches()
+	if len(sb) == 0 {
+		log.Warn("No sell branches")
+		return
+	}
+
 	s := []string{}
 	for i, v := range sb {
 		i++
