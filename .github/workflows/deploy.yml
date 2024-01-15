@@ -6,8 +6,8 @@ on:
 
 jobs:
   build:
-    if: ${{contains(github.event.pull_request.base.ref, 'feature/') || contains(github.event.pull_request.base.ref, 'fix/')}}
     runs-on: ubuntu-latest
+      echo "${{ github.event.pull_request.base.ref }}"
     steps:  
         - uses: actions/checkout@v3
         
