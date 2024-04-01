@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ivanglie/go-cbr-client"
-	"github.com/ivanglie/go-coingate-client"
-	"github.com/ivanglie/go-moex-client"
+	"github.com/ivanglie/usdrub-bot/pkg/go-cbr-client"
+	"github.com/ivanglie/usdrub-bot/pkg/go-coingate-client"
+	"github.com/ivanglie/usdrub-bot/pkg/go-moex-client"
 )
 
 const (

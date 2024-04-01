@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ivanglie/go-br-client"
+	"github.com/ivanglie/usdrub-bot/pkg/go-br-client"
 	"github.com/stretchr/testify/assert"
 )
 

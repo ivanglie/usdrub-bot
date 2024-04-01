@@ -8,14 +8,14 @@ import (
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/ivanglie/go-br-client"
-	"github.com/ivanglie/go-cbr-client"
-	"github.com/ivanglie/go-coingate-client"
-	"github.com/ivanglie/go-moex-client"
 	"github.com/ivanglie/usdrub-bot/internal/cexrate"
 	"github.com/ivanglie/usdrub-bot/internal/exrate"
 	"github.com/ivanglie/usdrub-bot/internal/logger"
 	"github.com/ivanglie/usdrub-bot/internal/scheduler"
+	"github.com/ivanglie/usdrub-bot/pkg/go-br-client"
+	"github.com/ivanglie/usdrub-bot/pkg/go-cbr-client"
+	"github.com/ivanglie/usdrub-bot/pkg/go-coingate-client"
+	"github.com/ivanglie/usdrub-bot/pkg/go-moex-client"
 
 	"github.com/jessevdk/go-flags"
 	"github.com/sirupsen/logrus"

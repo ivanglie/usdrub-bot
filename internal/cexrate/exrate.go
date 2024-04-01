@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	br "github.com/ivanglie/go-br-client"
+	br "github.com/ivanglie/usdrub-bot/pkg/go-br-client"
 )
 
 const (
