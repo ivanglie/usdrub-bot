@@ -9,9 +9,11 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/ivanglie/usdrub-bot/internal/cexrate"
+	"github.com/ivanglie/usdrub-bot/internal/cryptoexrate"
 	"github.com/ivanglie/usdrub-bot/internal/exrate"
 	"github.com/ivanglie/usdrub-bot/internal/logger"
 	"github.com/ivanglie/usdrub-bot/internal/scheduler"
+	"github.com/ivanglie/usdrub-bot/pkg/go-bestchange-client"
 	"github.com/ivanglie/usdrub-bot/pkg/go-br-client"
 	"github.com/ivanglie/usdrub-bot/pkg/go-cbr-client"
 	"github.com/ivanglie/usdrub-bot/pkg/go-coingate-client"
@@ -22,7 +24,7 @@ import (
 )
 
 const (
-	helpCmd = "Just use /forex, /moex, /cbrf, /cash and /dashboard command."
+	helpCmd = "Just use /forex, /moex, /cbrf, /cash, /crypto and /dashboard command."
 )
 
 var (
@@ -58,7 +60,8 @@ func main() {
 
 	setupLog(opts.Dbg)
 	setLogger(log)
-	coingate.Debug, moex.Debug, cbr.Debug, br.Debug, logger.Debug = opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg, opts.Dbg
+	coingate.Debug, moex.Debug, cbr.Debug, br.Debug, bestchange.Debug, logger.Debug = opts.Dbg, opts.Dbg, opts.Dbg,
+		opts.Dbg, opts.Dbg, opts.Dbg
 
 	updateRates := func() {
 		t := time.Now()
@@ -67,7 +70,7 @@ func main() {
 			Update()
 		}
 
-		rates := []RateInterface{exrate.Get(), cexrate.Get()}
+		rates := []RateInterface{exrate.Get(), cexrate.Get(), cryptoexrate.Get()}
 
 		wg := sync.WaitGroup{}
 		for _, r := range rates {
@@ -118,6 +121,8 @@ func main() {
 				cbrf(bot, update)
 			case "cash":
 				cash(bot, update)
+			case "crypto":
+				crypto(bot, update)
 			case "help":
 				help(bot, update)
 			case "start":
@@ -201,6 +206,21 @@ func cash(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
+func crypto(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	log.Infof("Crypto request from %s", update.Message.From)
+
+	msg := tgbotapi.NewMessage(
+		update.Message.Chat.ID,
+		fmt.Sprintf("<b>%s</b>\n%s", cryptoexrate.Prefix, cryptoexrate.Get().String()),
+	)
+
+	msg.ParseMode = tgbotapi.ModeHTML
+	msg.ReplyToMessageID = getReplyMessageID(update.Message)
+	msg.ReplyMarkup = &kb
+
+	bot.Send(msg)
+}
+
 func help(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Infof("Help request from %s", update.Message.From)
 
@@ -224,8 +244,9 @@ func start(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 func dashboard(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Infof("Dashboard request from %s", update.Message.From)
 
-	t := fmt.Sprintf("<b>%s</b>\n%s<b>%s</b>\n%s\n%s",
+	t := fmt.Sprintf("<b>%s</b>\n%s<b>%s</b>\n%s\n<b>%s</b>\n%s\n%s",
 		exrate.Prefix, exrate.Get().String(),
+		cryptoexrate.Prefix, cryptoexrate.Get().String(),
 		cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix)
 
 	if len(cexrate.Get().BuyBranches()) == 0 || len(cexrate.Get().SellBranches()) == 0 {
@@ -344,5 +365,6 @@ func setLogger(log *logrus.Logger) {
 	cbr.SetLogger(log)
 	moex.SetLogger(log)
 	br.SetLogger(log)
+	bestchange.SetLogger(log)
 	logger.SetLogger(log)
 }
