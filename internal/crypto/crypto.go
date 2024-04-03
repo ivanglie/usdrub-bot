@@ -1,4 +1,4 @@
-package cryptoexrate
+package crypto
 
 import (
 	"fmt"
@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	Prefix = "1 USDT equals"
+	Prefix = "1 USDT (TRC20) equals"
 	Suffix = "in Moscow, Russia by bestchange.com"
 )
 
-// rate represents currency exchange rate of cash.
-type rate struct {
+// crypto represents currency exchange crypto of cash.
+type crypto struct {
 	sync.RWMutex
 	name    string
 	f       func() (float64, error)
@@ -25,24 +25,24 @@ type rate struct {
 }
 
 var (
-	RateInstance *rate
+	RateInstance *crypto
 	lock         = &sync.Mutex{}
 )
 
 // Get returns instance of Rate.
-func Get() *rate {
+func Get() *crypto {
 	lock.Lock()
 	defer lock.Unlock()
 
 	if RateInstance == nil {
-		RateInstance = &rate{name: Prefix, f: func() (float64, error) { return bestchange.NewClient().Rate(bestchange.Moscow) }}
+		RateInstance = &crypto{name: Prefix, f: func() (float64, error) { return bestchange.NewClient().Rate(bestchange.Moscow) }}
 	}
 
 	return RateInstance
 }
 
 // Update exchange rate of cash.
-func (r *rate) Update() {
+func (r *crypto) Update() {
 	r.Lock()
 	defer r.Unlock()
 
@@ -60,7 +60,7 @@ func (r *rate) Update() {
 }
 
 // String representation of currency exchange cash rate.
-func (r *rate) String() string {
+func (r *crypto) String() string {
 	r.RLock()
 	defer r.RUnlock()
 

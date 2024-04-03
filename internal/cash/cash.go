@@ -1,4 +1,4 @@
-package cexrate
+package cash
 
 import (
 	"fmt"
@@ -15,8 +15,8 @@ const (
 	Suffix = "in branches in Moscow, Russia by Banki.ru"
 )
 
-// rate represents currency exchange rate of cash.
-type rate struct {
+// cash represents currency exchange cash of cash.
+type cash struct {
 	sync.RWMutex
 	name         string
 	f            func() (*br.Branches, error)
@@ -34,24 +34,24 @@ type rate struct {
 }
 
 var (
-	RateInstance *rate
+	RateInstance *cash
 	lock         = &sync.Mutex{}
 )
 
 // Get returns instance of Rate.
-func Get() *rate {
+func Get() *cash {
 	lock.Lock()
 	defer lock.Unlock()
 
 	if RateInstance == nil {
-		RateInstance = &rate{name: Prefix, f: func() (*br.Branches, error) { return br.NewClient().Rates(br.Moscow) }}
+		RateInstance = &cash{name: Prefix, f: func() (*br.Branches, error) { return br.NewClient().Rates(br.Moscow) }}
 	}
 
 	return RateInstance
 }
 
 // Update exchange rate of cash.
-func (r *rate) Update() {
+func (r *cash) Update() {
 	r.Lock()
 	defer r.Unlock()
 
@@ -71,7 +71,7 @@ func (r *rate) Update() {
 }
 
 // String representation of currency exchange cash rate.
-func (r *rate) String() string {
+func (r *cash) String() string {
 	r.RLock()
 	defer r.RUnlock()
 
@@ -80,7 +80,7 @@ func (r *rate) String() string {
 }
 
 // BuyBranches represented as string.
-func (r *rate) BuyBranches() []string {
+func (r *cash) BuyBranches() []string {
 	r.RLock()
 	defer r.RUnlock()
 
@@ -88,7 +88,7 @@ func (r *rate) BuyBranches() []string {
 }
 
 // SellBranches represented as string.
-func (r *rate) SellBranches() []string {
+func (r *cash) SellBranches() []string {
 	r.RLock()
 	defer r.RUnlock()
 

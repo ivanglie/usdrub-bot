@@ -1,4 +1,4 @@
-package exrate
+package exchange
 
 import (
 	"errors"

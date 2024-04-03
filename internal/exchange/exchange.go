@@ -1,4 +1,4 @@
-package exrate
+package exchange
 
 import (
 	"fmt"
@@ -19,8 +19,8 @@ const (
 	CBRF  = "Russian Central Bank"
 )
 
-// rate represents exchange rate.
-type rate struct {
+// exchange represents exchange exchange.
+type exchange struct {
 	sync.RWMutex
 	name    string
 	f       func() (float64, error)
@@ -30,7 +30,7 @@ type rate struct {
 }
 
 // update exchange rate.
-func (r *rate) update() {
+func (r *exchange) update() {
 	r.Lock()
 	defer r.Unlock()
 
@@ -48,7 +48,7 @@ func (r *rate) update() {
 }
 
 // String representation of rate.
-func (r *rate) String() string {
+func (r *exchange) String() string {
 	r.RLock()
 	defer r.RUnlock()
 
@@ -58,7 +58,7 @@ func (r *rate) String() string {
 // rates represents exchange rates.
 type rates struct {
 	sync.RWMutex
-	values []*rate
+	values []*exchange
 }
 
 var (
@@ -73,7 +73,7 @@ func Get() *rates {
 
 	if ratesInstance == nil {
 		ratesInstance = &rates{}
-		ratesInstance.values = []*rate{
+		ratesInstance.values = []*exchange{
 			{name: Forex, f: func() (float64, error) { return coingate.NewClient().GetRate("USD", "RUB") }},
 			{name: MOEX, f: func() (float64, error) { return moex.NewClient().GetRate(moex.USDRUB) }},
 			{name: CBRF, f: func() (float64, error) { return cbr.NewClient().GetRate("USD", time.Now()) }}}
@@ -93,7 +93,7 @@ func (r *rates) Update() {
 }
 
 // Value returns rate by name.
-func (r *rates) Value(name string) *rate {
+func (r *rates) Value(name string) *exchange {
 	r.RLock()
 	defer r.RUnlock()
 

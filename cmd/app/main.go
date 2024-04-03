@@ -8,9 +8,9 @@ import (
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/ivanglie/usdrub-bot/internal/cexrate"
-	"github.com/ivanglie/usdrub-bot/internal/cryptoexrate"
-	"github.com/ivanglie/usdrub-bot/internal/exrate"
+	"github.com/ivanglie/usdrub-bot/internal/cash"
+	"github.com/ivanglie/usdrub-bot/internal/crypto"
+	"github.com/ivanglie/usdrub-bot/internal/exchange"
 	"github.com/ivanglie/usdrub-bot/internal/logger"
 	"github.com/ivanglie/usdrub-bot/internal/scheduler"
 	"github.com/ivanglie/usdrub-bot/pkg/go-bestchange-client"
@@ -70,7 +70,7 @@ func main() {
 			Update()
 		}
 
-		rates := []RateInterface{exrate.Get(), cexrate.Get(), cryptoexrate.Get()}
+		rates := []RateInterface{exchange.Get(), cash.Get(), crypto.Get()}
 
 		wg := sync.WaitGroup{}
 		for _, r := range rates {
@@ -114,21 +114,21 @@ func main() {
 
 			switch update.Message.Command() {
 			case "forex":
-				forex(bot, update)
+				forexHandler(bot, update)
 			case "moex":
 				moexHandler(bot, update)
 			case "cbrf":
-				cbrf(bot, update)
+				cbrfHandler(bot, update)
 			case "cash":
-				cash(bot, update)
+				cashHandler(bot, update)
 			case "crypto":
-				crypto(bot, update)
+				cryptoHandler(bot, update)
 			case "help":
-				help(bot, update)
+				helpHandler(bot, update)
 			case "start":
 				start(bot, update)
 			case "dashboard":
-				dashboard(bot, update)
+				dashboardHandler(bot, update)
 			default:
 				log.Warnf("Unknown command %q", update.Message.Command())
 			}
@@ -149,12 +149,12 @@ func main() {
 	}
 }
 
-func forex(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+func forexHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Infof("Forex request from %s", update.Message.From)
 
 	msg := tgbotapi.NewMessage(
 		update.Message.Chat.ID,
-		fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.Forex)),
+		fmt.Sprintln(exchange.Prefix, exchange.Get().Value(exchange.Forex)),
 	)
 
 	msg.ParseMode = tgbotapi.ModeHTML
@@ -168,7 +168,7 @@ func moexHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 	msg := tgbotapi.NewMessage(
 		update.Message.Chat.ID,
-		fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.MOEX)),
+		fmt.Sprintln(exchange.Prefix, exchange.Get().Value(exchange.MOEX)),
 	)
 
 	msg.ParseMode = tgbotapi.ModeHTML
@@ -177,12 +177,12 @@ func moexHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
-func cbrf(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+func cbrfHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Infof("Cbrf request from %s", update.Message.From)
 
 	msg := tgbotapi.NewMessage(
 		update.Message.Chat.ID,
-		fmt.Sprintln(exrate.Prefix, exrate.Get().Value(exrate.CBRF)),
+		fmt.Sprintln(exchange.Prefix, exchange.Get().Value(exchange.CBRF)),
 	)
 
 	msg.ParseMode = tgbotapi.ModeHTML
@@ -191,12 +191,12 @@ func cbrf(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
-func cash(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+func cashHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Infof("Cash request from %s", update.Message.From)
 
 	msg := tgbotapi.NewMessage(
 		update.Message.Chat.ID,
-		fmt.Sprintf("<b>%s</b>\n%s\n%s", cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix),
+		fmt.Sprintf("<b>%s</b>\n%s\n%s", cash.Prefix, cash.Get().String(), cash.Suffix),
 	)
 
 	msg.ParseMode = tgbotapi.ModeHTML
@@ -206,12 +206,12 @@ func cash(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
-func crypto(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+func cryptoHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Infof("Crypto request from %s", update.Message.From)
 
 	msg := tgbotapi.NewMessage(
 		update.Message.Chat.ID,
-		fmt.Sprintf("<b>%s</b>\n%s", cryptoexrate.Prefix, cryptoexrate.Get().String()),
+		fmt.Sprintf("<b>%s</b>\n%s", crypto.Prefix, crypto.Get().String()),
 	)
 
 	msg.ParseMode = tgbotapi.ModeHTML
@@ -221,7 +221,7 @@ func crypto(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
-func help(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+func helpHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Infof("Help request from %s", update.Message.From)
 
 	msg := tgbotapi.NewMessage(
@@ -238,19 +238,19 @@ func help(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 func start(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Infof("Start request from %s", update.Message.From)
 
-	dashboard(bot, update)
+	dashboardHandler(bot, update)
 }
 
-func dashboard(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+func dashboardHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Infof("Dashboard request from %s", update.Message.From)
 
 	t := fmt.Sprintf("<b>%s</b>\n%s<b>%s</b>\n%s\n<b>%s</b>\n%s\n%s",
-		exrate.Prefix, exrate.Get().String(),
-		cryptoexrate.Prefix, cryptoexrate.Get().String(),
-		cexrate.Prefix, cexrate.Get().String(), cexrate.Suffix)
+		exchange.Prefix, exchange.Get().String(),
+		crypto.Prefix, crypto.Get().String(),
+		cash.Prefix, cash.Get().String(), cash.Suffix)
 
-	if len(cexrate.Get().BuyBranches()) == 0 || len(cexrate.Get().SellBranches()) == 0 {
-		t = fmt.Sprintf("<b>%s</b>\n%s", exrate.Prefix, exrate.Get().String())
+	if len(cash.Get().BuyBranches()) == 0 || len(cash.Get().SellBranches()) == 0 {
+		t = fmt.Sprintf("<b>%s</b>\n%s", exchange.Prefix, exchange.Get().String())
 		log.Warn("No branches")
 	}
 
@@ -265,7 +265,7 @@ func dashboard(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 func onBuy(bot *tgbotapi.BotAPI, cq *tgbotapi.CallbackQuery) {
 	log.Infof("OnBuy request from %s", cq.From)
 
-	bb := cexrate.Get().BuyBranches()
+	bb := cash.Get().BuyBranches()
 	if len(bb) == 0 {
 		log.Warn("No buy branches")
 		return
@@ -294,7 +294,7 @@ func onBuy(bot *tgbotapi.BotAPI, cq *tgbotapi.CallbackQuery) {
 func onSell(bot *tgbotapi.BotAPI, cq *tgbotapi.CallbackQuery) {
 	log.Infof("OnSell request from %s", cq.From)
 
-	sb := cexrate.Get().SellBranches()
+	sb := cash.Get().SellBranches()
 	if len(sb) == 0 {
 		log.Warn("No sell branches")
 		return

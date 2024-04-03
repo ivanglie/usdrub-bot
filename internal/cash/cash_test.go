@@ -1,4 +1,4 @@
-package cexrate
+package cash
 
 import (
 	"errors"
@@ -47,7 +47,7 @@ func Test_rate_Update(t *testing.T) {
 }
 
 func Test_rate_String(t *testing.T) {
-	r := &rate{}
+	r := &cash{}
 	r.branches = []br.Branch{{Bank: "b", Subway: "s", Currency: "c", Buy: 100.0, Sell: 200.0, Updated: time.Now()}}
 
 	assert.NotEmpty(t, r.String())
@@ -153,7 +153,7 @@ func Test_rate_BuyBranches(t *testing.T) {
 		},
 	}
 
-	c := &rate{}
+	c := &cash{}
 	c.buyBranches = buyBranches(b)
 	bb := c.BuyBranches()
 
@@ -212,7 +212,7 @@ func Test_rate_SellBranches(t *testing.T) {
 		},
 	}
 
-	c := &rate{}
+	c := &cash{}
 	c.sellBranches = sellBranches(b)
 	sb := c.SellBranches()
 
