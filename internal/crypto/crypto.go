@@ -35,7 +35,7 @@ func Get() *crypto {
 	defer lock.Unlock()
 
 	if RateInstance == nil {
-		RateInstance = &crypto{name: Prefix, f: func() (float64, error) { return bestchange.NewClient().Rate(bestchange.Moscow) }}
+		RateInstance = &crypto{name: Prefix, f: func() (float64, error) { return bestchange.NewClient().Rate() }}
 	}
 
 	return RateInstance

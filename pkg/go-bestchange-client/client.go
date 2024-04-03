@@ -11,12 +11,6 @@ import (
 const (
 	// Example: https://www.bestchange.com/cash-ruble-to-tether-trc20-in-msk.html.
 	baseURL = "https://www.bestchange.com/cash-ruble-to-tether-trc20-in-msk.html"
-
-	// Currency.
-	currency = "USDT"
-
-	// City.
-	Moscow City = "msk"
 )
 
 var (
@@ -26,7 +20,6 @@ var (
 
 // Client.
 type Client struct {
-	city      City
 	buildURL  func() string
 	collector *colly.Collector
 }
@@ -34,12 +27,11 @@ type Client struct {
 // NewClient creates a new client.
 func NewClient() *Client {
 	c := &Client{}
+	c.collector = colly.NewCollector(colly.AllowURLRevisit())
 
-	c.city = Moscow
 	c.buildURL = func() string {
 		return baseURL
 	}
-	c.collector = colly.NewCollector(colly.AllowURLRevisit())
 
 	t := &http.Transport{}
 	t.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
@@ -50,17 +42,13 @@ func NewClient() *Client {
 	return c
 }
 
-// Rate by and city (Moscow, if empty).
-func (c *Client) Rate(ct City) (float64, error) {
-	if len(ct) > 0 {
-		c.city = ct
-	}
-
+// Rate in Moscow.
+func (c *Client) Rate() (float64, error) {
 	if Debug {
-		log.Printf("[DEBUG] Fetching the USDT rate from %s", c.buildURL())
+		log.Printf("[DEBUG] Fetching the USDT (TRC20) rate from %s", c.buildURL())
 	}
 
-	r := &Rate{Currency: currency, City: ct}
+	r := &Rate{}
 	b, err := c.parseRate()
 	if err != nil {
 		r = nil
