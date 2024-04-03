@@ -11,7 +11,7 @@ import (
 
 func main() {
 	client := bestchange.NewClient()
-	rate, err := client.Rate(bestchange.Moscow)
+	rate, err := client.Rate()
 	if err != nil {
 		panic(err)
 	}
