@@ -13,11 +13,11 @@ import (
 	"github.com/ivanglie/usdrub-bot/internal/exchange"
 	"github.com/ivanglie/usdrub-bot/internal/logger"
 	"github.com/ivanglie/usdrub-bot/internal/scheduler"
-	"github.com/ivanglie/usdrub-bot/pkg/go-bestchange-client"
-	"github.com/ivanglie/usdrub-bot/pkg/go-br-client"
-	"github.com/ivanglie/usdrub-bot/pkg/go-cbr-client"
-	"github.com/ivanglie/usdrub-bot/pkg/go-coingate-client"
-	"github.com/ivanglie/usdrub-bot/pkg/go-moex-client"
+	"github.com/ivanglie/usdrub-bot/pkg/bankiru-go"
+	"github.com/ivanglie/usdrub-bot/pkg/bestchange-go"
+	"github.com/ivanglie/usdrub-bot/pkg/cbr-go"
+	"github.com/ivanglie/usdrub-bot/pkg/coingate-go"
+	"github.com/ivanglie/usdrub-bot/pkg/moex-go"
 
 	"github.com/jessevdk/go-flags"
 	"github.com/sirupsen/logrus"
@@ -60,7 +60,7 @@ func main() {
 
 	setupLog(opts.Dbg)
 	setLogger(log)
-	coingate.Debug, moex.Debug, cbr.Debug, br.Debug, bestchange.Debug, logger.Debug = opts.Dbg, opts.Dbg, opts.Dbg,
+	coingate.Debug, moex.Debug, cbr.Debug, bankiru.Debug, bestchange.Debug, logger.Debug = opts.Dbg, opts.Dbg, opts.Dbg,
 		opts.Dbg, opts.Dbg, opts.Dbg
 
 	updateRates := func() {
@@ -364,7 +364,7 @@ func setLogger(log *logrus.Logger) {
 	coingate.SetLogger(log)
 	cbr.SetLogger(log)
 	moex.SetLogger(log)
-	br.SetLogger(log)
+	bankiru.SetLogger(log)
 	bestchange.SetLogger(log)
 	logger.SetLogger(log)
 }

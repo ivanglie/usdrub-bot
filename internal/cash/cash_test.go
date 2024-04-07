@@ -5,17 +5,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ivanglie/usdrub-bot/pkg/go-br-client"
+	"github.com/ivanglie/usdrub-bot/pkg/bankiru-go"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_rate_Update(t *testing.T) {
 	r := Get()
-	r.f = func() (*br.Branches, error) {
-		rates := &br.Branches{
+	r.f = func() (*bankiru.Branches, error) {
+		rates := &bankiru.Branches{
 			Currency: "USD",
-			City:     br.Moscow,
-			Items: []br.Branch{
+			City:     bankiru.Moscow,
+			Items: []bankiru.Branch{
 				{Bank: "b", Subway: "s", Currency: "c", Buy: 49.0, Sell: 51.0, Updated: time.Now()},
 				{Bank: "b", Subway: "s", Currency: "c", Buy: 50.0, Sell: 52.0, Updated: time.Now()},
 				{Bank: "b", Subway: "s", Currency: "c", Buy: 51.0, Sell: 53.0, Updated: time.Now()},
@@ -29,11 +29,11 @@ func Test_rate_Update(t *testing.T) {
 	assert.Equal(t, 3, len(r.branches))
 
 	// Error
-	r.f = func() (*br.Branches, error) {
-		rates := &br.Branches{
+	r.f = func() (*bankiru.Branches, error) {
+		rates := &bankiru.Branches{
 			Currency: "USD",
-			City:     br.Moscow,
-			Items: []br.Branch{
+			City:     bankiru.Moscow,
+			Items: []bankiru.Branch{
 				{Bank: "b", Subway: "s", Currency: "c", Buy: 49.0, Sell: 51.0, Updated: time.Now()},
 				{Bank: "b", Subway: "s", Currency: "c", Buy: 50.0, Sell: 52.0, Updated: time.Now()},
 			},
@@ -48,14 +48,14 @@ func Test_rate_Update(t *testing.T) {
 
 func Test_rate_String(t *testing.T) {
 	r := &cash{}
-	r.branches = []br.Branch{{Bank: "b", Subway: "s", Currency: "c", Buy: 100.0, Sell: 200.0, Updated: time.Now()}}
+	r.branches = []bankiru.Branch{{Bank: "b", Subway: "s", Currency: "c", Buy: 100.0, Sell: 200.0, Updated: time.Now()}}
 
 	assert.NotEmpty(t, r.String())
 }
 
 func Test_mma(t *testing.T) {
 	// Min, max and avg
-	b := []br.Branch{
+	b := []bankiru.Branch{
 		{
 			Bank:     "b",
 			Subway:   "s",
@@ -90,7 +90,7 @@ func Test_mma(t *testing.T) {
 	assert.Equal(t, savg, 57.00)
 
 	// Empty branches
-	b = []br.Branch{}
+	b = []bankiru.Branch{}
 
 	bmin, smin, bmax, smax, bavg, savg = mma(b)
 	assert.Equal(t, bmin, 0.00)
@@ -102,7 +102,7 @@ func Test_mma(t *testing.T) {
 }
 
 func Test_rate_BuyBranches(t *testing.T) {
-	b := []br.Branch{
+	b := []bankiru.Branch{
 		{
 			Bank:     "b1",
 			Subway:   "s",
@@ -161,7 +161,7 @@ func Test_rate_BuyBranches(t *testing.T) {
 }
 
 func Test_rate_SellBranches(t *testing.T) {
-	b := []br.Branch{
+	b := []bankiru.Branch{
 		{
 			Bank:     "b1",
 			Subway:   "s",

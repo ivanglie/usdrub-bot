@@ -6,7 +6,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/ivanglie/usdrub-bot/pkg/go-bestchange-client"
+	"github.com/ivanglie/usdrub-bot/pkg/bestchange-go"
 )
 
 func main() {

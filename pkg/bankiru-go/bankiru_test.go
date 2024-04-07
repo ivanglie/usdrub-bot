@@ -1,4 +1,4 @@
-package br
+package bankiru
 
 import (
 	"math"

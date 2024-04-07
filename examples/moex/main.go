@@ -6,7 +6,7 @@ package main
 import (
 	"fmt"
 
-	moex "github.com/ivanglie/usdrub-bot/pkg/go-moex-client"
+	moex "github.com/ivanglie/usdrub-bot/pkg/moex-go"
 )
 
 func main() {

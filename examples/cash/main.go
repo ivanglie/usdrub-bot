@@ -6,12 +6,12 @@ package main
 import (
 	"fmt"
 
-	"github.com/ivanglie/usdrub-bot/pkg/go-br-client"
+	"github.com/ivanglie/usdrub-bot/pkg/bankiru-go"
 )
 
 func main() {
-	client := br.NewClient()
-	rates, err := client.Rates(br.Novosibirsk)
+	client := bankiru.NewClient()
+	rates, err := client.Rates(bankiru.Novosibirsk)
 	if err != nil {
 		panic(err)
 	}

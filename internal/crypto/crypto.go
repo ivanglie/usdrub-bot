@@ -6,12 +6,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ivanglie/usdrub-bot/pkg/go-bestchange-client"
+	"github.com/ivanglie/usdrub-bot/pkg/bestchange-go"
 )
 
 const (
 	Prefix = "1 USDT (TRC20) equals"
-	Suffix = "in Moscow, Russia by bestchange.com"
+	Suffix = "in Moscow, Russia by BestChange.com"
 )
 
 // crypto represents currency exchange crypto of cash.

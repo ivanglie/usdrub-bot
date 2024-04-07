@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ivanglie/usdrub-bot/pkg/go-cbr-client"
+	"github.com/ivanglie/usdrub-bot/pkg/cbr-go"
 )
 
 func main() {

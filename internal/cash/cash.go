@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	br "github.com/ivanglie/usdrub-bot/pkg/go-br-client"
+	"github.com/ivanglie/usdrub-bot/pkg/bankiru-go"
 )
 
 const (
@@ -19,8 +19,8 @@ const (
 type cash struct {
 	sync.RWMutex
 	name         string
-	f            func() (*br.Branches, error)
-	branches     []br.Branch
+	f            func() (*bankiru.Branches, error)
+	branches     []bankiru.Branch
 	buyBranches  []string
 	sellBranches []string
 	buyMin       float64
@@ -44,7 +44,7 @@ func Get() *cash {
 	defer lock.Unlock()
 
 	if RateInstance == nil {
-		RateInstance = &cash{name: Prefix, f: func() (*br.Branches, error) { return br.NewClient().Rates(br.Moscow) }}
+		RateInstance = &cash{name: Prefix, f: func() (*bankiru.Branches, error) { return bankiru.NewClient().Rates(bankiru.Moscow) }}
 	}
 
 	return RateInstance
@@ -96,8 +96,8 @@ func (r *cash) SellBranches() []string {
 }
 
 // buyBranches represented as string.
-func buyBranches(b []br.Branch) []string {
-	sort.Sort(sort.Reverse(br.ByBuySorter(b)))
+func buyBranches(b []bankiru.Branch) []string {
+	sort.Sort(sort.Reverse(bankiru.ByBuySorter(b)))
 
 	s := []string{}
 	for _, v := range b {
@@ -108,8 +108,8 @@ func buyBranches(b []br.Branch) []string {
 }
 
 // sellBranches represented as string.
-func sellBranches(b []br.Branch) []string {
-	sort.Sort(br.BySellSorter(b))
+func sellBranches(b []bankiru.Branch) []string {
+	sort.Sort(bankiru.BySellSorter(b))
 
 	s := []string{}
 	for _, v := range b {
@@ -120,7 +120,7 @@ func sellBranches(b []br.Branch) []string {
 }
 
 // mma returns min, max and average values of buy and sell rates.
-func mma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
+func mma(b []bankiru.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
 	if len(b) == 0 {
 		log.Println("[WARNING] mma: empty branches")
 		return
@@ -128,7 +128,7 @@ func mma(b []br.Branch) (bmin, smin, bmax, smax, bavg, savg float64) {
 
 	btotal, stotal := float64(0), float64(0)
 
-	bb, sb := []br.Branch{}, []br.Branch{}
+	bb, sb := []bankiru.Branch{}, []bankiru.Branch{}
 	for _, v := range b {
 		bb = append(bb, v)
 		sb = append(sb, v)

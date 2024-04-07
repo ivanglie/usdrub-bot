@@ -6,7 +6,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/ivanglie/usdrub-bot/pkg/go-coingate-client"
+	"github.com/ivanglie/usdrub-bot/pkg/coingate-go"
 )
 
 func main() {
