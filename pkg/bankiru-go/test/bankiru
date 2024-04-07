@@ -1,0 +1,858 @@
+<div class="mapListstyled__StyledMapList-sc-294xv0-0 fdpae">
+    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 iAgrFj">
+            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                <!-- SUCESS -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">Филиал Невский</div>
+                                        </div><img src="//static3.banki.ru/ugc/74/3b/ec/0a/68665.png"
+                                            alt="Филиал Невский"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">87,25 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">89,25 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03.07.2123
+                                            16:23</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- SUCESS -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">ДО "Новосибирск"
+                                            </div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Площадь Ленина,
+                                                Красный проспект, Площадь Гарина-Михайловского</div>
+                                        </div><img src="//static4.banki.ru/ugc/5e/e9/17/b8/189914.png"
+                                            alt="ДО &quot;Новосибирск&quot;"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">87 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">89,55 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03.07.2123
+                                            16:06</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- SUCESS -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">"АК БАРС" Банк - пр.
+                                                Димитрова, 7</div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Площадь Ленина,
+                                                Красный проспект, Площадь Гарина-Михайловского</div>
+                                        </div><img src="//static3.banki.ru/ugc/02/5f/fc/e3/36119.png"
+                                            alt="&quot;АК БАРС&quot; Банк - пр. Димитрова, 7"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">86,78 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">89,28 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03.07.2123
+                                            16:24</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- SUCESS -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">ДО "Новосибирский"
+                                                Ф-ла Сибирский ПАО Банк "ФК Открытие"</div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Октябрьская, Речной
+                                                вокзал, Площадь Ленина</div>
+                                        </div><img src="//static3.banki.ru/ugc/40/2d/13/cb/690.png"
+                                            alt="ДО  &quot;Новосибирский&quot; Ф-ла Сибирский ПАО Банк &quot;ФК Открытие&quot;"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">86,50 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">89,90 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03.07.2123
+                                            16:23</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- FAIL: empty rates -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">ДО "Новосибирский"
+                                                Ф-ла Сибирский ПАО Банк "ФК Открытие"</div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Октябрьская, Речной
+                                                вокзал, Площадь Ленина</div>
+                                        </div><img src="//static3.banki.ru/ugc/40/2d/13/cb/690.png"
+                                            alt="ДО  &quot;Новосибирский&quot; Ф-ла Сибирский ПАО Банк &quot;ФК Открытие&quot;"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <!-- <div data-test="text" class="Text__sc-j452t5-0 jzaqdw"> -
+                                                        </div> -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <!-- <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">89,90 ₽
+                                                        </div> -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03.07.2123
+                                            16:23</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- FAIL: without buy rate -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">ДО "Новосибирский"
+                                                Ф-ла Сибирский ПАО Банк "ФК Открытие"</div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Октябрьская, Речной
+                                                вокзал, Площадь Ленина</div>
+                                        </div><img src="//static3.banki.ru/ugc/40/2d/13/cb/690.png"
+                                            alt="ДО  &quot;Новосибирский&quot; Ф-ла Сибирский ПАО Банк &quot;ФК Открытие&quot;"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw"> -
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">89,90 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03.07.2123
+                                            16:23</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- FAIL: incorrect buy rate -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">ДО "Новосибирский"
+                                                Ф-ла Сибирский ПАО Банк "ФК Открытие"</div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Октябрьская, Речной
+                                                вокзал, Площадь Ленина</div>
+                                        </div><img src="//static3.banki.ru/ugc/40/2d/13/cb/690.png"
+                                            alt="ДО  &quot;Новосибирский&quot; Ф-ла Сибирский ПАО Банк &quot;ФК Открытие&quot;"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw"> 89,,90 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">89,90 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03.07.2123
+                                            16:23</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- FAIL: without sell rate -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">ДО "Новосибирский"
+                                                Ф-ла Сибирский ПАО Банк "ФК Открытие"</div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Октябрьская, Речной
+                                                вокзал, Площадь Ленина</div>
+                                        </div><img src="//static3.banki.ru/ugc/40/2d/13/cb/690.png"
+                                            alt="ДО  &quot;Новосибирский&quot; Ф-ла Сибирский ПАО Банк &quot;ФК Открытие&quot;"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">86,50 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw"> -
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03.07.2123
+                                            16:23</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- FAIL: incorrect sell rate -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">ДО "Новосибирский"
+                                                Ф-ла Сибирский ПАО Банк "ФК Открытие"</div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Октябрьская, Речной
+                                                вокзал, Площадь Ленина</div>
+                                        </div><img src="//static3.banki.ru/ugc/40/2d/13/cb/690.png"
+                                            alt="ДО  &quot;Новосибирский&quot; Ф-ла Сибирский ПАО Банк &quot;ФК Открытие&quot;"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">86,50 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">86,,50 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03.07.2123
+                                            16:23</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- FAIL: incorrect date format -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">ДО "Новосибирский"
+                                                Ф-ла Сибирский ПАО Банк "ФК Открытие"</div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Октябрьская, Речной
+                                                вокзал, Площадь Ленина</div>
+                                        </div><img src="//static3.banki.ru/ugc/40/2d/13/cb/690.png"
+                                            alt="ДО  &quot;Новосибирский&quot; Ф-ла Сибирский ПАО Банк &quot;ФК Открытие&quot;"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">86,50 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">89,90 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03072123
+                                            16:23</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- FAIL: not actual updated date -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">ДО "Новосибирский"
+                                                Ф-ла Сибирский ПАО Банк "ФК Открытие"</div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Октябрьская, Речной
+                                                вокзал, Площадь Ленина</div>
+                                        </div><img src="//static3.banki.ru/ugc/40/2d/13/cb/690.png"
+                                            alt="ДО  &quot;Новосибирский&quot; Ф-ла Сибирский ПАО Банк &quot;ФК Открытие&quot;"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">86,50 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">89,90 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03.07.2022
+                                            16:23</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- FAIL: empty date -->
+                <div>
+                    <section class="Panel__sc-1g68tnu-1 JpzER resultItemMapstyled__StyledPanel-sc-komxja-0 gPOMIy">
+                        <div class="Panel__sc-1g68tnu-0 cieTjP">
+                            <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                <div direction="vert"
+                                    class="FlexboxGrid__sc-akw86o-0 ipZNf resultItemMapstyled__StyledWrapperResult-sc-komxja-3 cITBmP">
+                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 ffxYsz">
+                                        <div direction="vert" class="FlexboxGrid__sc-akw86o-0 gXguwc">
+                                            <div data-test="text" class="Text__sc-j452t5-0 gfTHqP">ДО "Новосибирский"
+                                                Ф-ла Сибирский ПАО Банк "ФК Открытие"</div>
+                                            <div data-test="text" class="Text__sc-j452t5-0 dJGHYE">Октябрьская, Речной
+                                                вокзал, Площадь Ленина</div>
+                                        </div><img src="//static3.banki.ru/ugc/40/2d/13/cb/690.png"
+                                            alt="ДО  &quot;Новосибирский&quot; Ф-ла Сибирский ПАО Банк &quot;ФК Открытие&quot;"
+                                            class="resultItemMapstyled__StyledLogo-sc-komxja-4 eufxij">
+                                    </div>
+                                    <div direction="vert" class="FlexboxGrid__sc-akw86o-0 jkNAek">
+                                        <div direction="row" class="FlexboxGrid__sc-akw86o-0 eNzgjv">
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Покупка</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">86,50 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="FlexboxGridItem__sc-1crr98y-0 fcKIDw">
+                                                <div direction="vert" class="FlexboxGrid__sc-akw86o-0 dELgzc">
+                                                    <div data-test="text" class="Text__sc-j452t5-0 efivpt">Продажа</div>
+                                                    <div direction="row" class="FlexboxGrid__sc-akw86o-0 gkHuDs">
+                                                        <div
+                                                            class="resultItemMapstyled__StyledExchange-sc-komxja-6 inKcdh">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                height="20" fill="none">
+                                                                <path fill="#039BE5"
+                                                                    d="M1.837 1.837c2.449-2.45 13.877-2.45 16.326 0 2.45 2.449 2.45 13.877 0 16.326-2.449 2.45-13.877 2.45-16.326 0-2.45-2.449-2.45-13.877 0-16.326z">
+                                                                </path>
+                                                            </svg>
+                                                            <div data-test="text"
+                                                                class="Text__sc-j452t5-0 cjnWKp resultItemMapstyled__StyledRateText-sc-komxja-7 cuJoGj">
+                                                                $</div>
+                                                        </div>
+                                                        <div data-test="text" class="Text__sc-j452t5-0 jzaqdw">89,90 ₽
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div data-test="text" class="Text__sc-j452t5-0 hDxmZl">Обновление: 03072123
+                                            16:23</div> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- End -->
+            </div>
+        </div>
+    </div>
+</div>
