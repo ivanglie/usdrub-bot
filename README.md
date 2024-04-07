@@ -15,12 +15,3 @@ Telegram bot that provides the current exchange rate of the US Dollar to the Rus
 You can find it at [t.me/usd2rub_bot](https://t.me/usd2rub_bot). See screenshot:
 
 ![Screenshot](../assets/demo.png?raw=true)
-
-## References
-The project uses client libraries:
-* [go-coingate-client](https://github.com/ivanglie/go-coingate-client)
-* [go-moex-client](https://github.com/ivanglie/go-moex-client)
-* [go-cbr-client](https://github.com/ivanglie/go-cbr-client)
-* [go-br-client](https://github.com/ivanglie/go-br-client)
-
-See the links for more information.
